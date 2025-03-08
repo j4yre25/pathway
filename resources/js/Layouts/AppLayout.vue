@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import ApplicationMark from '@/Components/ApplicationMark.vue';
 import Banner from '@/Components/Banner.vue';
 import Dropdown from '@/Components/Dropdown.vue';
@@ -12,6 +12,7 @@ defineProps({
     title: String,
 });
 
+const page = usePage()
 const showingNavigationDropdown = ref(false);
 
 const switchToTeam = (team) => {
@@ -52,9 +53,17 @@ const logout = () => {
                                     Dashboard
                                 </NavLink>
 
-                                <NavLink :href="route('jobs')" :active="route().current('jobs')">
+                                <NavLink :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')">
                                     Jobs
                                 </NavLink>
+                                
+                                <NavLink v-if="page.props.permissions.canManageUsers" :href="route('admin.manage_users' , { user: page.props.auth.user.id })" :active="route().current('admin.manage_users')">
+                                    Manage Users
+                                </NavLink>
+
+                                <!-- <NavLink :href="route('manage_graduates')" :active="route().current('manage_graduates')">
+                                    Manage Graduates
+                                </NavLink> -->
                      
                             </div>
                         </div>
@@ -200,9 +209,13 @@ const logout = () => {
                             Dashboard
                         </ResponsiveNavLink>
 
-                        <ResponsiveNavLink :href="route('jobs')" :active="route().current('jobs')">
+                        <ResponsiveNavLink :href="route('jobs', { user: page.props.auth.user.id })" :active="route().current('jobs')">
                            Jobs
                         </ResponsiveNavLink>
+                        <ResponsiveNavLink v-if="page.props.permissions.canManageUsers" :href="route('admin.manage_users' , { user: page.props.auth.user.id })" :active="route().current('admin.manage_users')">
+                           Manage Users
+                        </ResponsiveNavLink>
+
                     </div>
 
                     

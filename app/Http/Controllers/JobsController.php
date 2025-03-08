@@ -2,49 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Jobs;
+use App\Models\Job;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+
 
 class JobsController extends Controller
 {
-    public function index(Request $request) {
+    public function index(User $user) {
 
-        $user = $request->user();
 
         $jobs = $user->jobs;
-        return Inertia::render('Jobs/Index', [
+        return Inertia::render('Jobs/Index/Index', [
             'jobs' => $jobs
         ]);
     }
 
-    public function create (User $user) {
+    public function create (Request $request, User $user) {
 
-        $new_job = new Jobs();
+        $new_job = new Job();
         $new_job->user_id = $user->id;
-        $new_job->name = 'New Job Name';
-        $new_job->description = 'New Job Description';
+        $new_job->name = $request->input('name');
+        $new_job->description = $request->input('description');
         $new_job->save();
 
         return Redirect()->back()->with('flash.banner', 'Job posted successfully.');
 
     }
 
-    public function view(Jobs $job) {
+    public function view(Job $job) {
         return Inertia::render('Jobs/View/Index', [
             'job' => $job
         ]);
     }
 
-    public function edit(Jobs $job) {
+    public function edit(Job $job) {
         return Inertia::render('Jobs/Edit/Index', [
             'job' => $job
         ]);
     }
 
-    public function update(Request $request, Jobs $job){
-
+    public function update(Request $request, Job $job){
+        Gate::authorize('update', $job);
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:99'],
             'description' => ['required', 'string', 'max:99'],
@@ -59,10 +60,15 @@ class JobsController extends Controller
         return Redirect()->back()->with('flash.banner', 'Job updated successfully.');
     }
 
-    public function delete(Jobs $job) {
-        $job->delete();
+    public function delete(Request $request, Job $job) {
 
-        return Redirect(route('jobs'));
+        Gate::authorize('delete', $job);
+
+        $job->delete();
+    
+        $user_id = $request->user()->id;
+
+        return Redirect(route('jobs', ['user' => $user_id]))->with('flash.banner', 'Job deleted successfully.');
     }
     
 }

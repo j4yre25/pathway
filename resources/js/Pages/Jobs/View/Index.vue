@@ -18,9 +18,7 @@ const props = defineProps({
 
             <Container>
                 <h2>Job Details</h2>
-                <p>{{ job.id }}</p>
-                <p>{{ job.name }}</p>
-                <p>{{ job.description }}</p>
+
 
             </Container>
 

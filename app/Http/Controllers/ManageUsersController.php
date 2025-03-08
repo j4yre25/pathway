@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class ManageUsersController extends Controller
+{
+    public function index (){
+
+
+        $all_users = User::all();
+
+        return Inertia::render('Admin/ManageUsers/Index/Index', [
+            'all_users' => $all_users
+
+
+        ]);
+
+    }
+
+    public function edit(User $users) {
+        return Inertia::render('Admin/ManageUsers/Edit/Index', [
+            'user' => $users
+        ]);
+    }
+
+
+    public function delete(Request $request, User $user) {
+
+        // Gate::authorize('delete', $job);
+
+        $user->delete();
+    
+        // $user_id = $request->user()->id;
+
+        return redirect()->route('admin.manage_users')->with('flash.banner', 'User deleted successfully.');
+    }
+}
