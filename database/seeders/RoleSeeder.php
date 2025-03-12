@@ -20,7 +20,7 @@ class RoleSeeder extends Seeder
 
         $role_peso->givePermissionTo($permission_manage_users);
 
-        $user = User::find(1);
+        $user = User::find(1);  
 
         $user->assignRole($role_peso);
     }

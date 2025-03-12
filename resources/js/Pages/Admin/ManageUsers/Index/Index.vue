@@ -57,6 +57,7 @@ const handleDelete = () => {
         <thead>
             <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                 <th class="border border-gray-200 px-6 py-3 text-left">ID</th>
+                <th class="border border-gray-200 px-6 py-3 text-left">Role</th>
                 <th class="border border-gray-200 px-6 py-3 text-left">Name</th>
                 <th class="border border-gray-200 px-6 py-3 text-left">Email</th>
                 <th class="border border-gray-200 px-6 py-3 text-left">Actions</th>
@@ -65,7 +66,22 @@ const handleDelete = () => {
         <tbody class="text-gray-600 text-sm font-light">
             <tr v-for="user in props.all_users" :key="user.id" class="border-b border-gray-200 hover:bg-gray-100">
                 <td class="border border-gray-200 px-6 py-4">{{ user.id }}</td>
-                <td class="border border-gray-200 px-6 py-4">{{ user.name }}</td>
+                <td class="border border-gray-200 px-6 py-4">{{ user.user_type }}</td>
+                <td class="border border-gray-200 px-6 py-4">
+    <!-- Conditionally display the name based on user_type -->
+                <template v-if="user.user_type === 'graduate'">
+                    {{ user.graduate_first_name }} {{ user.graduate_last_name }}
+                </template>
+                <template v-else-if="user.user_type === 'company'">
+                    {{ user.company_name }}
+                </template>
+                <template v-else-if="user.user_type === 'institution'">
+                    {{ user.institution_name }}
+                </template>
+                <template v-else>
+                    {{ user.name }}
+                </template>
+            </td>
                 <td class="border border-gray-200 px-6 py-4">{{ user.email }}</td>
                 <td class="border border-gray-200 px-6 py-4">
             

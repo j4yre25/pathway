@@ -6,7 +6,7 @@ use App\Models\Job;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Inertia\Inertia;
+ use Inertia\Inertia;
 
 
 class JobsController extends Controller
@@ -18,10 +18,19 @@ class JobsController extends Controller
         return Inertia::render('Jobs/Index/Index', [
             'jobs' => $jobs
         ]);
+
+        
     }
 
-    public function create (Request $request, User $user) {
+    
+    public function create(User $user) {
+        return Inertia::render('Jobs/Index/CreateJobs');
 
+
+    }
+
+    public function store(Request $request, User $user) {
+        // return Inertia::render('Jobs/Index/CreateJobs');
         $new_job = new Job();
         $new_job->user_id = $user->id;
         $new_job->name = $request->input('name');
@@ -30,7 +39,10 @@ class JobsController extends Controller
 
         return Redirect()->back()->with('flash.banner', 'Job posted successfully.');
 
-    }
+}
+
+   
+
 
     public function view(Job $job) {
         return Inertia::render('Jobs/View/Index', [

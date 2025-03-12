@@ -15,5 +15,6 @@ class Job extends Model
         'from_datetime',
         'to_datetime',
         'location',
+        
     ];
 }

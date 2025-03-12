@@ -28,9 +28,30 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
         'email',
         'password',
+        'user_type',
+        'graduate_specific_field',
+        'company_name',
+        'company_address',
+        'company_sector',
+        'company_category',
+        'company_contact_number',
+        'company_hr_last_name',
+        'company_hr_first_name',
+        'company_hr_middle_initial',
+        'institution_type',
+        'institution_address',
+        'institution_contact_number',
+        'institution_president_last_name',
+        'institution_president_first_name',
+        'institution_career_officer_first_name',
+        'graduate_first_name',
+        'graduate_last_name',
+        'graduate_school_graduated_from',
+        'graduate_program_completed',
+        'graduate_year_graduated',
+        'graduate_skills',
     ];
 
     /**
@@ -64,6 +85,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'graduate_year_graduated' => 'date'
         ];
     }
 
