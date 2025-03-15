@@ -12,6 +12,7 @@ defineProps({
     title: String,
 });
 
+
 const page = usePage()
 const showingNavigationDropdown = ref(false);
 
@@ -48,12 +49,12 @@ const logout = () => {
                             </div>
 
                             <!-- Navigation Links -->
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" v-if="!userNotApproved">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
 
-                                <NavLink :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')">
+                                <NavLink :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')" :disabled="userNotApproved" >
                                     Jobs
                                 </NavLink>
                                 
@@ -220,7 +221,7 @@ const logout = () => {
                             Dashboard
                         </ResponsiveNavLink>
 
-                        <ResponsiveNavLink :href="route('jobs', { user: page.props.auth.user.id })" :active="route().current('jobs')">
+                        <ResponsiveNavLink :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')">
                            Jobs
                         </ResponsiveNavLink>
                         <ResponsiveNavLink v-if="page.props.permissions.canManageUsers" :href="route('admin.manage_users' , { user: page.props.auth.user.id })" :active="route().current('admin.manage_users')">
