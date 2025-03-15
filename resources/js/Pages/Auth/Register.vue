@@ -14,7 +14,7 @@ const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
-    user_type: '', // Add user_type field
+    role: '', // Add role field
     // Graduate-specific fields
     graduate_specific_field: '',
     // Company-specific fields
@@ -66,10 +66,10 @@ const submit = () => {
         <form @submit.prevent="submit">
 
             <div class="mt-4">
-                <InputLabel for="user_type" value="User Type" />
+                <InputLabel for="role" value="User Type" />
                 <select
-                    id="user_type"
-                    v-model="form.user_type"
+                    id="role"
+                    v-model="form.role"
                     class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                     required
                 >
@@ -78,12 +78,12 @@ const submit = () => {
                     <option value="company">Company</option>
                     <option value="institution">Institution</option>
                 </select>
-                <InputError class="mt-2" :message="form.errors.user_type" />
+                <InputError class="mt-2" :message="form.errors.role" />
             </div>
 
             <!-- Dynamic Fields Based on User Type -->
             <!-- Graduate Fields -->
-            <div v-if="form.user_type === 'graduate'" class="mt-4">
+            <div v-if="form.role === 'graduate'" class="mt-4">
                 <!-- Graduate First Name -->
                 <InputLabel for="graduate_first_name" value="Graduate First Name" />
                 <TextInput
@@ -195,7 +195,7 @@ const submit = () => {
             </div>
 
             <!-- Company Fields -->
-            <div v-if="form.user_type === 'company'" class="mt-4">
+            <div v-if="form.role === 'company'" class="mt-4">
                 <InputLabel for="company_name" value="Company Name" />
                 <TextInput
                     id="company_name"
@@ -326,7 +326,7 @@ const submit = () => {
             </div>
 
             <!-- Institution Fields -->
-            <div v-if="form.user_type === 'institution'" class="mt-4">
+            <div v-if="form.role === 'institution'" class="mt-4">
                 <InputLabel for="institution_type" value="Institution Type" />
                 <select
                     id="institution_type"

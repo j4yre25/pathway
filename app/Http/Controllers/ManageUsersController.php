@@ -27,6 +27,13 @@ class ManageUsersController extends Controller
         ]);
     }
 
+    public function approve(User $user)
+    {
+        $user->is_approved = true; // Ensure this matches your database field
+        $user->save();
+    
+        return redirect()->route('admin.manage_users')->with('flash.banner', 'User  approved successfully.');
+    }
 
     public function delete(Request $request, User $user) {
 

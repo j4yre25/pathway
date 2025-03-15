@@ -22,16 +22,16 @@ class CreateNewUser implements CreatesNewUsers
         $rules = [
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
-            'user_type' => ['required', 'string', 'in:peso,graduate,company,institution'],
+            'role' => ['required', 'string', 'in:peso,graduate,company,institution'],
         ];
     
-        switch ($input['user_type']) {
+        switch ($input['role']) {
             case 'graduate':
                 $rules['graduate_first_name'] = ['required', 'string', 'max:255'];
                 $rules['graduate_last_name'] = ['required', 'string', 'max:255'];
                 $rules['graduate_school_graduated_from'] = ['required', 'string'];
                 $rules['graduate_program_completed'] = ['required', 'string'];
-                $rules['graduate_year_graduated'] = ['required', 'string'];
+                $rules['graduate_year_graduated'] = ['required', 'integer'];
                 $rules['graduate_skills'] = ['required', 'string'];
                 break;
             case 'company':
@@ -52,8 +52,6 @@ class CreateNewUser implements CreatesNewUsers
                 $rules['institution_president_first_name'] = ['required', 'string', 'max:255'];
                 $rules['institution_career_officer_first_name'] = ['required', 'string', 'max:255'];
                 $rules['institution_career_officer_first_name'] = ['required', 'string', 'max:255'];
-                $rules['institution_address'] = ['required', 'string'];
-                $rules['institution_address'] = ['required', 'string'];
                 break;
         }
     
@@ -62,27 +60,28 @@ class CreateNewUser implements CreatesNewUsers
         return User::create([
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
-            'user_type' => $input['user_type'],
+            'role' => $input['role'],
+            'is_approved' => false, 
             // Add other fields based on user type
-            'graduate_first_name' => $input['user_type'] === 'graduate' ? $input['graduate_first_name'] : null,
-            'graduate_last_name' => $input['user_type'] === 'graduate' ? $input['graduate_last_name'] : null,
-            'graduate_program_completed' => $input['user_type'] === 'graduate' ? $input['graduate_program_completed'] : null,
-            'graduate_graduate_year_graduated' => $input['user_type'] === 'graduate' ? $input['graduate_school_graduated_from'] : null,
-            'graduate_skills' => $input['user_type'] === 'graduate' ? $input['graduate_skills'] : null,
-            'company_name' => $input['user_type'] === 'company' ? $input['company_name'] : null,
-            'company_address' => $input['user_type'] === 'company' ? $input['company_address'] : null,
-            'company_sector' => $input['user_type'] === 'company' ? $input['company_sector'] : null,
-            'company_category' => $input['user_type'] === 'company' ? $input['company_category'] : null,
-            'company_contact_number' => $input['user_type'] === 'company' ? $input['company_contact_number'] : null,
-            'company_hr_last_name' => $input['user_type'] === 'company' ? $input['company_hr_last_name'] : null,
-            'company_hr_first_name' => $input['user_type'] === 'company' ? $input['company_hr_first_name'] : null,
-            'company_hr_middle_initial' => $input['user_type'] === 'company' ? $input['company_hr_middle_initial'] : null,
-            'institution_type' => $input['user_type'] === 'institution' ? $input['institution_type'] : null,
-            'institution_address' => $input['user_type'] === 'institution' ? $input['institution_address'] : null,
-            'institution_contact_number' => $input['user_type'] === 'institution' ? $input['institution_contact_number'] : null,
-            'institution_president_last_name' => $input['user_type'] === 'institution' ? $input['institution_president_last_name'] : null,
-            'institution_president_first_name' => $input['user_type'] === 'institution' ? $input['institution_president_first_name'] : null,
-            'institution_career_officer_first_name' => $input['user_type'] === 'institution' ? $input['institution_career_officer_first_name'] : null,
+            'graduate_first_name' => $input['role'] === 'graduate' ? $input['graduate_first_name'] : null,
+            'graduate_last_name' => $input['role'] === 'graduate' ? $input['graduate_last_name'] : null,
+            'graduate_program_completed' => $input['role'] === 'graduate' ? $input['graduate_program_completed'] : null,
+            'graduate_year_graduated' => $input['role'] === 'graduate' ? (int)$input['graduate_year_graduated'] : null,
+            'graduate_skills' => $input['role'] === 'graduate' ? $input['graduate_skills'] : null,
+            'company_name' => $input['role'] === 'company' ? $input['company_name'] : null,
+            'company_address' => $input['role'] === 'company' ? $input['company_address'] : null,
+            'company_sector' => $input['role'] === 'company' ? $input['company_sector'] : null,
+            'company_category' => $input['role'] === 'company' ? $input['company_category'] : null,
+            'company_contact_number' => $input['role'] === 'company' ? $input['company_contact_number'] : null,
+            'company_hr_last_name' => $input['role'] === 'company' ? $input['company_hr_last_name'] : null,
+            'company_hr_first_name' => $input['role'] === 'company' ? $input['company_hr_first_name'] : null,
+            'company_hr_middle_initial' => $input['role'] === 'company' ? $input['company_hr_middle_initial'] : null,
+            'institution_type' => $input['role'] === 'institution' ? $input['institution_type'] : null,
+            'institution_address' => $input['role'] === 'institution' ? $input['institution_address'] : null,
+            'institution_contact_number' => $input['role'] === 'institution' ? $input['institution_contact_number'] : null,
+            'institution_president_last_name' => $input['role'] === 'institution' ? $input['institution_president_last_name'] : null,
+            'institution_president_first_name' => $input['role'] === 'institution' ? $input['institution_president_first_name'] : null,
+            'institution_career_officer_first_name' => $input['role'] === 'institution' ? $input['institution_career_officer_first_name'] : null,
         ]);
     }
 }

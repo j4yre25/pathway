@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('graduate_last_name');
             $table->string('graduate_school_graduated_from')->nullable();
             $table->string('graduate_program_completed')->nullable();
-            $table->date('graduate_year_graduated')->nullable(); // Use date type for year graduated
+            $table->integer('graduate_year_graduated')->nullable(); // Use date type for year graduated
             $table->string('graduate_skills')->nullable();
 
             // Company-specific fields

@@ -30,8 +30,13 @@ class User extends Authenticatable
     protected $fillable = [
         'email',
         'password',
-        'user_type',
-        'graduate_specific_field',
+        'role',
+        'graduate_first_name',
+        'graduate_last_name',
+        'graduate_school_graduated_from',
+        'graduate_program_completed',
+        'graduate_year_graduated',
+        'graduate_skills',
         'company_name',
         'company_address',
         'company_sector',
@@ -46,12 +51,6 @@ class User extends Authenticatable
         'institution_president_last_name',
         'institution_president_first_name',
         'institution_career_officer_first_name',
-        'graduate_first_name',
-        'graduate_last_name',
-        'graduate_school_graduated_from',
-        'graduate_program_completed',
-        'graduate_year_graduated',
-        'graduate_skills',
     ];
 
     /**
@@ -85,7 +84,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'graduate_year_graduated' => 'date'
+            'graduate_year_graduated' => 'date',
+            'is_approved' => 'boolean'
         ];
     }
 
@@ -93,4 +93,9 @@ class User extends Authenticatable
         return $this->hasMany(Job::class);
 
     }
+
+
+    
+    
+
 }

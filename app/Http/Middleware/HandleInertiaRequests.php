@@ -39,7 +39,10 @@ class HandleInertiaRequests extends Middleware
             'permissions' => [
                 'canManageUsers' => fn () => $request->user()
                 ? $request->user()->hasPermissionTo('manage users'): null,
-            ]
+            ],
+            'csrf_token' => csrf_token(),
+            'userNotApproved' => session('user_not_approved')
+            
         ]);
     }
 }

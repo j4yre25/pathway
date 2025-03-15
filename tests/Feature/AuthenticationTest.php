@@ -30,6 +30,21 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
+    public function test_users_cannot_authenticate_when_not_approved(): void
+    {
+        // Create a user who is not approved
+        $user = User::factory()->create(['approved' => false]);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password', 
+        ]);
+
+        $this->assertGuest();
+        $response->assertSessionHasErrors(['email' => 'Your account is not approved yet.']);
+    }
+
+
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
         $user = User::factory()->create();
@@ -41,4 +56,6 @@ class AuthenticationTest extends TestCase
 
         $this->assertGuest();
     }
+
+    
 }

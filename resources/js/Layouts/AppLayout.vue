@@ -137,13 +137,13 @@ const logout = () => {
 
                                         <span v-else class="inline-flex rounded-md">
                                             <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
-                                                <template v-if="$page.props.auth.user.user_type === 'graduate'">
+                                                <template v-if="$page.props.auth.user.role === 'graduate'">
                                                     {{ $page.props.auth.user.graduate_first_name }}
                                                 </template>
-                                                <template v-else-if="$page.props.auth.user.user_type === 'company'">
+                                                <template v-else-if="$page.props.auth.user.role === 'company'">
                                                     {{ $page.props.auth.user.company_name }}
                                                 </template>
-                                                <template v-else-if="$page.props.auth.user.user_type === 'institution'">
+                                                <template v-else-if="$page.props.auth.user.role === 'institution'">
                                                     {{ $page.props.auth.user.institution_name }}
                                                 </template>
                                                 <template v-else>

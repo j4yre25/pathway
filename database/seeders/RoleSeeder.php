@@ -6,22 +6,36 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use App\Models\User;
+
 
 class RoleSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
-    public function run(): void
+    public function run()
     {
-        $role_peso = Role::create(['name' => 'peso']);
-        $permission_manage_users = Permission::create(['name' => 'manage users']);
+        $role_peso = Role::firstOrCreate(['name' => 'peso']);
+        $role_institution = Role::firstOrCreate(['name' => 'institution']);
+        $role_company = Role::firstOrCreate(['name' => 'company']);
+        $role_graduate = Role::firstOrCreate(['name' => 'graduate']);
 
-        $role_peso->givePermissionTo($permission_manage_users);
+        $permission_manage_users = Permission::firstOrCreate(['name' => 'manage users']);
+        $permission_post_jobs = Permission::firstOrCreate(['name' => 'post jobs']);
+        $permission_edit_jobs = Permission::firstOrCreate(['name' => 'edit jobs']);
+        $permission_view_jobs = Permission::firstOrCreate(['name' => 'view jobs']);
 
-        $user = User::find(1);  
+        $permissions_peso = [$permission_manage_users, $permission_post_jobs, $permission_edit_jobs, $permission_view_jobs];
+        $permissions_institution = [$permission_manage_users, $permission_post_jobs, $permission_edit_jobs, $permission_view_jobs];
+        $permissions_company = [$permission_manage_users, $permission_post_jobs, $permission_edit_jobs, $permission_view_jobs];
 
-        $user->assignRole($role_peso);
+        $role_peso->syncPermissions($permissions_peso);
+        $role_institution->syncPermissions($permissions_institution);
+        $role_company->syncPermissions($permissions_company);
+
+        $role_graduate->givePermissionTo($permission_view_jobs);
+
+
+    
     }
 }

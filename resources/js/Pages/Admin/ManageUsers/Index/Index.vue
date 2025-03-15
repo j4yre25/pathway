@@ -40,6 +40,14 @@ const handleDelete = () => {
         userToDelete.value = null; 
     }
 };
+const approveUser  = (user) => {
+
+    router.post(route('admin.manage_users.approve', { user: user.id }), {
+        
+    });
+};
+
+
 
 </script>
 
@@ -66,16 +74,16 @@ const handleDelete = () => {
         <tbody class="text-gray-600 text-sm font-light">
             <tr v-for="user in props.all_users" :key="user.id" class="border-b border-gray-200 hover:bg-gray-100">
                 <td class="border border-gray-200 px-6 py-4">{{ user.id }}</td>
-                <td class="border border-gray-200 px-6 py-4">{{ user.user_type }}</td>
+                <td class="border border-gray-200 px-6 py-4">{{ user.role }}</td>
                 <td class="border border-gray-200 px-6 py-4">
-    <!-- Conditionally display the name based on user_type -->
-                <template v-if="user.user_type === 'graduate'">
+    <!-- Conditionally display the name based on role -->
+                <template v-if="user.role === 'graduate'">
                     {{ user.graduate_first_name }} {{ user.graduate_last_name }}
                 </template>
-                <template v-else-if="user.user_type === 'company'">
+                <template v-else-if="user.role === 'company'">
                     {{ user.company_name }}
                 </template>
-                <template v-else-if="user.user_type === 'institution'">
+                <template v-else-if="user.role === 'institution'">
                     {{ user.institution_name }}
                 </template>
                 <template v-else>
@@ -96,7 +104,10 @@ const handleDelete = () => {
                     <DangerButton @click="confirmDelete(user)" class="mr-2">
                                         Delete User
                     </DangerButton>
+                    <PrimaryButton @click="approveUser (user)" v-if="!user.approved">Approve</PrimaryButton>
                 </td>
+
+               
             </tr>
         </tbody>
     </table>

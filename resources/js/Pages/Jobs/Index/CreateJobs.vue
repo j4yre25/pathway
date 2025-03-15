@@ -59,7 +59,7 @@ const createJob = () => {
                     </template>
 
                     <template #description>
-                        Fill in the details below to post a new job.
+                        Fill in the detailcs below to post a new job.
                     </template>
 
                     <template #form>
