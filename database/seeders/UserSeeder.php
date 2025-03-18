@@ -17,18 +17,18 @@ class UserSeeder extends Seeder
     {
         $users = [
             [
-                'email' => 'graduate@example2.com',
+                'email' => 'graduate@example.com',
                 'password' => 'password123',
                 'role' => 'graduate',
                 'graduate_first_name' => 'John',
                 'graduate_last_name' => 'Doe',
                 'graduate_school_graduated_from' => 'University A',
                 'graduate_program_completed' => 'Computer Science',
-                'graduate_year_graduated' =>  '2023',
+                'graduate_year_graduated' => '2023',
                 'graduate_skills' => 'PHP, Laravel',
             ],
             [
-                'email' => 'company@example2.com',
+                'email' => 'company@example.com',
                 'password' => 'password123',
                 'role' => 'company',
                 'company_name' => 'Tech Corp',
@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
                 'company_hr_middle_initial' => 'A',
             ],
             [
-                'email' => 'institution@example2.com',
+                'email' => 'institution@example.com',
                 'password' => 'password123',
                 'role' => 'institution',
                 'institution_type' => 'Educational',
@@ -54,11 +54,9 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $input) {
-
-            
             $rules = [
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                'password' => ['required', 'string', 'min:8'], 
+                'password' => ['required', 'string', 'min:8'], // Adjust password rules as needed
                 'role' => ['required', 'string', 'in:peso,graduate,company,institution'],
             ];
 
@@ -68,7 +66,7 @@ class UserSeeder extends Seeder
                     $rules['graduate_last_name'] = ['required', 'string', 'max:255'];
                     $rules['graduate_school_graduated_from'] = ['required', 'string'];
                     $rules['graduate_program_completed'] = ['required', 'string'];
-                    $rules['graduate_year_graduated'] = ['required', 'integer'];
+                    $rules['graduate_year_graduated'] = ['required', 'string'];
                     $rules['graduate_skills'] = ['required', 'string'];
                     break;
                 case 'company':
@@ -102,7 +100,7 @@ class UserSeeder extends Seeder
                 'graduate_first_name' => $input['role'] === 'graduate' ? $input['graduate_first_name'] : null,
                 'graduate_last_name' => $input['role'] === 'graduate' ? $input['graduate_last_name'] : null,
                 'graduate_program_completed' => $input['role'] === 'graduate' ? $input['graduate_program_completed'] : null,
-                'graduate_year_graduated' => $input['role'] === 'graduate' ? (int)$input['graduate_year_graduated'] : null,
+                'graduate_year_graduated' => $input['role'] === 'graduate' ? $input['graduate_year_graduated'] : null,
                 'graduate_skills' => $input['role'] === 'graduate' ? $input['graduate_skills'] : null,
                 'company_name' => $input['role'] === 'company' ? $input['company_name'] : null,
                 'company_address' => $input['role'] === 'company' ? $input['company_address'] : null,

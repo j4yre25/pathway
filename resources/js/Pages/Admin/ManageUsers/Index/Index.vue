@@ -94,10 +94,6 @@ const approveUser  = (user) => {
                 <td class="border border-gray-200 px-6 py-4">
             
 
-                    <!-- <Link :href="route('all_users.view', { user: user.id})">
-                    View
-                </Link>
-              -->
               <Link :href="route('admin.manage_users.edit', { user: user.id })">
                      <PrimaryButton class ="mr-2">Edit</PrimaryButton>
                 </Link>

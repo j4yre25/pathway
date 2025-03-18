@@ -4,6 +4,8 @@
     // import UpdateForm from './UpdateForm.vue';
     // import DeleteForm from './DeleteForm.vue';
     import SectionBorder from '@/Components/SectionBorder.vue';
+    import { ref } from 'vue';
+    import { usePage, router } from '@inertiajs/vue3';
    
 
 
