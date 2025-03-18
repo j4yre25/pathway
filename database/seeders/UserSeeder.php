@@ -51,6 +51,13 @@ class UserSeeder extends Seeder
                 'institution_president_first_name' => 'Emily',
                 'institution_career_officer_first_name' => 'Michael',
             ],
+            [
+                'email' => 'peso@example.com',
+                'password' => 'password123',
+                'role' => 'peso',
+                'peso_first_name'  => 'Peso ',
+                'peso_last_name'  => 'Admin',
+            ],
         ];
 
         foreach ($users as $input) {
@@ -116,6 +123,9 @@ class UserSeeder extends Seeder
                 'institution_president_last_name' => $input['role'] === 'institution' ? $input['institution_president_last_name'] : null,
                 'institution_president_first_name' => $input['role'] === 'institution' ? $input['institution_president_first_name'] : null,
                 'institution_career_officer_first_name' => $input['role'] === 'institution' ? $input['institution_career_officer_first_name'] : null,
+               'peso_first_name' => $input['role'] === 'peso' && isset($input['peso_first_name']) ? $input['peso_first_name'] : '',
+                'peso_last_name' => $input['role'] === 'peso' && isset($input['peso_last_name']) ? $input['peso_last_name'] : '',
+
             ]);
         }
     }

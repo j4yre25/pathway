@@ -16,7 +16,10 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Fortify;
-
+use Laravel\Fortify\Actions\AttemptToAuthenticate;
+use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
+use App\Http\Controllers\AdminController;
+use Illuminate\Contracts\Auth\StatefulGuard;
 
 
 class FortifyServiceProvider extends ServiceProvider
@@ -26,7 +29,7 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+   
     }
 
     /**
@@ -48,7 +51,7 @@ class FortifyServiceProvider extends ServiceProvider
                 // Check if the user is approved
                 if (!$user->is_approved) {
                     // Flash a message and redirect to login
-                    session()->flash('message', 'Your account is not approved yet. Please contact the administrator.');
+                    session()->flash('message', 'Your account is not approved yet. Pleawese contact the administrator.');
                     return redirect()->route('login');
                 }
         

@@ -18,7 +18,17 @@ const form = useForm({
     name: props.user.name,
     email: props.user.email,
     photo: null,
+    peso_first_name: props.user.peso_first_name,
+    peso_last_name: props.user.peso_last_name,
+    graduate_first_name: props.user.graduate_first_name || '',
+    graduate_last_name: props.user.graduate_last_name || '',
+    company_hr_first_name: props.user.company_hr_first_name || '',
+    company_hr_last_name: props.user.company_hr_last_name || '',
+    institution_president_first_name: props.user.institution_president_first_name || '',
+    institution_president_last_name: props.user.institution_president_last_name || '',
 });
+
+
 
 const verificationLinkSent = ref(null);
 const photoPreview = ref(null);
@@ -129,18 +139,109 @@ const clearPhotoFileInput = () => {
             </div>
 
             <!-- Name -->
-            <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="name" value="Name" />
+            <div v-if="user.role === 'graduate'" class="col-span-6 sm:col-span-4">
+                <InputLabel for="graduate_first_name" value="First Name" />
                 <TextInput
-                    id="name"
-                    v-model="form.name"
+                    id="graduate_first_name"
+                    v-model="form.graduate_first_name"
                     type="text"
                     class="mt-1 block w-full"
                     required
-                    autocomplete="name"
+                    autocomplete="graduate_first_name"
                 />
-                <InputError :message="form.errors.name" class="mt-2" />
+                <InputError :message="form.errors.graduate_first_name" class="mt-2" />
             </div>
+
+            <div v-if="user.role === 'graduate'" class="col-span-6 sm:col-span-4">
+                <InputLabel for="graduate_last_name" value="Last Name" />
+                <TextInput
+                    id="graduate_last_name"
+                    v-model="form.graduate_last_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="graduate_last_name"
+                />
+                <InputError :message="form.errors.graduate_last_name" class="mt-2" />
+            </div>
+
+            <div v-if="user.role === 'company'" class="col-span-6 sm:col-span-4">
+                <InputLabel for="company_hr_first_name" value="HR First Name" />
+                <TextInput
+                    id="company_hr_first_name"
+                    v-model="form.company_hr_first_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="company_hr_first_name"
+                />
+                <InputError :message="form.errors.company_hr_first_name" class="mt-2" />
+            </div>
+
+            <div v-if="user.role === 'company'" class="col-span-6 sm:col-span-4">
+                <InputLabel for="company_hr_last_name" value="HR Last Name" />
+                <TextInput
+                    id="company_hr_last_name"
+                    v-model="form.company_hr_last_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="company_hr_last_name"
+                />
+                <InputError :message="form.errors.company_hr_last_name" class="mt-2" />
+            </div>
+
+            <div v-if="user.role === 'institution'" class="col-span-6 sm:col-span-4">
+                <InputLabel for="institution_president_first_name" value="President First Name" />
+                <TextInput
+                    id="institution_president_first_name"
+                    v-model="form.institution_president_first_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="institution_president_first_name"
+                />
+                <InputError :message="form.errors.institution_president_first_name" class="mt-2" />
+            </div>
+
+            <div v-if="user.role === 'institution'" class="col-span-6 sm:col-span-4">
+                <InputLabel for="institution_president_last_name" value="President Last Name" />
+                <TextInput
+                    id="institution_president_last_name"
+                    v-model="form.institution_president_last_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="institution_president_last_name"
+                />
+                <InputError :message="form.errors.institution_president_last_name" class="mt-2" />
+            </div>
+            <div v-if="user.role === 'peso'" class="col-span-6 sm:col-span-4">
+                <InputLabel for="peso_first_name" value="Peso First Name" />
+                <TextInput
+                    id="peso_first_name"
+                    v-model="form.peso_first_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="peso_first_name"
+                />
+                <InputError :message="form.errors.peso_first_name" class="mt-2" />
+            </div>
+            <div v-if="user.role === 'peso'" class="col-span-6 sm:col-span-4">
+                <InputLabel for="peso_last_name" value="Peso Last Name" />
+                <TextInput
+                    id="peso_last_name"
+                    v-model="form.peso_last_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="peso_last_name"
+                />
+                <InputError :message="form.errors.peso_last_name" class="mt-2" />
+            </div>
+
+  
 
             <!-- Email -->
             <div class="col-span-6 sm:col-span-4">

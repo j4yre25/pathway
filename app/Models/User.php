@@ -31,6 +31,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'peso_first_name',
+        'peso_last_name',
         'graduate_first_name',
         'graduate_last_name',
         'graduate_school_graduated_from',
@@ -91,6 +93,15 @@ class User extends Authenticatable
 
     public function jobs() {
         return $this->hasMany(Job::class);
+
+    }
+    public function sectors() {
+        return $this->hasMany(Sector::class);
+
+    }
+
+    public function categories() {
+        return $this->hasManyThrough(Category::class, Sector::class);
 
     }
 

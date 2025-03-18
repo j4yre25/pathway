@@ -7,14 +7,24 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import { defineProps } from 'vue';
 
-defineProps({
+const props = defineProps({
     title: String,
+    sectors: Array
 });
 
 
+
 const page = usePage()
+
+const sector = page.props.sectors
 const showingNavigationDropdown = ref(false);
+console.log('Sector:', sector);
+
+
+
+
 
 const switchToTeam = (team) => {
     router.put(route('current-team.update'), {
@@ -49,14 +59,27 @@ const logout = () => {
                             </div>
 
                             <!-- Navigation Links -->
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" v-if="!userNotApproved">
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
 
-                                <NavLink :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')" :disabled="userNotApproved" >
+                                <NavLink :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')" >
                                     Jobs
                                 </NavLink>
+
+                                <NavLink :href="route('sectors' , { user: page.props.auth.user.id })" :active="route().current('sectors')" >
+                                    Sectors
+                                </NavLink>
+
+                                <!-- <NavLink 
+                                    v-if="sector" 
+                                    :href="route('categories', { sector: sector.id })" 
+                                    :active="route().current('categories')"
+                                >
+                                    Categories
+                                </NavLink> -->
+                                
                                 
                                 <NavLink v-if="page.props.permissions.canManageUsers" :href="route('admin.manage_users' , { user: page.props.auth.user.id })" :active="route().current('admin.manage_users')">
                                     Manage Users

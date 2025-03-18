@@ -1,11 +1,12 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import Welcome from '@/Components/Welcome.vue';
+
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import Welcome from '@/Components/Welcome.vue';
 
 const { props } = usePage();
-const userNotApproved = computed(() => props.userNotApproved);
+const userNotApproved = computed(() => props.userNotApproved ?? false);
 console.log(props.userNotApproved)
 
 </script>

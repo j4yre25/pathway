@@ -94,12 +94,8 @@ const approveUser  = (user) => {
                 <td class="border border-gray-200 px-6 py-4">
             
 
-              <Link :href="route('admin.manage_users.edit', { user: user.id })">
-                     <PrimaryButton class ="mr-2">Edit</PrimaryButton>
-                </Link>
-                    <DangerButton @click="confirmDelete(user)" class="mr-2">
-                                        Delete User
-                    </DangerButton>
+             
+
                     <PrimaryButton @click="approveUser (user)" v-if="!user.approved">Approve</PrimaryButton>
                 </td>
 
