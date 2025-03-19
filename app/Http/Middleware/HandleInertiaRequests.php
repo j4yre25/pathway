@@ -41,6 +41,8 @@ class HandleInertiaRequests extends Middleware
                 ? $request->user()->hasPermissionTo('manage users'): null,
                 'canManageApprovalGraduate' => fn () => $request->user()
                 ? $request->user()->hasPermissionTo('manage approval graduate'): null,
+                'canManageGraduate' => fn () => $request->user()
+                ? $request->user()->hasPermissionTo('manage graduate'): null,
         
                 'canManageInstitution' => fn () => $request->user()
                 ? $request->user()->hasPermissionTo('manage institution'): null,
