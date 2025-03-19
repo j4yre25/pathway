@@ -68,9 +68,39 @@ const logout = () => {
                                     Jobs
                                 </NavLink>
 
-                                <NavLink :href="route('sectors' , { user: page.props.auth.user.id })" :active="route().current('sectors')" >
+                                <NavLink
+                                    v-if="page.props.permissions.viewSectors"
+                                    :href="route('sectors', { user: page.props.auth.user.id })"
+                                    :active="route().current('sectors')"
+                                >
                                     Sectors
                                 </NavLink>
+        <!-- Graduate Link -->
+        <NavLink
+            v-if="page.props.permissions.canManageGraduate"
+            :href="route('graduates.index')"
+            :active="route().current('graduates.index')"
+        >
+            Graduate
+        </NavLink>
+
+        <!-- Institution Link -->
+        <NavLink
+            v-if="page.props.permissions.canManageInstitution"
+            :href="route('institutions.index')"
+            :active="route().current('institutions.index')"
+        >
+            Institution
+        </NavLink>
+
+        <!-- Manage Approval Link -->
+        <NavLink
+            v-if="page.props.permissions.canManageApprovalGraduate"
+            :href="route('institution.manage_users')"
+            :active="route().current('institution.manage_users')"
+        >
+            Manage Approval
+        </NavLink>
 
                                 <!-- <NavLink 
                                     v-if="sector" 

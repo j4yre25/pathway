@@ -12,6 +12,12 @@ use App\Http\Controllers\AdminRegisterController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SectorController;
 USE App\Http\Controllers\UserController;
+use App\Http\Controllers\GraduateController;
+use App\Http\Controllers\InstitutionController;
+use App\Http\Controllers\SchoolYearController;
+use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\CareerOpportunityController;
+use App\Http\Controllers\ManageGraduatesApprovalController;
 
 
 Route::get('/', function () {
@@ -126,25 +132,37 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 // ->name('graduates.delete');
 
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/{user}', [SectorController::class, 'index'])
-->name('sectors');
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    // View Sectors
+    Route::get('/sectors/{user}', [SectorController::class, 'index'])
+        ->middleware('can:view sectors')
+        ->name('sectors');
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/{user}/create', [SectorController::class, 'create'])
-->name('sectors.create');
+    // Create Sector Form
+    Route::get('/sectors/{user}/create', [SectorController::class, 'create'])
+        ->middleware('can:add sectors')
+        ->name('sectors.create');
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('/sectors/{user}', [SectorController::class, 'store'])
-->name('sectors.store');
-   
+    // Store Sector
+    Route::post('/sectors/{user}', [SectorController::class, 'store'])
+        ->middleware('can:add sectors')
+        ->name('sectors.store');
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/edit/{sector}', [SectorController::class, 'edit'])
-->name('sectors.edit');    
+    // Edit Sector Form
+    Route::get('/sectors/edit/{sector}', [SectorController::class, 'edit'])
+        ->middleware('can:update sectors')
+        ->name('sectors.edit');
 
+    // Update Sector
+    Route::put('/sectors/edit/{sector}', [SectorController::class, 'update'])
+        ->middleware('can:update sectors')
+        ->name('sectors.update');
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->put('/sectors/edit/{sector}', [SectorController::class, 'update'])
-->name('sectors.update');    
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('/sectors/edit/{sector}', [SectorController::class, 'delete'])
-->name('sectors.delete');
+    // Delete Sector
+    Route::delete('/sectors/edit/{sector}', [SectorController::class, 'delete'])
+        ->middleware('can:delete sectors')
+        ->name('sectors.delete');
+});
 
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
@@ -170,3 +188,34 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
     ->delete('/categories/edit/{category}', [CategoryController::class, 'delete'])
     ->name('categories.delete');
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    // Graduate Routes
+    Route::resource('graduates', GraduateController::class);
+    Route::get('/graduates/download-template', [GraduateController::class, 'downloadTemplate'])
+        ->name('graduates.downloadTemplate');
+    Route::post('/graduates/batch-upload', [GraduateController::class, 'batchUpload'])
+        ->name('graduates.batchUpload');
+
+    // Institution Routes
+    Route::resource('institutions', InstitutionController::class);
+
+    // School Years Routes
+    Route::resource('school-years', SchoolYearController::class);
+
+    // Programs Routes
+    Route::resource('programs', ProgramController::class);
+
+    // Career Opportunities Routes
+    Route::resource('career-opportunities', CareerOpportunityController::class);
+
+    // Manage Graduates Approval Routes
+    Route::prefix('institution')->group(function () {
+        Route::get('/manage-users', [ManageGraduatesApprovalController::class, 'index'])
+            ->middleware('can:manage approval graduate')
+            ->name('institution.manage_users');
+        Route::post('/manage-users/{user}/approve', [ManageGraduatesApprovalController::class, 'approve'])
+            ->middleware('can:manage approval graduate')
+            ->name('institution.manage_users.approve');
+        });
+    });
