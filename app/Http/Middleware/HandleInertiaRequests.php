@@ -39,10 +39,26 @@ class HandleInertiaRequests extends Middleware
             'permissions' => [
                 'canManageUsers' => fn () => $request->user()
                 ? $request->user()->hasPermissionTo('manage users'): null,
+                'canManageApprovalGraduate' => fn () => $request->user()
+                ? $request->user()->hasPermissionTo('manage approval graduate'): null,
+                'canManageGraduate' => fn () => $request->user()
+                ? $request->user()->hasPermissionTo('manage graduate'): null,
+        
+                'canManageInstitution' => fn () => $request->user()
+                ? $request->user()->hasPermissionTo('manage institution'): null,
+
+                'addSectors' => fn () => $request->user()
+                ? $request->user()->hasPermissionTo('add sectors'): null,
+                'updateSectors' => fn () => $request->user()
+                ? $request->user()->hasPermissionTo('update sectors'): null,
+                'deleteSectors' => fn () => $request->user()
+                ? $request->user()->hasPermissionTo('delete sectors'): null,
+             
             ],
             'csrf_token' => csrf_token(),
             'userNotApproved' => session('user_not_approved')
             
+            //
         ]);
     }
 }

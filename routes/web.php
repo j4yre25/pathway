@@ -12,6 +12,12 @@ use App\Http\Controllers\AdminRegisterController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SectorController;
 USE App\Http\Controllers\UserController;
+use App\Http\Controllers\GraduateController;
+use App\Http\Controllers\InstitutionController;
+use App\Http\Controllers\SchoolYearController;
+use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\CareerOpportunityController;
+use App\Http\Controllers\ManageGraduatesApprovalController;
 
 
 Route::get('/', function () {
@@ -170,3 +176,34 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
     ->delete('/categories/edit/{category}', [CategoryController::class, 'delete'])
     ->name('categories.delete');
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    // Graduate Routes
+    Route::resource('graduates', GraduateController::class);
+    Route::get('/graduates/download-template', [GraduateController::class, 'downloadTemplate'])
+        ->name('graduates.downloadTemplate');
+    Route::post('/graduates/batch-upload', [GraduateController::class, 'batchUpload'])
+        ->name('graduates.batchUpload');
+
+    // Institution Routes
+    Route::resource('institutions', InstitutionController::class);
+
+    // School Years Routes
+    Route::resource('school-years', SchoolYearController::class);
+
+    // Programs Routes
+    Route::resource('programs', ProgramController::class);
+
+    // Career Opportunities Routes
+    Route::resource('career-opportunities', CareerOpportunityController::class);
+
+    // Manage Graduates Approval Routes
+    Route::prefix('institution')->group(function () {
+        Route::get('/manage-users', [ManageGraduatesApprovalController::class, 'index'])
+            ->middleware('can:manage approval graduate')
+            ->name('institution.manage_users');
+        Route::post('/manage-users/{user}/approve', [ManageGraduatesApprovalController::class, 'approve'])
+            ->middleware('can:manage approval graduate')
+            ->name('institution.manage_users.approve');
+        });
+    });
