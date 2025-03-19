@@ -27,11 +27,12 @@ class RoleSeeder extends Seeder
         $permission_post_jobs = Permission::firstOrCreate(['name' => 'post jobs']);
         $permission_edit_jobs = Permission::firstOrCreate(['name' => 'edit jobs']);
         $permission_view_jobs = Permission::firstOrCreate(['name' => 'view jobs']);
+        $permission_manage_sectors = Permission::firstOrCreate(['name' => 'view sectors']);
         $permission_add_sectors = Permission::FirstorCreate(['name' => 'add sectors']);
         $permission_update_sectors = Permission::FirstorCreate(['name' => 'update sectors']);
         $permission_delete_sectors = Permission::FirstorCreate(['name' => 'delete sectors']);
 
-        $permissions_peso = [$permission_manage_users, $permission_post_jobs, $permission_edit_jobs, $permission_view_jobs, $permission_add_sectors, $permission_update_sectors,  $permission_delete_sectors];
+        $permissions_peso = [$permission_manage_users, $permission_post_jobs, $permission_edit_jobs, $permission_view_jobs, $permission_add_sectors, $permission_update_sectors,  $permission_delete_sectors, $permission_manage_sectors];
         $permissions_institution = [$permission_manage_approval_graduate,  $permission_manage_institution, $permission_manage_graduate,  $permission_post_jobs, $permission_edit_jobs, $permission_view_jobs];
         $permissions_company = [$permission_manage_users, $permission_post_jobs, $permission_edit_jobs, $permission_view_jobs];
 
