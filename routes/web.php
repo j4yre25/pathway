@@ -132,37 +132,25 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 // ->name('graduates.delete');
 
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
-    // View Sectors
-    Route::get('/sectors/{user}', [SectorController::class, 'index'])
-        ->middleware('can:view sectors')
-        ->name('sectors');
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/{user}', [SectorController::class, 'index'])
+->name('sectors');
 
-    // Create Sector Form
-    Route::get('/sectors/{user}/create', [SectorController::class, 'create'])
-        ->middleware('can:add sectors')
-        ->name('sectors.create');
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/{user}/create', [SectorController::class, 'create'])
+->name('sectors.create');
 
-    // Store Sector
-    Route::post('/sectors/{user}', [SectorController::class, 'store'])
-        ->middleware('can:add sectors')
-        ->name('sectors.store');
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('/sectors/{user}', [SectorController::class, 'store'])
+->name('sectors.store');
+   
 
-    // Edit Sector Form
-    Route::get('/sectors/edit/{sector}', [SectorController::class, 'edit'])
-        ->middleware('can:update sectors')
-        ->name('sectors.edit');
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/edit/{sector}', [SectorController::class, 'edit'])
+->name('sectors.edit');    
 
-    // Update Sector
-    Route::put('/sectors/edit/{sector}', [SectorController::class, 'update'])
-        ->middleware('can:update sectors')
-        ->name('sectors.update');
 
-    // Delete Sector
-    Route::delete('/sectors/edit/{sector}', [SectorController::class, 'delete'])
-        ->middleware('can:delete sectors')
-        ->name('sectors.delete');
-});
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->put('/sectors/edit/{sector}', [SectorController::class, 'update'])
+->name('sectors.update');    
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('/sectors/edit/{sector}', [SectorController::class, 'delete'])
+->name('sectors.delete');
 
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
