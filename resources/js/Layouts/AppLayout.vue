@@ -69,12 +69,13 @@ const logout = () => {
                                 </NavLink>
 
                                 <NavLink
-                                    v-if="page.props.permissions.viewSectors"
-                                    :href="route('sectors', { user: page.props.auth.user.id })"
-                                    :active="route().current('sectors')"
-                                >
-                                    Sectors
-                                </NavLink>
+                                v-if="page.props.permissions.viewSectors"
+                                :href="route('sectors', { user: page.props.auth.user.id })"
+                                :active="route().current('sectors')"
+                            >
+                                Sectors
+                            </NavLink>
+
         <!-- Graduate Link -->
         <NavLink
             v-if="page.props.permissions.canManageGraduate"
@@ -102,13 +103,13 @@ const logout = () => {
             Manage Approval
         </NavLink>
 
-                                <!-- <NavLink 
-                                    v-if="sector" 
+                                <NavLink 
+                                    v-if="sectors" 
                                     :href="route('categories', { sector: sector.id })" 
                                     :active="route().current('categories')"
                                 >
                                     Categories
-                                </NavLink> -->
+                                </NavLink>
                                 
                                 
                                 <NavLink v-if="page.props.permissions.canManageUsers" :href="route('admin.manage_users' , { user: page.props.auth.user.id })" :active="route().current('admin.manage_users')">

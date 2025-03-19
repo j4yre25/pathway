@@ -54,6 +54,9 @@ class HandleInertiaRequests extends Middleware
                 'deleteSectors' => fn () => $request->user()
                 ? $request->user()->hasPermissionTo('delete sectors'): null,
              
+                'viewSectors' => fn () => $request->user()
+                ? $request->user()->hasPermissionTo('view sectors'): null,
+             
             ],
             'csrf_token' => csrf_token(),
             'userNotApproved' => session('user_not_approved')
