@@ -68,9 +68,9 @@ const logout = () => {
                                     Jobs
                                 </NavLink>
 
-                                <NavLink :href="route('sectors' , { user: page.props.auth.user.id })" :active="route().current('sectors')" >
+                                <!-- <NavLink :href="route('sectors' , { user: page.props.auth.user.id })" :active="route().current('sectors')" >
                                     Sectors
-                                </NavLink>
+                                </NavLink> -->
 
                                 <!-- <NavLink 
                                     v-if="sector" 
