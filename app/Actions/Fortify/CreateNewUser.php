@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
+use App\Actions\Fortify\PasswordValidationRules;    
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -39,7 +40,8 @@ class CreateNewUser implements CreatesNewUsers
                 $rules['company_address'] = ['required', 'string'];
                 $rules['company_sector'] = ['required', 'string'];
                 $rules['company_category'] = ['required', 'string'];
-                $rules['company_contact_number'] = ['required', 'string'];
+                $rules['company_contact_number'] = [
+                    'required'];
                 $rules['company_hr_last_name'] = ['required', 'string', 'max:255'];
                 $rules['company_hr_first_name'] = ['required', 'string', 'max:255'];
                 $rules['company_hr_middle_initial'] = ['required', 'string'];
@@ -50,7 +52,6 @@ class CreateNewUser implements CreatesNewUsers
                 $rules['institution_contact_number'] = ['required', 'string'];
                 $rules['institution_president_last_name'] = ['required', 'string', 'max:255'];
                 $rules['institution_president_first_name'] = ['required', 'string', 'max:255'];
-                $rules['institution_career_officer_first_name'] = ['required', 'string', 'max:255'];
                 $rules['institution_career_officer_first_name'] = ['required', 'string', 'max:255'];
                 break;
         }
