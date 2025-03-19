@@ -31,14 +31,31 @@ class JobsController extends Controller
 
     public function store(Request $request, User $user) {
         // return Inertia::render('Jobs/Index/CreateJobs');
+        $validated = $request->validate([
+            'job_title' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'vacancy' => 'required|integer',
+            'salary' => 'required|string|max:255',
+            'job_type' => 'required|string|max:255',
+            'experience_level' => 'required|string|max:255',
+            'description' => 'required|string',
+            'skills' => 'required|array',
+        ]);
+    
         $new_job = new Job();
         $new_job->user_id = $user->id;
-        $new_job->name = $request->input('name');
-        $new_job->description = $request->input('description');
+        $new_job->job_title = $validated['job_title'];
+        $new_job->location = $validated['location'];
+        $new_job->salary = $validated['salary'];
+        $new_job->job_type = $validated['job_type'];
+        $new_job->experience_level = $validated['experience_level'];
+        $new_job->skills = json_encode($validated['skills']);
+        $new_job->vacancy = $validated['vacancy'];
+        $new_job->description = $validated['description'];
         $new_job->save();
-
-        return Redirect()->back()->with('flash.banner', 'Job posted successfully.');
-
+    
+        // return redirect()->back()->with('flash.banner', 'Job posted successfully.');
+        return redirect()->route('jobs', ['user' => $user->id])->with('flash.banner', 'Job posted successfully.');
 }
 
    
