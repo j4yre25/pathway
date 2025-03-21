@@ -108,6 +108,14 @@ console.log(page.props.permissions.canManageInstitution)
 
                                 <NavLink 
                                     v-if="sectors" 
+
+                                <!-- <NavLink :href="route('sectors' , { user: page.props.auth.user.id })" :active="route().current('sectors')" >
+                                    Sectors
+                                </NavLink> -->
+
+                                <!-- <NavLink 
+                                    v-if="sector" 
+
                                     :href="route('categories', { sector: sector.id })" 
                                     :active="route().current('categories')"
                                 >
