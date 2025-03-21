@@ -35,7 +35,7 @@ class JobsController extends Controller
             'job_title' => 'required|string|max:255',
             'location' => 'required|string|max:255',
             'vacancy' => 'required|integer',
-            'salary' => 'required|string|max:255',
+            'salary' => 'required|integer|max:255',
             'job_type' => 'required|string|max:255',
             'experience_level' => 'required|string|max:255',
             'description' => 'required|string',
