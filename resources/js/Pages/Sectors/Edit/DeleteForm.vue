@@ -51,6 +51,9 @@ const deleteSector= (r) => {
                             Delete Sector
                         </DangerButton>
                         <SecondaryButton @click="open = false">Cancel</SecondaryButton>
+                        <Link :href="route('categories', { sector: sector.id })">
+                            <PrimaryButton>Manage Categories</PrimaryButton>
+                        </Link>
                 </template>
 
             </ConfirmationModal>

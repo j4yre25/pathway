@@ -37,6 +37,8 @@ const switchToTeam = (team) => {
 const logout = () => {
     router.post(route('logout'));
 };
+
+console.log(page.props.permissions.canManageInstitution)
 </script>
 
 <template>
@@ -68,17 +70,57 @@ const logout = () => {
                                     Jobs
                                 </NavLink>
 
+                                <NavLink
+                                v-if="page.props.permissions.viewSectors"
+                                :href="route('sectors', { user: page.props.auth.user.id })"
+                                :active="route().current('sectors')"
+                            >
+                                Sectors
+                            </NavLink>
+
+        <!-- Graduate Link -->
+        <NavLink
+            v-if="page.props.permissions.canManageGraduate"
+            :href="route('graduates.index')"
+            :active="route().current('graduates.index')"
+        >
+            Graduate
+        </NavLink>
+        
+
+        <!-- Institution Link -->
+        <NavLink
+            v-if="page.props.permissions.canManageInstitution"
+            :href="route('institutions.index')"
+            :active="route().current('institutions.index')"
+        >
+            Institution
+        </NavLink>
+
+        <!-- Manage Approval Link -->
+        <NavLink
+            v-if="page.props.permissions.canManageApprovalGraduate"
+            :href="route('institution.manage_users')"
+            :active="route().current('institution.manage_users')"
+        >
+            Manage Approval
+        </NavLink>
+
+                                <NavLink 
+                                    v-if="sectors" 
+
                                 <!-- <NavLink :href="route('sectors' , { user: page.props.auth.user.id })" :active="route().current('sectors')" >
                                     Sectors
                                 </NavLink> -->
 
                                 <!-- <NavLink 
                                     v-if="sector" 
+
                                     :href="route('categories', { sector: sector.id })" 
                                     :active="route().current('categories')"
                                 >
                                     Categories
-                                </NavLink> -->
+                                </NavLink>
                                 
                                 
                                 <NavLink v-if="page.props.permissions.canManageUsers" :href="route('admin.manage_users' , { user: page.props.auth.user.id })" :active="route().current('admin.manage_users')">
