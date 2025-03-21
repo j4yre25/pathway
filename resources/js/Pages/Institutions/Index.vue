@@ -230,50 +230,50 @@
     isCareerModalOpen.value = true;
   };
   
-  const saveYear = (yearData) => {
+ const saveYear = (yearData) => {
     if (editingYear.value) {
-        router.patch(`/school-years/${editingYear.value.id}`, yearData, {
+        router.patch(route('school-years.update', { school_year: editingYear.value.id }), yearData, {
             onSuccess: () => {
                 isSchoolYearModalOpen.value = false;
-                router.visit('/institution-management', { preserveState: true });
+                router.visit(route('institution-management'), { preserveState: true });
             },
         });
     } else {
-        router.post('/school-years', yearData, {
+        router.post(route('school-years.store'), yearData, {
             onSuccess: () => {
                 isSchoolYearModalOpen.value = false;
             },
         });
     }
-  };
-  
-  const saveProgram = (programData) => {
+};
+
+const saveProgram = (programData) => {
     if (editingProgram.value) {
-        router.patch(`/programs/${programData.id}`, programData, {
+        router.patch(route('programs.update', { program: programData.id }), programData, {
             onSuccess: () => {
                 isProgramModalOpen.value = false;
-                router.visit('/institution-management', { preserveState: true });
+                router.visit(route('institution-management'), { preserveState: true });
             },
         });
     } else {
-        router.post('/programs', programData, {
+        router.post(route('programs.store'), programData, {
             onSuccess: () => {
                 isProgramModalOpen.value = false;
             },
         });
     }
-  };
-  
-  const saveOpportunity = (opportunityData) => { 
+};
+
+const saveOpportunity = (opportunityData) => { 
     if (editingOpportunity.value) { 
-        router.patch(`/career-opportunities/${editingOpportunity.value.id}`, opportunityData, { 
+        router.patch(route('career-opportunities.update', { career_opportunity: editingOpportunity.value.id }), opportunityData, { 
             onSuccess: () => { 
                 isCareerModalOpen.value = false; 
-                router.visit('/institution-management', { preserveState: true });
+                router.visit(route('institution-management'), { preserveState: true });
             }, 
         }); 
     } else { 
-        router.post('/career-opportunities', { 
+        router.post(route('career-opportunities.store'), { 
             title: opportunityData.title, 
             program_id: opportunityData.program_id, 
         }, { 
@@ -283,24 +283,23 @@
             }, 
         }); 
     } 
-  };
-  
-  
-  const deleteYear = (id) => {
+};
+
+const deleteYear = (id) => {
     if (confirm('Are you sure you want to delete this school year?')) {
-        router.delete(`/school-years/${id}`);
+        router.delete(route('school-years.destroy', { school_year: id }));
     }
-  };
-  
-  const deleteProgram = (id) => {
+};
+
+const deleteProgram = (id) => {
     if (confirm('Are you sure you want to delete this program?')) {
-        router.delete(`/programs/${id}`);
+        router.delete(route('programs.destroy', { program: id }));
     }
-  };
-  
-  const deleteOpportunity = (id) => {
+};
+
+const deleteOpportunity = (id) => {
     if (confirm('Are you sure you want to delete this career opportunity?')) {
-        router.delete(`/career-opportunities/${id}`);
+        router.delete(route('career-opportunities.destroy', { career_opportunity: id }));
     }
-  };
+};
   </script>

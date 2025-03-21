@@ -3,25 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Models\Institution;
-use App\Models\Program; // Import the Program model
+use App\Models\Program;
 use App\Models\CareerOpportunity;
 use App\Models\SchoolYear;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-
 class InstitutionController extends Controller
 {
     public function index()
-{
-    return Inertia::render('Institutions/Index', [
-        'institutions' => Institution::all(),
-        'programs' => Program::all(),
-        'careerOpportunities' => CareerOpportunity::with('program')->get(), // Ensure relationship is loaded
-        'schoolYears' => SchoolYear::all(),
-    ]);
-}
+    {
+        return Inertia::render('Institutions/Index', [
+            'institutions' => Institution::all(),
+            'programs' => Program::all(),
+            'careerOpportunities' => CareerOpportunity::with('program')->get(),
+            'schoolYears' => SchoolYear::all(),
+        ]);
+    }
 
+    public function create()
+    {
+        return Inertia::render('Institutions/Create', [
+            'programs' => Program::all(),
+            'schoolYears' => SchoolYear::all(),
+        ]);
+    }
 
     public function store(Request $request)
     {
@@ -34,7 +40,23 @@ class InstitutionController extends Controller
 
         Institution::create($validated);
 
-        return redirect()->back()->with('success', 'Institution data added successfully.');
+        return redirect()->route('institutions.index')->with('success', 'Institution data added successfully.');
+    }
+
+    public function show(Institution $institution)
+    {
+        return Inertia::render('Institutions/Show', [
+            'institution' => $institution,
+        ]);
+    }
+
+    public function edit(Institution $institution)
+    {
+        return Inertia::render('Institutions/Edit', [
+            'institution' => $institution,
+            'programs' => Program::all(),
+            'schoolYears' => SchoolYear::all(),
+        ]);
     }
 
     public function update(Request $request, Institution $institution)
@@ -48,13 +70,13 @@ class InstitutionController extends Controller
 
         $institution->update($validated);
 
-        return redirect()->back()->with('success', 'Institution data updated successfully.');
+        return redirect()->route('institutions.index')->with('success', 'Institution data updated successfully.');
     }
 
     public function destroy(Institution $institution)
     {
         $institution->delete();
 
-        return redirect()->back()->with('success', 'Institution deleted successfully.');
+        return redirect()->route('institutions.index')->with('success', 'Institution deleted successfully.');
     }
 }

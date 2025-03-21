@@ -7,7 +7,10 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { ref } from 'vue';
+import { computed } from 'vue';
+import { mask } from 'vue-the-mask';
+
+const directives = { mask };
 
 // Define the form with additional fields for user types
 const form = useForm({
@@ -44,6 +47,39 @@ const form = useForm({
     terms: false,
 });
 
+
+const formattedContactNumber = computed({
+    get: () => {
+        let rawNumber = form.company_contact_number.replace(/\D/g, ""); // Remove non-numeric characters
+
+        // Ensure only the first 10 digits are considered
+        if (rawNumber.length > 10) {
+            rawNumber = rawNumber.slice(0, 10);
+        }
+
+        // Ensure that the displayed format is always "+63 XXX XXX XXXX"
+        return `+63 ${rawNumber.replace(/(\d{3})(\d{3})(\d{4})/, "$1 $2 $3")}`.trim();
+    },
+    set: (value) => {
+        // Remove non-numeric characters except for numbers
+        let rawValue = value.replace(/\D/g, "");
+
+        // Ensure only the last 10 digits are stored
+        if (rawValue.startsWith("63")) {
+            rawValue = rawValue.slice(2);
+        }
+
+        if (rawValue.startsWith("0")) {
+            rawValue = rawValue.slice(1);
+        }
+
+        if (rawValue.length > 10) {
+            rawValue = rawValue.slice(0, 10);
+        }
+
+        form.company_contact_number = rawValue;
+    },
+});
 // Track the selected user type
 
 
@@ -179,7 +215,7 @@ const submit = () => {
                 <TextInput
                     id="graduate_year_graduated"
                     v-model="form.graduate_year_graduated"
-                    type="date" 
+                    type="number" 
                     class="mt-1 block w-full"
                     required
                 />
@@ -219,7 +255,7 @@ const submit = () => {
                     required
                     autocomplete="email"
                 />
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError class="mt-1" :message="form.errors.email" />
             </div>
 
                 <div class="mt-4">
@@ -232,7 +268,7 @@ const submit = () => {
                         required
                         autocomplete="new-password"
                     />
-                    <InputError class="mt-2" :message="form.errors.password" />
+                    <InputError class="mt-1" :message="form.errors.password" />
                 </div>
 
                 <div class="mt-4">
@@ -245,7 +281,7 @@ const submit = () => {
                         required
                         autocomplete="new-password"
                     />
-                    <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                    <InputError class="mt-1" :message="form.errors.password_confirmation" />
                 </div>
 
                 <div class="mt-4">
@@ -257,7 +293,7 @@ const submit = () => {
                     class="mt-1 mb-4  block w-full"
                     required
                 />
-                <InputError class="mt-2" :message="form.errors.company_address" />
+                <InputError class="mt-1" :message="form.errors.company_address" />
             </div>
 
             <div class="mt-4">
@@ -269,7 +305,7 @@ const submit = () => {
                     class="mt-1 mb-4  block w-full"
                     required
                 />
-                <InputError class="mt-2" :message="form.errors.company_sector" />
+                <InputError class="mt-0" :message="form.errors.company_sector" />
             </div>
     
 
@@ -281,21 +317,19 @@ const submit = () => {
                     class="mt-1 mb-4  block w-full"
                     required
                 />
-                <InputError class="mt-2" :message="form.errors.company_category" />
+                <InputError class="mt-0" :message="form.errors.company_category" />
 
-
-             
-              
 
                 <InputLabel for="company_contact_number" value="Company Contact Number" />
                 <TextInput
                     id="company_contact_number"
-                    v-model="form.company_contact_number"
+                    v-model="formattedContactNumber"
+                    v-mask="'# (###) ###-####'"
                     type="text"
-                    class="mt-1 mb-4 block w-full"
+                    class="mt-1 mb-2 block w-full "
                     required
                 />
-                <InputError class="mt-2" :message="form.errors.company_contact_number" />
+                <InputError class="mb-3" :message="form.errors.company_contact_number" />
 
                 <InputLabel for="company_hr_last_name" value="HR Last Name" />
                 <TextInput

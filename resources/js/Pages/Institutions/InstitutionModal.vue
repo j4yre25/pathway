@@ -7,14 +7,13 @@
             <div class="mb-4">
                 <InputLabel for="school_year_range" value="School Year Range" />
                 <TextInput v-model="form.school_year_range" id="school_year_range" class="w-full" placeholder="Ex. 2023-2024" />
-                <TextInput v-model="form.term" id="term" class="w-full" placeholder="Ex. 1 (Must be from 1 – 5)" />
+               
 
             </div>
 
             <!-- Term -->
             <div class="mb-4">
-                <InputLabel for="term" value="Term" />
-                <TextInput v-model="form.term" id="term" class="w-full" />
+                <TextInput v-model="form.term" id="school_year_range" class="w-full" placeholder="Ex. 1 (Must be from 1 – 5)" />
             </div>
 
             <!-- Program Selection -->
@@ -87,6 +86,10 @@ const closeModal = () => {
 };
 
 const save = () => {
+     if (!form.value.school_year_range || !form.value.term || !form.value.program_id) {
+        alert("Please fill in all required fields.");
+        return;
+    }
     emit("save", form.value);
 };
 </script>

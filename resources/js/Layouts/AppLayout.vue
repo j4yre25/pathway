@@ -37,6 +37,8 @@ const switchToTeam = (team) => {
 const logout = () => {
     router.post(route('logout'));
 };
+
+console.log(page.props.permissions.canManageInstitution)
 </script>
 
 <template>
@@ -84,6 +86,7 @@ const logout = () => {
         >
             Graduate
         </NavLink>
+        
 
         <!-- Institution Link -->
         <NavLink

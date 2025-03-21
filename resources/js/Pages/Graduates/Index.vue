@@ -130,16 +130,16 @@
   };
   
   const saveGraduate = (graduateData) => {
-      if (editingGraduate.value) {
-          router.patch(`/graduates/${graduateData.id}`, graduateData, {
-              onSuccess: () => isModalOpen.value = false,
-          });
-      } else {
-          router.post('/graduates', graduateData, {
-              onSuccess: () => isModalOpen.value = false,
-          });
-      }
-  };
+    if (editingGraduate.value) {
+        router.patch(route('graduates.update', { graduate: graduateData.id }), graduateData, {
+            onSuccess: () => isModalOpen.value = false,
+        });
+    } else {
+        router.post(route('graduates.store'), graduateData, {
+            onSuccess: () => isModalOpen.value = false,
+        });
+    }
+};
   
   const deleteGraduate = (id) => {
       if (confirm('Are you sure you want to delete this graduate?')) {

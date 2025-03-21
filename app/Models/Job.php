@@ -11,10 +11,13 @@ class Job extends Model
     }
 
     protected $fillable = [
-        'name',
-        'from_datetime',
-        'to_datetime',
+        'job_title',
+        'description',
         'location',
-        
+        'salary',
+        'vacancy',
+        'employ_type',
+        'experience_level',
+        'skills',
     ];
 }

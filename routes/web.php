@@ -178,27 +178,83 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     ->name('categories.delete');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
-    // Graduate Routes
-    Route::resource('graduates', GraduateController::class);
-    Route::get('/graduates/download-template', [GraduateController::class, 'downloadTemplate'])
-        ->name('graduates.downloadTemplate');
-    Route::post('/graduates/batch-upload', [GraduateController::class, 'batchUpload'])
-        ->name('graduates.batchUpload');
+  Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage approval graduate'])->group(function () {
+            Route::get('/graduates', [GraduateController::class, 'index'])->name('graduates.index');
+
+            // Show the form for creating a new graduate
+            Route::get('/graduates/create', [GraduateController::class, 'create'])->name('graduates.create');
+
+            // Store a new graduate
+            Route::post('/graduates', [GraduateController::class, 'store'])->name('graduates.store');
+
+            // Show a specific graduate
+            Route::get('/graduates/{graduate}', [GraduateController::class, 'show'])->name('graduates.show');
+
+            // Show the form for editing a specific graduate
+            Route::get('/graduates/{graduate}/edit', [GraduateController::class, 'edit'])->name('graduates.edit');
+
+            // Update a specific graduate
+            Route::patch('/graduates/{graduate}', [GraduateController::class, 'update'])->name('graduates.update');
+
+            // Delete a specific graduate
+            Route::delete('/graduates/{graduate}', [GraduateController::class, 'destroy'])->name('graduates.destroy');
+
+            // Additional custom routes
+            Route::get('/graduates/download-template', [GraduateController::class, 'downloadTemplate'])
+                ->name('graduates.downloadTemplate');
+            Route::post('/graduates/batch-upload', [GraduateController::class, 'batchUpload'])
+                ->name('graduates.batchUpload');
+            });
 
     // Institution Routes
-    Route::resource('institutions', InstitutionController::class);
-
-    // School Years Routes
-    Route::resource('school-years', SchoolYearController::class);
-
-    // Programs Routes
-    Route::resource('programs', ProgramController::class);
-
-    // Career Opportunities Routes
-    Route::resource('career-opportunities', CareerOpportunityController::class);
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+        // Institution Routes
+        Route::middleware(['can:manage institution'])->group(function () {
+        Route::get('/institutions', [InstitutionController::class, 'index'])->name('institutions.index');
+        Route::get('/institutions/create', [InstitutionController::class, 'create'])->name('institutions.create');
+        Route::post('/institutions', [InstitutionController::class, 'store'])->name('institutions.store');
+        Route::get('/institutions/{institution}', [InstitutionController::class, 'show'])->name('institutions.show');
+        Route::get('/institutions/{institution}/edit', [InstitutionController::class, 'edit'])->name('institutions.edit');
+        Route::put('/institutions/{institution}', [InstitutionController::class, 'update'])->name('institutions.update');
+        Route::delete('/institutions/{institution}', [InstitutionController::class, 'destroy'])->name('institutions.destroy');
+        });
+    
+        // School Years Routes
+        Route::middleware(['can:manage institution'])->group(function () {
+            Route::get('/school-years', [SchoolYearController::class, 'index'])->name('school-years.index');
+            Route::get('/school-years/create', [SchoolYearController::class, 'create'])->name('school-years.create');
+            Route::post('/school-years', [SchoolYearController::class, 'store'])->name('school-years.store');
+            Route::get('/school-years/{school_year}', [SchoolYearController::class, 'show'])->name('school-years.show');
+            Route::get('/school-years/{school_year}/edit', [SchoolYearController::class, 'edit'])->name('school-years.edit');
+            Route::put('/school-years/{school_year}', [SchoolYearController::class, 'update'])->name('school-years.update');
+            Route::delete('/school-years/{school_year}', [SchoolYearController::class, 'destroy'])->name('school-years.destroy');
+        });
+    
+        // Programs Routes
+        Route::middleware(['can:manage institution'])->group(function () {
+            Route::get('/programs', [ProgramController::class, 'index'])->name('programs.index');
+            Route::get('/programs/create', [ProgramController::class, 'create'])->name('programs.create');
+            Route::post('/programs', [ProgramController::class, 'store'])->name('programs.store');
+            Route::get('/programs/{program}', [ProgramController::class, 'show'])->name('programs.show');
+            Route::get('/programs/{program}/edit', [ProgramController::class, 'edit'])->name('programs.edit');
+            Route::put('/programs/{program}', [ProgramController::class, 'update'])->name('programs.update');
+            Route::delete('/programs/{program}', [ProgramController::class, 'destroy'])->name('programs.destroy');
+        });
+    
+        // Career Opportunities Routes
+        Route::middleware(['permission:manage institution'])->group(function () {
+            Route::get('/career-opportunities', [CareerOpportunityController::class, 'index'])->name('career-opportunities.index');
+            Route::get('/career-opportunities/create', [CareerOpportunityController::class, 'create'])->name('career-opportunities.create');
+            Route::post('/career-opportunities', [CareerOpportunityController::class, 'store'])->name('career-opportunities.store');
+            Route::get('/career-opportunities/{career_opportunity}', [CareerOpportunityController::class, 'show'])->name('career-opportunities.show');
+            Route::get('/career-opportunities/{career_opportunity}/edit', [CareerOpportunityController::class, 'edit'])->name('career-opportunities.edit');
+            Route::put('/career-opportunities/{career_opportunity}', [CareerOpportunityController::class, 'update'])->name('career-opportunities.update');
+            Route::delete('/career-opportunities/{career_opportunity}', [CareerOpportunityController::class, 'destroy'])->name('career-opportunities.destroy');
+        });
+    });
 
     // Manage Graduates Approval Routes
-    Route::prefix('institution')->group(function () {
+   
         Route::get('/manage-users', [ManageGraduatesApprovalController::class, 'index'])
             ->middleware('can:manage approval graduate')
             ->name('institution.manage_users');
@@ -206,4 +262,3 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             ->middleware('can:manage approval graduate')
             ->name('institution.manage_users.approve');
         });
-    });

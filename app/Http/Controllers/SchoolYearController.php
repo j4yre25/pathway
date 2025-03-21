@@ -10,7 +10,7 @@ class SchoolYearController extends Controller
 {
     public function index()
     {
-        return Inertia::render('SchoolYears/Index', [
+        return Inertia::render('Institutions/SchoolYearModal', [
             'schoolYears' => SchoolYear::all(),
         ]);
     }
@@ -24,7 +24,6 @@ class SchoolYearController extends Controller
 
         SchoolYear::create($validated);
 
-        return redirect()->route('school-years.index')->with('success', 'School year added successfully.');
     }
 
     public function update(Request $request, SchoolYear $schoolYear)
@@ -36,13 +35,11 @@ class SchoolYearController extends Controller
 
         $schoolYear->update($validated);
 
-        return redirect()->route('school-years.index')->with('success', 'School year updated successfully.');
     }
 
     public function destroy(SchoolYear $schoolYear)
     {
         $schoolYear->delete();
 
-        return redirect()->route('school-years.index')->with('success', 'School year deleted successfully.');
     }
 }

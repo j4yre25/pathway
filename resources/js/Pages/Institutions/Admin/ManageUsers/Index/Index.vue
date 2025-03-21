@@ -82,7 +82,7 @@ const approveUser = (user) => {
                                     {{ user.company_name }}
                                 </template>
                                 <template v-else-if="user.role === 'institution'">
-                                    {{ user.institution_name }}
+                                    {{ user.institution_career_officer_first_name }}
                                 </template>
                                 <template v-else>
                                     {{ user.name }}

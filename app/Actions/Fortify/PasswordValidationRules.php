@@ -13,6 +13,17 @@ trait PasswordValidationRules
      */
     protected function passwordRules(): array
     {
-        return ['required', 'string', Password::default(), 'confirmed'];
+        return [
+            'required',
+            'string',
+            'max:30', // Maximum of 30 characters (applied separately)
+            Password::min(8) // Minimum of 8 characters
+                    ->mixedCase() // Requires uppercase & lowercase letters
+                    ->letters() // Requires at least one letter
+                    ->numbers() // Requires at least one number
+                    ->symbols() // Requires at least one special character (@$!%*?&)
+                    ->uncompromised(), // Checks against breached passwords
+            'confirmed', // Ensures password confirmation matches
+        ];
     }
 }
