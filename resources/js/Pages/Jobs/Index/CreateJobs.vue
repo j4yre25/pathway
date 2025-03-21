@@ -84,7 +84,7 @@ const createJob = () => {
                     </template>
 
 
-                    <template #form class="py-4">
+                    <template #form>
 
                         <div class=" col-span-6 sm:col-span-4">
                             <InputLabel for="job_title" value="Job Title" class="mb-2"/>
