@@ -215,7 +215,7 @@ const submit = () => {
                 <TextInput
                     id="graduate_year_graduated"
                     v-model="form.graduate_year_graduated"
-                    type="date" 
+                    type="number" 
                     class="mt-1 block w-full"
                     required
                 />

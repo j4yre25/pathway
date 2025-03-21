@@ -83,7 +83,9 @@ const createJob = () => {
                         Fill in the detailcs below to post a new job.
                     </template>
 
-                    <template #form class="py-4">
+
+                    <template #form>
+
                         <div class=" col-span-6 sm:col-span-4">
                             <InputLabel for="job_title" value="Job Title" class="mb-2"/>
                             <TextInput id="job_title" v-model="form.job_title" type="text" placeholder="Job Title" class="mt-1 mb-5 block w-full p-2 border rounded-lg" required />

@@ -1,3 +1,4 @@
+
 <script setup>
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Link } from '@inertiajs/vue3';
