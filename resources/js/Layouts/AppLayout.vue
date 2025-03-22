@@ -106,11 +106,11 @@ console.log(page.props.permissions.canManageInstitution)
             Manage Approval
         </NavLink>
 
-                                <NavLink 
+                                <!--<NavLink 
                                     v-if="sectors" 
 
-                                <!-- <NavLink :href="route('sectors' , { user: page.props.auth.user.id })" :active="route().current('sectors')" >
-                                    Sectors
+                                 <NavLink :href="route('sectors' , { user: page.props.auth.user.id })" :active="route().current('sectors')" >
+                                    Sectors 
                                 </NavLink> -->
 
                                 <!-- <NavLink 
