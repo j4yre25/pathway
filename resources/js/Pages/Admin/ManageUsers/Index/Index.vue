@@ -63,14 +63,15 @@ const approveUser  = (user) => {
             <div class="overflow-x-auto">
     <table class="min-w-full bg-white border border-gray-200">
         <thead>
-            <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                <th class="border border-gray-200 px-6 py-3 text-left">ID</th>
-                <th class="border border-gray-200 px-6 py-3 text-left">Role</th>
-                <th class="border border-gray-200 px-6 py-3 text-left">Name</th>
-                <th class="border border-gray-200 px-6 py-3 text-left">Email</th>
-                <th class="border border-gray-200 px-6 py-3 text-left">Actions</th>
-            </tr>
-        </thead>
+    <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+        <th class="border border-gray-200 px-6 py-3 text-left">ID</th>
+        <th class="border border-gray-200 px-6 py-3 text-left">Role</th>
+        <th class="border border-gray-200 px-6 py-3 text-left">Name</th>
+        <th class="border border-gray-200 px-6 py-3 text-left">Email</th>
+        <th class="border border-gray-200 px-6 py-3 text-left">Status</th> 
+        <th class="border border-gray-200 px-6 py-3 text-left">Actions</th>
+    </tr>
+</thead>
         <tbody class="text-gray-600 text-sm font-light">
             <tr v-for="user in props.all_users" :key="user.id" class="border-b border-gray-200 hover:bg-gray-100">
                 <td class="border border-gray-200 px-6 py-4">{{ user.id }}</td>
@@ -80,21 +81,27 @@ const approveUser  = (user) => {
                 <template v-if="user.role === 'graduate'">
                     {{ user.graduate_first_name }} {{ user.graduate_last_name }}
                 </template>
+                <template v-if="user.role === 'peso'">
+                    {{ user.peso_first_name }} {{ user.peso_last_name }}
+                </template>
                 <template v-else-if="user.role === 'company'">
                     {{ user.company_name }}
                 </template>
                 <template v-else-if="user.role === 'institution'">
-                    {{ user.institution_last_name }} {{ user.institution_first_name }}
+                    {{ user.institution_career_officer_first_name }} {{ user.institution_career_officer_last_name }}
                 </template>
                 <template v-else>
                     {{ user.name }}
                 </template>
             </td>
                 <td class="border border-gray-200 px-6 py-4">{{ user.email }}</td>
-                <td class="border border-gray-200 px-6 py-4">
-            
 
-             
+
+                <td class="border border-gray-200 px-6 py-4">
+            <span v-if="user.is_approved" class="text-green-600 font-semibold">Approved</span>
+            <span v-else class="text-red-600 font-semibold">Pending</span>
+        </td>
+                <td class="border border-gray-200 px-6 py-4">
 
                     <PrimaryButton @click="approveUser (user)" v-if="!user.approved">Approve</PrimaryButton>
                 </td>

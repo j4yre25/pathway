@@ -34,7 +34,7 @@ class SectorController extends Controller
 
     public function store(Request $request, User $user) {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'unique:sectors'],
         ]);
         // return Inertia::render('Jobs/Index/CreateJobs');
         $new_sector = new Sector();

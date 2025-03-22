@@ -27,10 +27,10 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
     ]);
 });
-// Route::middleware(['auth', 'role:peso'])->group(function () {
+Route::middleware(['auth', 'can:manage users'])->group(function () {
     Route::get('/admin/register', [AdminRegisterController::class, 'showRegistrationForm'])->name('admin.register');
     Route::post('/admin/register', [AdminRegisterController::class, 'register'])->name('admin.register.submit');
-// });
+});
 
 // Route::middleware(['auth', 'role:hr'])->group(function () {
     Route::get('/hr/register', [HRRegisterController::class, 'showRegistrationForm'])->name('hr.register');

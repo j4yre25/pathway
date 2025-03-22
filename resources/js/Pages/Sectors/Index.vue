@@ -60,14 +60,7 @@ const createSector = () => {
 
               
             </div>
-            <div v-for="sector in sectors" :key="sector.id" class="mt-4">
-                    <div class="flex items-center justify-between">
-                        <!-- <span>{{ sector.name }}</span> -->
-                        <Link :href="route('categories', { sector: sector.id })">
-                            <PrimaryButton>Manage Categories</PrimaryButton>
-                        </Link>
-                    </div>
-                </div>
+          
 
             <div class="mt-8">
                 <MySectors :sectors="sectors" />

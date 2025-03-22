@@ -30,11 +30,13 @@ const props = defineProps({
             <td class="border border-gray-200 px-6 py-4">{{ sector.id }}</td>
             <td class="border border-gray-200 px-6 py-4">{{ sector.name }}</td>
             <td class="border border-gray-200 px-6 py-4">
-              <Link :href="route('sectors.edit', { sector: sector.id })">
-                <PrimaryButton class="mr-2">Edit</PrimaryButton>
-              </Link>
-            
-            </td>
+            <Link :href="route('sectors.edit', { sector: sector.id })">
+              <PrimaryButton class="mr-2">Edit</PrimaryButton>
+            </Link>
+            <Link :href="route('categories', { sector: sector.id })">
+              <PrimaryButton>Manage Categories</PrimaryButton>
+            </Link>
+          </td>
           </tr>
         </tbody>
       </table>

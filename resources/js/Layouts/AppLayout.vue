@@ -78,6 +78,43 @@ console.log(page.props.permissions.canManageInstitution)
                                 Sectors
                             </NavLink>
 
+
+                            <!-- Graduate Link -->
+                            <NavLink
+                                v-if="page.props.permissions.canManageGraduate"
+                                :href="route('graduates.index')"
+                                :active="route().current('graduates.index')"
+                            >
+                                Graduate
+                            </NavLink>
+                            
+
+                            <!-- Institution Link -->
+                            <NavLink
+                                v-if="page.props.permissions.canManageInstitution"
+                                :href="route('institutions.index')"
+                                :active="route().current('institutions.index')"
+                            >
+                                Institution
+                            </NavLink>
+
+                            <!-- Manage Approval Link -->
+                            <NavLink
+                                v-if="page.props.permissions.canManageApprovalGraduate"
+                                :href="route('institution.manage_users')"
+                                :active="route().current('institution.manage_users')">
+                                Manage Approval
+                            </NavLink>
+
+                            <NavLink 
+                            v-if="sectors" :href="route('sectors' , { user: page.props.auth.user.id })" :active="route().current('sectors')" >
+                                       Sectors
+                             </NavLink>
+                                 
+                             <NavLink v-if="page.props.permissions.canManageUsers" :href="route('admin.manage_users' , { user: page.props.auth.user.id })" :active="route().current('admin.manage_users')">
+                                    Manage Users
+                                </NavLink>
+
         <!-- Graduate Link -->
         <NavLink
             v-if="page.props.permissions.canManageGraduate"
@@ -113,6 +150,7 @@ console.log(page.props.permissions.canManageInstitution)
                                     Sectors 
                                 </NavLink> -->
 
+
                                 <!-- <NavLink 
                                     v-if="sector" 
 
@@ -122,12 +160,9 @@ console.log(page.props.permissions.canManageInstitution)
                                     Categories
                                 </NavLink>
                                 
-                                
-                                <NavLink v-if="page.props.permissions.canManageUsers" :href="route('admin.manage_users' , { user: page.props.auth.user.id })" :active="route().current('admin.manage_users')">
-                                    Manage Users
-                                </NavLink>
+                            
 
-                                <!-- <NavLink :href="route('manage_graduates')" :active="route().current('manage_graduates')">
+                                <NavLink :href="route('manage_graduates')" :active="route().current('manage_graduates')">
                                     Manage Graduates
                                 </NavLink> -->
                      
@@ -233,8 +268,12 @@ console.log(page.props.permissions.canManageInstitution)
                                             Profile
                                         </DropdownLink>
 
+                                        <DropdownLink :href="route('admin.register')">
+                                            Admin Registration 
+
                                         <DropdownLink :href="route('hr.register')">
                                             Add Human Resource Officer (HRO)
+
                                         </DropdownLink>
 
                                         <DropdownLink v-if="$page.props.jetstream.hasApiFeatures" :href="route('api-tokens.index')">

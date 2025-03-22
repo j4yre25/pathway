@@ -39,11 +39,19 @@ const updateProfileInformation = () => {
         form.photo = photoInput.value.files[0];
     }
 
-    form.post(route('user-profile-information.update'), {
+    form.put(route('user-profile-information.update'), {
         errorBag: 'updateProfileInformation',
         preserveScroll: true,
-        onSuccess: () => clearPhotoFileInput(),
+        onSuccess: () => {clearPhotoFileInput();
+            location.reload();
+            Inertia.reload({ only: ['user'] });    
+        } 
+        ,
     });
+
+    console.log('Submitting form:', form);
+    console.log('Route:', route('user-profile-information.update'));
+
 };
 
 const sendEmailVerification = () => {
