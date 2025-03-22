@@ -40,8 +40,7 @@ class CreateNewUser implements CreatesNewUsers
                 $rules['company_address'] = ['required', 'string'];
                 $rules['company_sector'] = ['required', 'string'];
                 $rules['company_category'] = ['required', 'string'];
-                $rules['company_contact_number'] = [
-                    'required'];
+                $rules['company_contact_number'] = ['required','max:10'];
                 $rules['company_hr_last_name'] = ['required', 'string', 'max:255'];
                 $rules['company_hr_first_name'] = ['required', 'string', 'max:255'];
                 $rules['company_hr_middle_initial'] = ['required', 'string'];
