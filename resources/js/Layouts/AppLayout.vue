@@ -106,11 +106,11 @@ console.log(page.props.permissions.canManageInstitution)
             Manage Approval
         </NavLink>
 
-                                <NavLink 
+                                <!--<NavLink 
                                     v-if="sectors" 
 
-                                <!-- <NavLink :href="route('sectors' , { user: page.props.auth.user.id })" :active="route().current('sectors')" >
-                                    Sectors
+                                 <NavLink :href="route('sectors' , { user: page.props.auth.user.id })" :active="route().current('sectors')" >
+                                    Sectors 
                                 </NavLink> -->
 
                                 <!-- <NavLink 
@@ -231,6 +231,10 @@ console.log(page.props.permissions.canManageInstitution)
 
                                         <DropdownLink :href="route('profile.show')">
                                             Profile
+                                        </DropdownLink>
+
+                                        <DropdownLink :href="route('hr.register')">
+                                            Add Human Resource Officer (HRO)
                                         </DropdownLink>
 
                                         <DropdownLink v-if="$page.props.jetstream.hasApiFeatures" :href="route('api-tokens.index')">

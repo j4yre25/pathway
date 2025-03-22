@@ -10,12 +10,12 @@ import TextInput from '@/Components/TextInput.vue';
 
 // Define the form with additional fields for user types
 const form = useForm({
-    peso_first_name: '',
-    peso_last_name: '',
+    hr_first_name: '',
+    hr_last_name: '',
     email: '',
     password: '',
     password_confirmation: '',
-    role: 'peso', 
+    role: 'hr', 
     terms: false,
 });
 
@@ -24,7 +24,7 @@ const form = useForm({
 
 // Handle form submission
 const submit = () => {
-    form.post(route('admin.register'), {
+    form.post(route('hr.register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
         onSuccess: () => {
             Inertia.visit(route('login'));
@@ -34,7 +34,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Peso Admin Register" />
+    <Head title="Human Resource Officer Register" />
 
     <AuthenticationCard>
         <template #logo>
@@ -47,26 +47,26 @@ const submit = () => {
             <!-- PESO Field-->
             <div class="mt-4">
                 <!-- PesoFirst Name -->
-                <InputLabel for="peso_first_name" value="PesoFirst Name" />
+                <InputLabel for="hr_first_name" value="First Name" />
                 <TextInput
-                    id="peso_first_name"
-                    v-model="form.peso_first_name"
+                    id="hr_first_name"
+                    v-model="form.hr_first_name"
                     type="text"
                     class="mt-1 block w-full"
                     required
                 />
-                <InputError class="mt-2" :message="form.errors.peso_first_name" />
+                <InputError class="mt-2" :message="form.errors.hr_first_name" />
 
                 <!-- PESO Last Name -->
-                <InputLabel for="peso_last_name" value="Peso Last Name" />
+                <InputLabel for="hr_last_name" value="Last Name" />
                 <TextInput
-                    id="peso_last_name"
-                    v-model="form.peso_last_name"
+                    id="hr_last_name"
+                    v-model="form.hr_last_name"
                     type="text"
                     class="mt-1 block w-full"
                     required
                 />
-                <InputError class="mt-2" :message="form.errors.peso_last_name" />
+                <InputError class="mt-2" :message="form.errors.hr_last_name" />
 
             
 
@@ -127,10 +127,6 @@ const submit = () => {
             </div>
 
             <div class="flex items-center justify-end mt-8">
-                <Link :href="route('login')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Already registered?
-                </Link>
-
                 <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Register
                 </PrimaryButton>

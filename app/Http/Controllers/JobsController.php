@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Job;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\Sector;
+use App\Models\Graduate;
 use Illuminate\Support\Facades\Gate;
- use Inertia\Inertia;
+use Inertia\Inertia;
 
 
 class JobsController extends Controller
@@ -24,9 +26,12 @@ class JobsController extends Controller
 
     
     public function create(User $user) {
-        return Inertia::render('Jobs/Index/CreateJobs');
+         $sectors = Sector::with('categories')->get();
 
 
+        return Inertia::render('Jobs/Index/CreateJobs', [
+            'sectors' => $sectors,
+    ]);
     }
 
     public function store(Request $request, User $user) {
@@ -35,10 +40,11 @@ class JobsController extends Controller
             'job_title' => 'required|string|max:255',
             'location' => 'required|string|max:255',
             'vacancy' => 'required|integer',
-            'salary' => 'required|string|max:255',
-            'job_type' => 'required|string|max:255',
-            'experience_level' => 'required|string|max:255',
+            'salary' => 'required|integer',
+            'job_type' => 'required|string',
+            'experience_level' => 'required|string',
             'description' => 'required|string',
+            'requirements' => 'required|string',
             'skills' => 'required|array',
         ]);
     
@@ -52,6 +58,7 @@ class JobsController extends Controller
         $new_job->skills = json_encode($validated['skills']);
         $new_job->vacancy = $validated['vacancy'];
         $new_job->description = $validated['description'];
+        $new_job->requirements = $validated['requirements'];
         $new_job->save();
     
         // return redirect()->back()->with('flash.banner', 'Job posted successfully.');

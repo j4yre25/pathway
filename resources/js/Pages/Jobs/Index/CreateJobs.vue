@@ -7,13 +7,14 @@ import FormSection from '@/Components/FormSection.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 
 const page = usePage()
 
 const props = defineProps ({
-    jobs: Array
+    jobs: Array,
+    sectors: Array
 })
 
 console.log('User ID:', page.props);
@@ -27,7 +28,38 @@ const form = useForm({
     experience_level: '',
     description: '',
     skills: [],
+    sector: 5000, // Default value for the salary
+    category: '',
 });
+
+// This is for the categories & sector dropdown
+const availableCategories = ref([])
+
+watch(() => form.sector, (newSector) => {
+    if (newSector) {
+        const selectedSector = props.sectors.find(sector => sector.id === newSector);
+        availableCategories.value = selectedSector ? selectedSector.categories : [];
+        form.category = '';
+    }
+    else {
+        availableCategories.value = [];
+    }
+});
+
+// This is for the salary range validation
+const salaryError = ref('');
+
+const validateSalary = (event) => {
+    let value = event.target.value;
+
+    let numericValue = parseFloat(value);
+
+    if (numericValue < 5000 || numericValue > 100000) {
+        salaryError.value = 'Salary must be between 5000 and 100000';
+    } else {
+        salaryError.value = '';
+    }
+}
 
 const newSkill = ref('');
 
@@ -95,39 +127,80 @@ const createJob = () => {
                         <div class="grid grid-cols-2 gap-4">
                             <div class="col-span-1">
                                 <InputLabel for="location" value="Job Location" class="mb-2"/>
-                                <TextInput id="location" v-model="form.location" type="text" placeholder="Job Location" class="mt-1 mb-2 p-2 border rounded-lg" required />
+                                <TextInput id="location" v-model="form.location" type="text" placeholder="Job Location" class="w-full p-2 border rounded-lg mt-1" required />
                                 <InputError :message="form.errors.location" class="mt-2" />
                             </div>
 
-                            <div class="col-span-1">
+                            <div class="mx-20 col-span-1">
                                 <InputLabel for="vacancy" value="No. of Vacancies" class="mb-2" />
-                                <TextInput id="vacancy" v-model="form.vacancy" type="number" placeholder="No. of Vacancies" class="mt-1 mb-2 p-2 border rounded-lg" required />
+                                <TextInput id="vacancy" v-model="form.vacancy" type="number" placeholder="No. of Vacancies" class="w-80 mt-1 p-2 border rounded-lg" required />
                                 <InputError :message="form.errors.vacancy" class="mt-2" />
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div class="grid grid-cols-3 gap-4 mt-4">
                             <div class="col-span-1">
-                                <InputLabel for="salary" value="Salary Range" class="mb-2" />
-                                <TextInput id="salary" v-model="form.salary" type="text" placeholder="Salary Range" class="mt-1 mb-2    p-2 border rounded-lg" />
-                                <InputError :message="form.errors.salary" class="mt-2" />
+                                <InputLabel for="sector" value="Sector" class="mb-2"/>
+                                <select v-model="form.sector" id="sector" class="w-80 mt-1 mb-2 p-2 border rounded-lg" required>
+                                    <option value="" disabled class="text-gray-400">Select Sector</option>
+                                    <option v-for="sector in props.sectors" :key="sector.id" :value="sector.id">
+                                        {{ sector.name }}
+                                    </option>
+                                </select>
+                                <InputError :message="form.errors.category" class="mt-2" />
                             </div>
 
+                            <div class="mx-2 col-span-1">
+                                <InputLabel for="category" value="Category" class="mb-2"/>
+                                <select v-model="form.category" id="category" class="w-80 mt-1 mb-2 p-2 border rounded-lg" :disabled="!form.sector" required>
+                                    <option value="" disabled class="text-gray-400">Select Category</option>
+                                    <option v-for="category in availableCategories" :key="category.id" :value="category.id">
+                                        {{ category.name }}
+                                    </option>
+                                </select>
+                                <InputError :message="form.errors.category" class="mt-2" />
+                                <p class="text-red-500 text-sm mt-1">{{ form.errors.category }}</p>
+
+                            </div>
+
+                            <!-- Example minimum and maximum salary range  -->
+                            <div class="col-span-1">
+                                <InputLabel for="salary" value="Salary Range" class="mb-2" />
+                                
+                                <!-- Number Input -->
+                                <TextInput 
+                                    id="salary" 
+                                    v-model="form.salary" 
+                                    type="number" 
+                                    class="mt-1 mb-2 p-2 border rounded-lg w-full text-center" 
+                                    required
+                                    min="5000"
+                                    max="100000"
+                                    @input="validateSalary"
+                                />
+
+                                <p class="text-gray-500 text-sm mt-1">Min: 5,000 | Max: 100,000</p>
+
+                                <InputError :message="form.errors.salary" class="mt-2" />
+                                <p v-if="salaryError" class="text-red-500 text-sm mt-1">{{ salaryError }}</p>
+                            </div>
+
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 mt-4 place-items-center">
                             <div class="col-span-1">
                                 <InputLabel for="job_type" value="Job Type" class="mb-2"/>
-                                <select v-model="form.job_type" id="job_type" class="p-2 border rounded-lg">
+                                <select v-model="form.job_type" id="job_type" class="w-80 mt-1 mb-2 p-2 border rounded-lg">
                                     <option value="">Select Employment Type</option>
                                     <option value="full-time">Full-Time</option>
                                     <option value="part-time">Part-Time</option>
                                 </select>
                                 <InputError :message="form.errors.job_type" class="mt-2" />
                             </div>
-                        </div>
 
-                        <div class="grid grid-cols-2 gap-4 mt-4">
                             <div class="col-span-1">
                                 <InputLabel for="experience_level" value="Experience Level" class="mb-2" />
-                                <select v-model="form.experience_level" id="experience_level" class="p-2 border rounded-lg">
+                                <select v-model="form.experience_level" id="experience_level" class="w-80 mt-1 mb-2 p-2 border rounded-lg">
                                     <option value="">Select Experience Level</option>
                                     <option value="entry-level">Entry-level</option>
                                     <option value="intermediate">Intermediate</option>
@@ -140,8 +213,14 @@ const createJob = () => {
 
                         <div class="col-span-6 sm:col-span-4 mt-5" >
                             <InputLabel for="description" value="Job Description" />
-                            <textarea id="description" v-model="form.description" placeholder="Job Description" class="w-full p-2 border rounded-lg h-28 mt-2" required></textarea>
+                            <textarea id="description" v-model="form.description" placeholder="Job Description" class="w-full p-2 border rounded-lg h-40 mt-2 resize-none" required></textarea>
                             <InputError :message="form.errors.description" class="mt-2" />
+                        </div>
+
+                        <div class="col-span-6 sm:col-span-4 mt-5" >
+                            <InputLabel for="job_requirement" value="Job Requirements" />
+                            <textarea id="job_requirement" v-model="form.job_description" placeholder="Job Requirements" class="w-full p-2 border rounded-lg h-40 mt-2  resize-none" required></textarea>
+                            <InputError :message="form.errors.job_requirement" class="mt-2" />
                         </div>
 
                         <div class="mt-4">

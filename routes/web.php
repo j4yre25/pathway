@@ -11,6 +11,7 @@ USE App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminRegisterController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SectorController;
+use App\Http\Controllers\HRRegisterController;
 USE App\Http\Controllers\UserController;
 use App\Http\Controllers\GraduateController;
 use App\Http\Controllers\InstitutionController;
@@ -29,6 +30,11 @@ Route::get('/', function () {
 // Route::middleware(['auth', 'role:peso'])->group(function () {
     Route::get('/admin/register', [AdminRegisterController::class, 'showRegistrationForm'])->name('admin.register');
     Route::post('/admin/register', [AdminRegisterController::class, 'register'])->name('admin.register.submit');
+// });
+
+// Route::middleware(['auth', 'role:hr'])->group(function () {
+    Route::get('/hr/register', [HRRegisterController::class, 'showRegistrationForm'])->name('hr.register');
+    Route::post('/hr/register', [HRRegisterController::class, 'register'])->name('hr.register.submit');
 // });
 
 Route::middleware([
