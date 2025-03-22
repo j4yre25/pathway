@@ -27,7 +27,7 @@ class CreateNewHR implements CreatesNewUsers
         ])->validate();
 
         // Create the admin user
-        return User::create([
+        $user = User::create([
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
             'role' => 'hr', 
@@ -35,5 +35,8 @@ class CreateNewHR implements CreatesNewUsers
             'hr_first_name' => $input['hr_first_name'],
             'hr_last_name' => $input['hr_last_name'],
         ]);
+
+        $user->assignRole('company');
+        return $user;
     }
 }

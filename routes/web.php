@@ -27,15 +27,15 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
     ]);
 });
-Route::middleware(['auth', 'can:manage users'])->group(function () {
+Route::middleware(['auth', 'role:peso'])->group(function () {
     Route::get('/admin/register', [AdminRegisterController::class, 'showRegistrationForm'])->name('admin.register');
     Route::post('/admin/register', [AdminRegisterController::class, 'register'])->name('admin.register.submit');
 });
 
-// Route::middleware(['auth', 'role:hr'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/hr/register', [HRRegisterController::class, 'showRegistrationForm'])->name('hr.register');
     Route::post('/hr/register', [HRRegisterController::class, 'register'])->name('hr.register.submit');
-// });
+ });
 
 Route::middleware([
     'auth:sanctum',
@@ -107,7 +107,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 
 // Manage Users (PESO)
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->get('/admin/manage-users', [ManageUsersController::class, 'index'])
-->name('admin.manage_users');    
+->name('admin.manage_users');
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->get('/admin/manage-users/list', [ManageUsersController::class, 'list'])
+->name('admin.manage_users.list');        
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->get('/admin/manage-users/edit/{user}', [ManageUsersController::class, 'edit'])
 ->name('admin.manage_users.edit');    
@@ -117,6 +120,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->post('/admin/manage-users/{user}/approve', [ManageUsersController::class, 'approve'])
     ->name('admin.manage_users.approve');
+
+    
 
 // Manage Graduates
 // Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/manage-graduates', [ManageGraduatesController::class, 'index'])
@@ -248,7 +253,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         });
     
         // Career Opportunities Routes
-        Route::middleware(['permission:manage institution'])->group(function () {
+        Route::middleware(['can:manage institution'])->group(function () {
             Route::get('/career-opportunities', [CareerOpportunityController::class, 'index'])->name('career-opportunities.index');
             Route::get('/career-opportunities/create', [CareerOpportunityController::class, 'create'])->name('career-opportunities.create');
             Route::post('/career-opportunities', [CareerOpportunityController::class, 'store'])->name('career-opportunities.store');

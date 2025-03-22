@@ -14,7 +14,8 @@ const page = usePage()
 
 const props = defineProps ({
     jobs: Array,
-    sectors: Array
+    sectors: Array,
+    categories: Array,
 })
 
 console.log('User ID:', page.props);
@@ -23,13 +24,14 @@ const form = useForm({
     job_title: '', 
     location: '',
     vacancy: '',
-    salary: '',
+    salary: 5000,
     job_type: '',
     experience_level: '',
     description: '',
     skills: [],
-    sector: 5000, // Default value for the salary
+    sector: '', 
     category: '',
+    requirements: '',
 });
 
 // This is for the categories & sector dropdown
@@ -218,9 +220,9 @@ const createJob = () => {
                         </div>
 
                         <div class="col-span-6 sm:col-span-4 mt-5" >
-                            <InputLabel for="job_requirement" value="Job Requirements" />
-                            <textarea id="job_requirement" v-model="form.job_description" placeholder="Job Requirements" class="w-full p-2 border rounded-lg h-40 mt-2  resize-none" required></textarea>
-                            <InputError :message="form.errors.job_requirement" class="mt-2" />
+                            <InputLabel for="requirements" value="Job Requirements" />
+                            <textarea id="requirements" v-model="form.requirements" placeholder="Job Requirements" class="w-full p-2 border rounded-lg h-40 mt-2  resize-none" required></textarea>
+                            <InputError :message="form.errors.requirements" class="mt-2" />
                         </div>
 
                         <div class="mt-4">

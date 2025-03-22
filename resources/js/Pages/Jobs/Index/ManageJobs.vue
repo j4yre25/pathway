@@ -30,7 +30,7 @@ const archiveJob = (jobId) => {
             <th class="py-2 px-4 text-left border">Employment Type</th>
             <th class="py-2 px-4 text-left border">Experience Level</th>
             <th class="py-2 px-4 text-left border">Status</th>
-   
+            <th class="py-2 px-4 text-left border">Action</th>
           </tr>
         </thead>
         <tbody class="text-gray-600 text-sm font-light">
@@ -41,7 +41,17 @@ const archiveJob = (jobId) => {
             <td class="border border-gray-200 px-6 py-4">{{ job.job_type }}</td>
             <td class="border border-gray-200 px-6 py-4">{{ job.experience_level }}</td>
             <td class="border border-gray-200 px-6 py-4">{{ job.status}}</td>
-            
+            <td class="border border-gray-200 px-6 py-4">
+              <Link :href="route('jobs.view', { job: job.id })">
+                <PrimaryButton class="mr-2">View</PrimaryButton>
+              </Link>
+              <Link :href="route('jobs.edit', { job: job.id })">
+                <PrimaryButton class="mr-2">Edit</PrimaryButton>
+              </Link>
+              <button @click="archiveJob(job.id)">
+                <PrimaryButton class="mr-2">Archive</PrimaryButton>
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>

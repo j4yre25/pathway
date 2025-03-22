@@ -9,6 +9,7 @@ use App\Models\Sector;
 use App\Models\Graduate;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Illuminate\Validation\Rule;
 
 
 class JobsController extends Controller
@@ -37,7 +38,15 @@ class JobsController extends Controller
     public function store(Request $request, User $user) {
         // return Inertia::render('Jobs/Index/CreateJobs');
         $validated = $request->validate([
-            'job_title' => 'required|string|max:255',
+            'job_title' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('jobs')->where(function ($query) use ($user, $request) {
+                    return $query->where('user_id', $user->id)
+                                 ->where('location', $request->location);
+                }),
+            ],
             'location' => 'required|string|max:255',
             'vacancy' => 'required|integer',
             'salary' => 'required|integer',
@@ -46,6 +55,8 @@ class JobsController extends Controller
             'description' => 'required|string',
             'requirements' => 'required|string',
             'skills' => 'required|array',
+            'sector' => 'required|exists:sectors,id', 
+            'category' => 'required|exists:categories,id',
         ]);
     
         $new_job = new Job();
@@ -59,6 +70,8 @@ class JobsController extends Controller
         $new_job->vacancy = $validated['vacancy'];
         $new_job->description = $validated['description'];
         $new_job->requirements = $validated['requirements'];
+        $new_job->sector_id = $validated['sector']; 
+        $new_job->category_id = $validated['category']; 
         $new_job->save();
     
         // return redirect()->back()->with('flash.banner', 'Job posted successfully.');
