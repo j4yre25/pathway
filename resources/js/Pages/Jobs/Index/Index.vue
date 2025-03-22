@@ -53,16 +53,24 @@ const createJob = () => {
 
 
             <!-- <PrimaryButton @click="createJob()" class="">Post Job</PrimaryButton> --> 
-            <div class="mt-8">
-                <Link :href="route('jobs.create', { user: page.props.auth.user.id })">
-                <PrimaryButton class="mr-2">Post Jobs</PrimaryButton>
-              </Link>
+            <div class="flex space-x-2">
+                <div class="mt-8">
+                    <Link :href="route('jobs.create', { user: page.props.auth.user.id })">
+                        <PrimaryButton class="mr-2">Post Jobs</PrimaryButton>
+                    </Link>
+                </div>
+
+                <div class="mt-8">
+                    <PrimaryButton class="mr-2">Manage Posted Jobs</PrimaryButton>
+                    <Link :href="route('jobs', { user: page.props.auth.user.id })">
+                        
+                    </Link>
+                </div>
             </div>
+
 
             <div class="mt-8">
                 <MyJobs :jobs="jobs" />
-
-
             </div>
 
  

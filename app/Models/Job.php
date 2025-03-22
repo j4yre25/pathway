@@ -17,8 +17,15 @@ class Job extends Model
         'location',
         'salary',
         'vacancy',
-        'employ_type',
+        'job_type', 
         'experience_level',
-        'skills',
+        'skills', 
+        'sector_id', 
+        'category_id',
+    ];
+
+
+    protected $casts = [
+        'skills' => 'array', // Cast skills to an array
     ];
 }

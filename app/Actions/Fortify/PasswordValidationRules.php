@@ -16,7 +16,7 @@ trait PasswordValidationRules
         return [
             'required',
             'string',
-            'max:30', // Maximum of 30 characters (applied separately)
+            'max:20', // Maximum of 30 characters (applied separately)
             Password::min(8) // Minimum of 8 characters
                     ->mixedCase() // Requires uppercase & lowercase letters
                     ->letters() // Requires at least one letter

@@ -22,30 +22,9 @@ const props = defineProps ({
 
 
 const showModal = ref(false);
-const userToDelete = ref(null);
 
-const deleteUser = (user) => {
-    router.delete(route('admin.manage_users.delete', { user: user.id }));
-};
 
-const confirmDelete = (user) => {
-    userToDelete.value = user;
-    showModal.value = true;
-};
 
-const handleDelete = () => {
-    if (userToDelete.value) {
-        deleteUser (userToDelete.value);
-        showModal.value = false;
-        userToDelete.value = null; 
-    }
-};
-const approveUser  = (user) => {
-
-    router.post(route('admin.manage_users.approve', { user: user.id }), {
-        
-    });
-};
 
 
 
@@ -55,7 +34,7 @@ const approveUser  = (user) => {
 <template>
     <AppLayout title="Manage Users">
         <template #header>
-            Manage Users
+            List of Users
         
         </template>
         
@@ -67,13 +46,10 @@ const approveUser  = (user) => {
         <th class="border border-gray-200 px-6 py-3 text-left">ID</th>
         <th class="border border-gray-200 px-6 py-3 text-left">Role</th>
         <th class="border border-gray-200 px-6 py-3 text-left">Name</th>
-        <th class="border border-gray-200 px-6 py-3 text-left">Email</th>
-        <th class="border border-gray-200 px-6 py-3 text-left">Status</th> 
-        <th class="border border-gray-200 px-6 py-3 text-left">Actions</th>
     </tr>
 </thead>
         <tbody class="text-gray-600 text-sm font-light">
-            <tr v-for="user in all_users" :key="user.id" class="border-b border-gray-200 hover:bg-gray-100">
+            <tr v-for="user in props.all_users" :key="user.id" class="border-b border-gray-200 hover:bg-gray-100">
                 <td class="border border-gray-200 px-6 py-4">{{ user.id }}</td>
                 <td class="border border-gray-200 px-6 py-4">{{ user.role }}</td>
                 <td class="border border-gray-200 px-6 py-4">
@@ -94,17 +70,9 @@ const approveUser  = (user) => {
                     {{ user.name }}
                 </template>
             </td>
-                <td class="border border-gray-200 px-6 py-4">{{ user.email }}</td>
+              
 
-
-                <td class="border border-gray-200 px-6 py-4">
-            <span v-if="user.is_approved" class="text-green-600 font-semibold">Approved</span>
-            <span v-else class="text-red-600 font-semibold">Pending</span>
-        </td>
-                <td class="border border-gray-200 px-6 py-4">
-
-                    <PrimaryButton @click="approveUser (user)" v-if="!user.is_approved">Approve</PrimaryButton>
-                </td>
+             
 
                
             </tr>
