@@ -26,14 +26,21 @@ class CreateNewAdmin implements CreatesNewUsers
             'peso_last_name' => ['required', 'string', 'max:255'],
         ])->validate();
 
+      
+
         // Create the admin user
-        return User::create([
+        $user = User::create([
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
             'role' => 'peso', 
-            'is_approved' => 1, 
+            'is_approved' =>  true,
             'peso_first_name' => $input['peso_first_name'],
             'peso_last_name' => $input['peso_last_name'],
         ]);
+
+        $user->assignRole('peso');
+        $user->update(['is_approved' => true]);
+
+        return $user;
     }
 }

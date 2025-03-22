@@ -467,6 +467,16 @@ const submit = () => {
                     required
                 />
                 <InputError class="mt-2" :message="form.errors.institution_career_officer_first_name" />
+
+                <InputLabel for="institution_career_officer_last_name" value="Career Officer Last Name" />
+                <TextInput
+                    id="institution_career_officer_last_name"
+                    v-model="form.institution_career_officer_last_name"
+                    type="text"
+                    class="mt-1 mb-4 block w-full"
+                    required
+                />
+                <InputError class="mt-2" :message="form.errors.institution_career_officer_last_name" />
             </div>
     
 

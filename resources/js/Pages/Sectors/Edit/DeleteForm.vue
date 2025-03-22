@@ -37,6 +37,18 @@ const deleteSector= (r) => {
 
             </DangerButton>
 
+            <div v-for="sector in sectors" :key="sector.id" class="mt-4">
+                    <div class="flex items-center justify-between">
+                        <!-- <span>{{ sector.name }}</span> -->
+                        <Link :href="route('categories', { sector: sector.id })">
+                            <PrimaryButton>Manage Categories</PrimaryButton>
+                        </Link>
+                    </div>
+                </div>
+
+            
+         
+
             <ConfirmationModal @close="open = false" :show="open">
                 <template #title>
                     Are you sure?
@@ -51,9 +63,7 @@ const deleteSector= (r) => {
                             Delete Sector
                         </DangerButton>
                         <SecondaryButton @click="open = false">Cancel</SecondaryButton>
-                        <Link :href="route('categories', { sector: sector.id })">
-                            <PrimaryButton>Manage Categories</PrimaryButton>
-                        </Link>
+                        
                 </template>
 
             </ConfirmationModal>

@@ -30,6 +30,6 @@ class AdminRegisterController extends Controller
     {
         $creator->create($request->all());
 
-        return redirect()->route('login')->with('success', 'Admin registration successful!');
+        return redirect()->route('dashboard')->with('success', 'Admin registration successful!');
     }
 }

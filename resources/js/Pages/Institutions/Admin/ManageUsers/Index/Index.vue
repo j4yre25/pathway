@@ -70,11 +70,10 @@ const approveUser = (user) => {
                         </tr>
                     </thead>
                     <tbody class="text-gray-600 text-sm font-light">
-                        <tr v-for="user in props.all_users" :key="user.id" class="border-b border-gray-200 hover:bg-gray-100">
+                        <tr v-for="user in all_users" :key="user.id" class="border-b border-gray-200 hover:bg-gray-100">
                             <td class="border border-gray-200 px-6 py-4">{{ user.id }}</td>
                             <td class="border border-gray-200 px-6 py-4">{{ user.role }}</td>
                             <td class="border border-gray-200 px-6 py-4">
-                                <!-- Conditionally display the name based on role -->
                                 <template v-if="user.role === 'graduate'">
                                     {{ user.graduate_first_name }} {{ user.graduate_last_name }}
                                 </template>

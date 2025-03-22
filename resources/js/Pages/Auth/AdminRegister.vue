@@ -18,17 +18,18 @@ const form = useForm({
     password_confirmation: '',
     role: 'peso', 
     terms: false,
+    is_approved: true,
 });
 
-// Track the selected user type
+
 
 
 // Handle form submission
 const submit = () => {
-    form.post(route('admin.register'), {
+    form.post(route('admin.register.submit'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
         onSuccess: () => {
-            Inertia.visit(route('login'));
+            Inertia.visit(route('dashboard'));
         },
     });
 };

@@ -34,7 +34,7 @@ class CategoryController extends Controller
 
     public function store(Request $request, Sector $sector) {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'unique:categories'],
         ]);
 
         $new_category = new Category();

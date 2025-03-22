@@ -53,6 +53,7 @@ class CreateNewUser implements CreatesNewUsers
                 $rules['institution_president_last_name'] = ['required', 'string', 'max:255'];
                 $rules['institution_president_first_name'] = ['required', 'string', 'max:255'];
                 $rules['institution_career_officer_first_name'] = ['required', 'string', 'max:255'];
+                $rules['institution_career_officer_last_name'] = ['required', 'string', 'max:255'];
                 break;
         }
     
@@ -83,6 +84,7 @@ class CreateNewUser implements CreatesNewUsers
             'institution_president_last_name' => $input['role'] === 'institution' ? $input['institution_president_last_name'] : null,
             'institution_president_first_name' => $input['role'] === 'institution' ? $input['institution_president_first_name'] : null,
             'institution_career_officer_first_name' => $input['role'] === 'institution' ? $input['institution_career_officer_first_name'] : null,
+            'institution_career_officer_last_name' => $input['role'] === 'institution' ? $input['institution_career_officer_last_name'] : null,
         ]);
     }
 }
