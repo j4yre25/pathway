@@ -64,6 +64,14 @@ const maxWidthClass = computed(() => {
         'lg': 'sm:max-w-lg',
         'xl': 'sm:max-w-xl',
         '2xl': 'sm:max-w-2xl',
+        '3xl': 'sm:max-w-3xl', // New size
+        '4xl': 'sm:max-w-4xl', // New size
+        '5xl': 'sm:max-w-5xl', // New size
+        'full': 'sm:max-w-full', // Full width
+        'screen-sm': 'sm:max-w-screen-sm', // Screen size
+        'screen-md': 'sm:max-w-screen-md', // Screen size
+        'screen-lg': 'sm:max-w-screen-lg', // Screen size
+        'screen-xl': 'sm:max-w-screen-xl', // Screen size
     }[props.maxWidth];
 });
 </script>
