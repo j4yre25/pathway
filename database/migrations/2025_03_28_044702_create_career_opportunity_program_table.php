@@ -14,7 +14,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('career_opportunity_id')->constrained()->onDelete('cascade');
             $table->foreignId('program_id')->constrained()->onDelete('cascade');
-            $table->unique(['career_opportunity_id', 'program_id'], 'unique_career_opportunity_program'); // Shorter name
+            $table->unique(['career_opportunity_id', 'program_id'], 'unique_career_opportunity_program'); 
         });
     }
 

@@ -76,6 +76,7 @@ console.log(page.props.permissions.canManageInstitution)
                                 :active="route().current('sectors')">
                                 Sectors
                             </NavLink>
+                            
 
 
 

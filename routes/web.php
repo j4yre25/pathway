@@ -170,7 +170,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
     ->get('/categories', [CategoryController::class, 'index'])
-    ->name('categories');
+    ->name('categories.index');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
     ->get('/categories/create', [CategoryController::class, 'create'])

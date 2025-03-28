@@ -8,29 +8,29 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
+
 
 class CategoryController extends Controller
 {
    
-    public function index(Sector $sector) {
-        $categories = $sector->categories->map(function($category) {
-            return [
-                'id' => $category->id,
-                'name' => $category->name,
-            ];
-        });
+    public function index() {
+        // Fetch all sectors with their related categories
+        $sectors = Sector::with('categories')->get();
+    
+        // Debugging
     
         return Inertia::render('Categories/Index', [
-            'categories' => $categories,
-            'sector' => $sector, // This is a single sector object
+            'sectors' => $sectors,
         ]);
-    }
+    }    
     
     public function create(Sector $sector) {
         $sectors = Sector::all();
         return Inertia::render('Categories/CreateCategories', [
             'sectors' => $sectors, 
             'sector' => $sector,
+            
 
         ]);
     }
