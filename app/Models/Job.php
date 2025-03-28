@@ -10,6 +10,16 @@ class Job extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function sector()
+{
+    return $this->belongsTo(Sector::class);
+}
+
+public function category()
+{
+    return $this->belongsTo(Category::class);
+}
+
     protected $fillable = [
         'job_title',
         'description',

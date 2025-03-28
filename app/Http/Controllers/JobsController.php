@@ -35,6 +35,17 @@ class JobsController extends Controller
     ]);
     }
 
+    public function manage(User $user) {
+        // Fetch jobs posted by the authenticated user
+        $jobs = $user->jobs;
+    
+        return Inertia::render('Jobs/Index/ManageJobs', [
+            'jobs' => $jobs
+        ]);
+    }
+    
+
+
     public function store(Request $request, User $user) {
         // return Inertia::render('Jobs/Index/CreateJobs');
         $validated = $request->validate([

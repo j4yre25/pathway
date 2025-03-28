@@ -15,7 +15,9 @@ const archiveJob = (jobId) => {
     });
 };
 
-
+const approveJob = (job) => {
+    router.post(route('jobs.approve', { job: job.id }), {});
+};
 </script>
 
 <template>
@@ -40,7 +42,17 @@ const archiveJob = (jobId) => {
             <td class="border border-gray-200 px-6 py-4">{{ job.location }}</td>
             <td class="border border-gray-200 px-6 py-4">{{ job.job_type }}</td>
             <td class="border border-gray-200 px-6 py-4">{{ job.experience_level }}</td>
-            <td class="border border-gray-200 px-6 py-4">{{ job.status}}</td>
+            <td class="border border-gray-200 px-6 py-4">
+                <!-- Status Badge -->
+                <span :class="{
+                    'bg-green-100 text-green-800': job.status === 'active',
+                    'bg-red-100 text-red-800': job.status === 'inactive',
+                    'bg-yellow-100 text-yellow-800': job.status === 'pending',
+                    'bg-blue-100 text-blue-800': job.status === 'archived'
+                }" class="px-3 py-1 text-sm font-semibold rounded-full">
+                    {{ job.status }}
+                </span>
+            </td>
             
           </tr>
         </tbody>

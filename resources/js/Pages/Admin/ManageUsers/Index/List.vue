@@ -49,18 +49,13 @@ const showModal = ref(false);
     </tr>
 </thead>
         <tbody class="text-gray-600 text-sm font-light">
-            <tr v-for="user in props.all_users" :key="user.id" class="border-b border-gray-200 hover:bg-gray-100">
+            <tr v-for="user in all_users.filter(u => u.role === 'company' || u.role === 'institution')" :key="user.id" class="border-b border-gray-200 hover:bg-gray-100">
                 <td class="border border-gray-200 px-6 py-4">{{ user.id }}</td>
                 <td class="border border-gray-200 px-6 py-4">{{ user.role }}</td>
                 <td class="border border-gray-200 px-6 py-4">
     <!-- Conditionally display the name based on role -->
-                <template v-if="user.role === 'graduate'">
-                    {{ user.graduate_first_name }} {{ user.graduate_last_name }}
-                </template>
-                <template v-if="user.role === 'peso'">
-                    {{ user.peso_first_name }} {{ user.peso_last_name }}
-                </template>
-                <template v-else-if="user.role === 'company'">
+
+                <template v-if="user.role === 'company'">
                     {{ user.company_name }}
                 </template>
                 <template v-else-if="user.role === 'institution'">

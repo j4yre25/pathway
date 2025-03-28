@@ -89,7 +89,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('/jobs/{user}', [JobsController::class, 'store'])
 ->name('jobs.store');
-   
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->get('/jobs/manage/{user}', [JobsController::class, 'manage'])
+->name('jobs.manage');
+
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/view/{job}', [JobsController::class, 'view'])
 ->name('jobs.view');    
