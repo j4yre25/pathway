@@ -9,6 +9,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { computed } from 'vue';
 import { MaskDirective } from 'vue-the-mask';
 import { onMounted, ref } from 'vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 
 
 // Determine the role based on the route
@@ -118,7 +119,7 @@ const submit = () => {
 <template>
     <Head title="Register" />
 
-    <A>
+    <AuthenticationCard>
         <template #logo>
             <AuthenticationCardLogo />
         </template>
@@ -536,7 +537,7 @@ const submit = () => {
                 </div>
             </div>
 
-            < <div class="flex items-center justify-end mt-8 border-t border-gray-200 pt-12">
+            <div class="flex items-center justify-end mt-8 border-t border-gray-200 pt-12">
                 <Link :href="route('login')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Already registered?
                 </Link>
@@ -545,5 +546,5 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
-    </A>
+    </AuthenticationCard>
 </template>
