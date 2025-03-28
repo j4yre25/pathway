@@ -19,6 +19,7 @@ use App\Http\Controllers\SchoolYearController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\CareerOpportunityController;
 use App\Http\Controllers\ManageGraduatesApprovalController;
+use App\Http\Controllers\BatchUploadController;
 
 
 Route::get('/', function () {
@@ -212,13 +213,19 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
             // Delete a specific graduate
             Route::delete('/graduates/{graduate}', [GraduateController::class, 'destroy'])->name('graduates.destroy');
-
-            // Additional custom routes
-            Route::get('/graduates/download-template', [GraduateController::class, 'downloadTemplate'])
-                ->name('graduates.downloadTemplate');
-            Route::post('/graduates/batch-upload', [GraduateController::class, 'batchUpload'])
-                ->name('graduates.batchUpload');
             });
+
+            Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
+            ->post('/graduates/batch-upload', [BatchUploadController::class, 'upload'])
+             ->name('graduates.batch.upload');
+
+             Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
+             ->get('/graduates/batch-download', [BatchUploadController::class, 'download'])
+            ->name('graduates.batch.download');
+
+
+
+
 
     // Institution Routes
     Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
