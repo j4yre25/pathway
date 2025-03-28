@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Support\Facades\Log;
 use App\Models\Graduate;
 use App\Models\SchoolYear;
@@ -34,7 +33,6 @@ class GraduateController extends Controller
 }
 
 
-
 public function store(Request $request)
 {
     Log::info('Graduate store request received', $request->all());
@@ -42,20 +40,32 @@ public function store(Request $request)
     $validated = $request->validate([
         'name' => 'required|string|max:255',
         'program_id' => 'required|exists:programs,id',
-        'year_graduated' => 'required|numeric|min:1900|max:' . date('Y'), // Ensure it's a number
+        'year_graduated' => 'required|numeric|min:1900|max:' . date('Y'),
         'employment_status' => 'required|in:Employed,Underemployed,Unemployed',
         'current_job_title' => 'nullable|string|max:255',
     ]);
 
-    // Convert `year_graduated` to an integer in case it's sent as a string
+    // Convert `year_graduated` to integer in case it's sent as a string
     $validated['year_graduated'] = (int) $validated['year_graduated'];
 
     if ($validated['employment_status'] == 'Unemployed') {
-        $validated['current_job_title'] = 'N/A'; // ✅ Set 'N/A' for unemployed
+        $validated['current_job_title'] = 'N/A';
     } elseif (empty($validated['current_job_title'])) {
-        $validated['current_job_title'] = 'Not Provided'; // ✅ Set default for blank job title
-    }    
+        $validated['current_job_title'] = 'Not Provided';
+    }
 
+    // Check if a graduate with the same name, program, and year already exists
+    $existingGraduate = Graduate::where('name', $validated['name'])
+        ->where('program_id', $validated['program_id'])
+        ->where('year_graduated', $validated['year_graduated'])
+        ->first();
+
+    if ($existingGraduate) {
+        Log::warning('Duplicate graduate entry attempt', $validated);
+        return back()->withErrors(['msg' => 'This graduate entry already exists.']);
+    }
+
+    // Create new graduate entry
     $graduate = Graduate::create($validated);
 
     if (!$graduate) {
@@ -68,24 +78,38 @@ public function store(Request $request)
     return redirect()->route('graduates.index')->with('success', 'Graduate added successfully.');
 }
 
-    public function update(Request $request, Graduate $graduate)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'program_id' => 'required|exists:programs,id', // Fix validation
-            'year_graduated' => 'required|integer|min:1900|max:' . date('Y'),
-            'employment_status' => 'required|in:Employed,Underemployed,Unemployed',
-            'current_job_title' => 'nullable|string|max:255',
-        ]);
 
-        if ($validated['employment_status'] == 'Unemployed') {
-            $validated['current_job_title'] = 'N/A';
-        }
+public function update(Request $request, Graduate $graduate)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'program_id' => 'required|exists:programs,id',
+        'year_graduated' => 'required|integer|min:1900|max:' . date('Y'),
+        'employment_status' => 'required|in:Employed,Underemployed,Unemployed',
+        'current_job_title' => 'nullable|string|max:255',
+    ]);
 
-        $graduate->update($validated);
-
-        return redirect()->route('graduates.index')->with('success', 'Graduate updated successfully.');
+    if ($validated['employment_status'] == 'Unemployed') {
+        $validated['current_job_title'] = 'N/A';
     }
+
+    // Check if another graduate already exists with the same name, program, and year
+    $existingGraduate = Graduate::where('name', $validated['name'])
+        ->where('program_id', $validated['program_id'])
+        ->where('year_graduated', $validated['year_graduated'])
+        ->where('id', '!=', $graduate->id) // Ensure it's not the same record being updated
+        ->first();
+
+    if ($existingGraduate) {
+        Log::warning('Duplicate graduate update attempt', $validated);
+        return back()->withErrors(['msg' => 'A graduate with these details already exists.']);
+    }
+
+    $graduate->update($validated);
+
+    return redirect()->route('graduates.index')->with('success', 'Graduate updated successfully.');
+}
+
 
     public function destroy(Graduate $graduate)
     {
@@ -94,67 +118,12 @@ public function store(Request $request)
         return redirect()->route('graduates.index')->with('success', 'Graduate deleted successfully.');
     }
 
-    public function downloadTemplate()
-{
-    $filePath = app_path('Templates/graduate_template.csv'); // Correct path
-
-    if (!file_exists($filePath)) {
-        abort(404, 'Template not found.');
-    }
-
-    return Response::download($filePath, 'graduate_template.csv', [
-        'Content-Type' => 'text/csv',
-    ]);
-}
-
+   
 public function show($id)
 {
     $graduate = Graduate::findOrFail($id);
     return response()->json($graduate);
 }
 
-
-public function batchUpload(Request $request)
-{
-    $request->validate([
-        'csv_file' => 'required|mimes:csv,txt|max:2048',
-    ]);
-
-    $file = $request->file('csv_file');
-
-    $csv = Reader::createFromPath($file->getPathname(), 'r');
-    $csv->setHeaderOffset(0);
-
-    $graduates = [];
-    foreach ($csv as $row) {
-        $validator = Validator::make($row, [
-            'Full Name' => 'required|string|max:255',
-            'Year Graduated' => 'required|integer|min:1900|max:' . date('Y'),
-            'Program' => 'required|string|exists:programs,name',
-            'Employment Status' => 'required|in:Employed,Underemployed,Unemployed',
-            'Current Job Title' => 'nullable|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            continue; // Skip invalid rows
-        }
-
-        $program = Program::where('name', $row['Program'])->first();
-
-        $graduates[] = [
-            'name' => $row['Full Name'],
-            'year_graduated' => $row['Year Graduated'],
-            'program_id' => $program->id,
-            'employment_status' => $row['Employment Status'],
-            'current_job_title' => $row['Employment Status'] == 'Unemployed' ? 'N/A' : $row['Current Job Title'],
-            'created_at' => now(),
-            'updated_at' => now(),
-        ];
-    }
-
-    Graduate::insert($graduates);
-
-    return redirect()->route('graduates.index')->with('success', count($graduates) . ' graduates uploaded successfully.');
-}
 
 }
