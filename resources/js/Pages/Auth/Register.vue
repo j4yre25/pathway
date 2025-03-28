@@ -118,7 +118,7 @@ const submit = () => {
 <template>
     <Head title="Register" />
 
-    <AuthenticationCard>
+    <A>
         <template #logo>
             <AuthenticationCardLogo />
         </template>
@@ -545,5 +545,5 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
-    </AuthenticationCard>
+    </A>
 </template>

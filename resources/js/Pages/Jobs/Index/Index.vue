@@ -11,6 +11,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import MyJobs from './MyJobs.vue'
+import ManageJobs from './ManageJobs.vue'
 
 
 const page = usePage()
@@ -29,14 +30,7 @@ const form = useForm({
     location: ''
 });
 
-const createJob = () => {
-    form.post(route('jobs.create', { user: page.props.auth.user.id }), {
-        onSuccess: () => {
-            form.reset();
-        }
-    });
-    
-}
+
 
 </script>
 
@@ -61,9 +55,9 @@ const createJob = () => {
                 </div>
 
                 <div class="mt-8">
-                    <PrimaryButton class="mr-2">Manage Posted Jobs</PrimaryButton>
-                    <Link :href="route('jobs', { user: page.props.auth.user.id })">
-                        
+                    
+                    <Link :href="route('jobs.manage', { user: page.props.auth.user.id })">
+                        <PrimaryButton class="mr-2">Manage Posted Jobs</PrimaryButton>
                     </Link>
                 </div>
             </div>

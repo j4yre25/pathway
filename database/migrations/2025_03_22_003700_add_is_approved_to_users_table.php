@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             if (!Schema::hasColumn('users', 'is_approved')) {
-                $table->boolean('is_approved')->default(false)->after('role'); // Add after role for better structure
+                $table->boolean('is_approved')->default(false)->after('role'); 
             }
         });
     }

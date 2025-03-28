@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
+use Illuminate\Support\Facades\Auth;
+
 
 class UpdateUserPassword implements UpdatesUserPasswords
 {
@@ -18,6 +20,11 @@ class UpdateUserPassword implements UpdatesUserPasswords
      */
     public function update(User $user, array $input): void
     {
+
+        if (!Auth::check()) {
+            throw new \Exception('User is Logout.');
+        }
+
         Validator::make($input, [
             'current_password' => ['required', 'string', 'current_password:web'],
             'password' => $this->passwordRules(),
@@ -28,5 +35,8 @@ class UpdateUserPassword implements UpdatesUserPasswords
         $user->forceFill([
             'password' => Hash::make($input['password']),
         ])->save();
+
+        Auth::logout();
+
     }
 }

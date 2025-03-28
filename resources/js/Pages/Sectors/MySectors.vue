@@ -33,9 +33,7 @@ const props = defineProps({
             <Link :href="route('sectors.edit', { sector: sector.id })">
               <PrimaryButton class="mr-2">Edit</PrimaryButton>
             </Link>
-            <Link :href="route('categories', { sector: sector.id })">
-              <PrimaryButton>Manage Categories</PrimaryButton>
-            </Link>
+        
           </td>
           </tr>
         </tbody>

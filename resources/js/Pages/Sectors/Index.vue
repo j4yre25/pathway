@@ -57,10 +57,15 @@ const createSector = () => {
                 <Link :href="route('sectors.create', { user: page.props.auth.user.id })">
                 <PrimaryButton class="mr-2">Add Sectors</PrimaryButton>
               </Link>
+              <Link :href="route('categories.create', { user: page.props.auth.user.id })">
+                <PrimaryButton class="mr-2">Add Categories</PrimaryButton>
+              </Link>
+
+              
 
               
             </div>
-          
+
 
             <div class="mt-8">
                 <MySectors :sectors="sectors" />
