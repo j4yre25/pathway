@@ -177,7 +177,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     ->name('categories.create');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-    ->post('/categories', [CategoryController::class, 'store'])
+    ->post('/categories/{sector}', [CategoryController::class, 'store'])
     ->name('categories.store');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
@@ -192,6 +192,9 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     ->delete('/categories/edit/{category}', [CategoryController::class, 'delete'])
     ->name('categories.delete');
 
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
+    ->get('/sectors/{sector}/categories', [CategoryController::class, 'index'])
+    ->name('sectors.categories.index');
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
   Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage approval graduate'])->group(function () {
             Route::get('/graduates', [GraduateController::class, 'index'])->name('graduates.index');

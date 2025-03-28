@@ -56,6 +56,7 @@ class User extends Authenticatable
         'company_hr_contact_number',
         // Institution
         'institution_type',
+        'institution_name',
         'institution_address',
         'institution_contact_number',
         'institution_president_last_name',

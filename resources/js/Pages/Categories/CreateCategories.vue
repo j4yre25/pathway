@@ -15,22 +15,28 @@ const page = usePage()
 
 const props = defineProps ({
    categories: Array,
-   sectors: Array
+   sectors: Array,
+   sector: Object
 
 })
 
 
-const sector = page.props.sector; // Access the single sector object
+const sector = page.props.sector;
+console.log(sector);
+
+
 const categories = page.props.categories;
 console.log('User ID:', page.props);
 
 const form = useForm({
     name: '',
-    sector_id: '',
+    sector_id: props.sector.id,
 });
 
 const createCategory = () => {
-    form.post(route('categories.store', { sector: sector.id }), {
+    console.log('sector ID:', form.sector_id)
+    console.log('form:', form)
+    form.post(route('categories.store', { sector: form.sector_id }), {
         onSuccess: () => {
             form.reset();
         }
@@ -74,7 +80,7 @@ const createCategory = () => {
                             class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                         >
                             <option value="" disabled>Select a sector</option>
-                            <option v-for="sector in sectors" :key="sector.id" :value="sector.id">
+                            <option v-for="sector in props.sectors" :key="sector.id" :value="sector.id">
                                 {{ sector.name }}
                             </option>
                         </select>

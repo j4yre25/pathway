@@ -156,7 +156,7 @@ const createJob = () => {
                                 <InputLabel for="category" value="Category" class="mb-2"/>
                                 <select v-model="form.category" id="category" class="w-80 mt-1 mb-2 p-2 border rounded-lg" :disabled="!form.sector" required>
                                     <option value="" disabled class="text-gray-400">Select Category</option>
-                                    <option v-for="category in availableCategories" :key="category.id" :value="category.id">
+                                    <option v-for="category in categories" :key="category.id" :value="category.id">
                                         {{ category.name }}
                                     </option>
                                 </select>

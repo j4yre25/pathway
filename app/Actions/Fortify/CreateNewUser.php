@@ -53,6 +53,7 @@ class CreateNewUser implements CreatesNewUsers
                 break;
             case 'institution':
                 $rules['institution_type'] = ['required', 'string'];
+                $rules['institution_name'] = ['required', 'string'];
                 $rules['institution_address'] = ['required', 'string'];
                 $rules['institution_contact_number'] = ['required', 'string'];
                 $rules['institution_president_last_name'] = ['required', 'string', 'max:255'];
@@ -94,6 +95,7 @@ class CreateNewUser implements CreatesNewUsers
                 break;
             case 'institution':
                 $userData['institution_type'] = $input['institution_type'];
+                $userData['institution_name'] = $input['institution_name'];
                 $userData['institution_address'] = $input['institution_address'];
                 $userData['institution_contact_number'] = $input['institution_contact_number'];
                 $userData['institution_president_last_name'] = $input['institution_president_last_name'];

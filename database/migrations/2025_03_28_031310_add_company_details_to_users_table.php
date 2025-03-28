@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('company_zip_code')->after('company_province');
             $table->string('company_email')->after('company_zip_code');
             $table->string('company_telephone_number')->nullable()->after('company_email');
+            $table->string('company_hr_gender')->nullable(); 
+            $table->string('company_hr_address')->nullable(); 
             $table->date('company_hr_dob')->nullable()->after('company_hr_gender');
             $table->string('company_hr_contact_number')->after('company_hr_address');
         });
