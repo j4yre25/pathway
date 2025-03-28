@@ -46,12 +46,10 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
         ])->validateWithBag('updateProfileInformation');
 
-        // Handle Profile Photo Update
         if (isset($input['photo'])) {
             $user->updateProfilePhoto($input['photo']);
         }
 
-        // Handle Email Verification Logic
         if ($input['email'] !== $user->email && $user instanceof MustVerifyEmail) {
             $this->updateVerifiedUser($user, $input);
         } else {

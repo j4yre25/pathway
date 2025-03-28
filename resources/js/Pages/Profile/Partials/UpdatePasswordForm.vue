@@ -39,10 +39,7 @@ const updatePassword = () => {
 
 <template>
     <FormSection @submitted="updatePassword">
-        <template #title>
-            Update Password
-        </template>
-
+  
         <template #description>
             Ensure your account is using a long, random password to stay secure.
         </template>

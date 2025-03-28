@@ -27,13 +27,6 @@
                       <DeleteForm :sector="sector" />
 
                       
-                      <div class="mt-4">
-                <div class="flex items-center justify-between">
-                    <Link :href="route('categories', { sector: sector.id })">
-                        <PrimaryButton>Manage Categories</PrimaryButton>
-                    </Link>
-                </div>
-            </div>
           
 
             </Container>

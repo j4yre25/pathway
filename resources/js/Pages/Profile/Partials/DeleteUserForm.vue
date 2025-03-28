@@ -39,9 +39,7 @@ const closeModal = () => {
 
 <template>
     <ActionSection>
-        <template #title>
-            Delete Account
-        </template>
+   
 
         <template #description>
             Permanently delete your account.

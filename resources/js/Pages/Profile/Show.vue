@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DeleteUserForm from '@/Pages/Profile/Partials/DeleteUserForm.vue';
 import LogoutOtherBrowserSessionsForm from '@/Pages/Profile/Partials/LogoutOtherBrowserSessionsForm.vue';
@@ -11,6 +12,12 @@ defineProps({
     confirmsTwoFactorAuthentication: Boolean,
     sessions: Array,
 });
+
+const isProfileInfoOpen = ref(false);
+const isPasswordUpdateOpen = ref(false);
+const isTwoFactorAuthOpen = ref(false);
+const isLogoutSessionsOpen = ref(false);
+const isDeleteAccountOpen = ref(false);
 </script>
 
 <template>
@@ -23,34 +30,77 @@ defineProps({
 
         <div>
             <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-                <div v-if="$page.props.jetstream.canUpdateProfileInformation">
-                    <UpdateProfileInformationForm :user="$page.props.auth.user" />
+                <div id="accordion-collapse" data-accordion="collapse">
+                    <!-- Update Profile Information Section -->
+                    <div v-if="$page.props.jetstream.canUpdateProfileInformation">
+                        <h2 id="accordion-collapse-heading-1">
+                            <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border border-b-0 border-gray-200 rounded-t-xl  dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 hover:text-white" data-accordion-target="#accordion-collapse-body-1" aria-expanded="true" aria-controls="accordion-collapse-body-1" @click="isProfileInfoOpen = !isProfileInfoOpen">
+                                <h3 class="text-lg font-medium text-gray-900 hover:text-white"> Update Profile Information </h3>
+                                <svg data-accordion-icon class="w-3 h-3 shrink-0" :class="{ 'rotate-180': isProfileInfoOpen }" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                </svg>
+                            </button>
+                        </h2>
+                        <div id="accordion-collapse-body-1" :class="{ 'hidden': !isProfileInfoOpen }" aria-labelledby="accordion-collapse-heading-1">
+                            <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700">
+                                <UpdateProfileInformationForm :user="$page.props.auth.user" />
+                                <SectionBorder />
+                            </div>
+                        </div>
+                    </div>
 
-                    <SectionBorder />
+                    <!-- Update Password Section -->
+                    <div v-if="$page.props.jetstream.canUpdatePassword">
+                        <h2 id="accordion-collapse-heading-2">
+                            <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border border-b-0 border-gray-200  dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 hover:text-white" data-accordion-target="#accordion-collapse-body-2" aria-expanded="false" aria-controls="accordion-collapse-body-2" @click="isPasswordUpdateOpen = !isPasswordUpdateOpen">
+                                <h3 class="text-lg font-medium text-gray-900 hover:text-white"> Update Password </h3>
+                                <svg data-accordion-icon class="w-3 h-3 shrink-0" :class="{ 'rotate-180': isPasswordUpdateOpen }" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                </svg>
+                            </button>
+                        </h2>
+                        <div id="accordion-collapse-body-2" :class="{ 'hidden': !isPasswordUpdateOpen }" aria-labelledby="accordion-collapse-heading-2">
+                            <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700">
+                                <UpdatePasswordForm />
+                                <SectionBorder />
+                            </div>
+                        </div>
+                    </div>
+
+    
+
+                    <!-- Logout Other Browser Sessions Section -->
+                    <div>
+                        <h2 id="accordion-collapse-heading-4">
+                            <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border border-b-0 border-gray-200  dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 hover:text-white" data-accordion-target="#accordion-collapse-body-4" aria-expanded="false" aria-controls="accordion-collapse-body-4" @click="isLogoutSessionsOpen = !isLogoutSessionsOpen">
+                                <h3 class="text-lg font-medium text-gray-900 hover:text-white"> Logout Other Browser Sessions </h3>
+                                <svg data-accordion-icon class="w-3 h-3 shrink-0" :class="{ 'rotate-180': isLogoutSessionsOpen }" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                </svg>
+                            </button>
+                        </h2>
+                        <div id="accordion-collapse-body-4" :class="{ 'hidden': !isLogoutSessionsOpen }" aria-labelledby="accordion-collapse-heading-4">
+                            <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700">
+                                <LogoutOtherBrowserSessionsForm :sessions="sessions" />
+                                <SectionBorder />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delete Account Section -->
+                    <template v-if="$page.props.jetstream.hasAccountDeletionFeatures">
+                        <h2 id="accordion-collapse-heading-5">
+                            <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border border-gray-200  dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 hover:text-white" data-accordion-target="#accordion-collapse-body-5" aria-expanded="false" aria-controls="accordion-collapse-body-5" @click="isDeleteAccountOpen = !isDeleteAccountOpen">
+                                <h3 class="text-lg font-medium text-gray-900 hover:text-white"> Delete Account </h3>
+                                <svg data-accordion-icon class="w-3 h-3 shrink-0" :class="{ 'rotate-180': isDeleteAccountOpen }" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                </svg>
+                            </button>
+                        </h2>
+                        <div id="accordion-collapse-body-5" :class="{ 'hidden': !isDeleteAccountOpen }" aria-labelledby="accordion-collapse-heading-5">
+                            <div class="p-5 border border-t-0 border-gray-200 dark:border-gray-700">
+                                <DeleteUserForm />
+                                <SectionBorder />
+                            </div>
+                        </div>
+                    </template>
                 </div>
-
-                <div v-if="$page.props.jetstream.canUpdatePassword">
-                    <UpdatePasswordForm class="mt-10 sm:mt-0" />
-
-                    <SectionBorder />
-                </div>
-
-                <div v-if="$page.props.jetstream.canManageTwoFactorAuthentication">
-                    <TwoFactorAuthenticationForm
-                        :requires-confirmation="confirmsTwoFactorAuthentication"
-                        class="mt-10 sm:mt-0"
-                    />
-
-                    <SectionBorder />
-                </div>
-
-                <LogoutOtherBrowserSessionsForm :sessions="sessions" class="mt-10 sm:mt-0" />
-
-                <template v-if="$page.props.jetstream.hasAccountDeletionFeatures">
-                    <SectionBorder />
-
-                    <DeleteUserForm class="mt-10 sm:mt-0" />
-                </template>
             </div>
         </div>
     </AppLayout>

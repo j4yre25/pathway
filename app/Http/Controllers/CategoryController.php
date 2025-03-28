@@ -26,9 +26,10 @@ class CategoryController extends Controller
         ]);
     }
     
-    public function create(Sector $sector) {
+    public function create() {
+        $sectors = Sector::all();
         return Inertia::render('Categories/CreateCategories', [
-            'sector' => $sector 
+            'sectors' => $sectors 
         ]);
     }
 

@@ -26,6 +26,7 @@ console.log('User ID:', page.props);
 
 const form = useForm({
     name: '',
+    sector_id: '',
 });
 
 const createCategory = () => {
@@ -63,12 +64,29 @@ const createCategory = () => {
                     </template>
 
                     <template #form>
+                        
+
+                        <div class="col-span-6 sm:col-span-4">
+                        <InputLabel for="sector" value="Sector" />
+                        <select
+                            id="sector"
+                            v-model="form.sector_id"
+                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                        >
+                            <option value="" disabled>Select a sector</option>
+                            <option v-for="sector in sectors" :key="sector.id" :value="sector.id">
+                                {{ sector.name }}
+                            </option>
+                        </select>
+                        <InputError :message="form.errors.sector_id" class="mt-2" />
+                    </div>
+
                         <div class="col-span-6 sm:col-span-4">
                             <InputLabel for="name" value="Category Name" />
                             <TextInput id="name" v-model="form.name" type="text" class="mt-1 block w-full" />
                             <InputError :message="form.errors.name" class="mt-2" />
                         </div>
-
+                       
                 
 
                         <!-- <div class="col-span-6 sm:col-span-4">

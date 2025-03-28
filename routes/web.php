@@ -27,7 +27,7 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
     ]);
 });
-Route::middleware(['auth', 'role:peso'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/admin/register', [AdminRegisterController::class, 'showRegistrationForm'])->name('admin.register');
     Route::post('/admin/register', [AdminRegisterController::class, 'register'])->name('admin.register.submit');
 });
@@ -165,15 +165,15 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-    ->get('/categories/{sector}', [CategoryController::class, 'index'])
+    ->get('/categories', [CategoryController::class, 'index'])
     ->name('categories');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-    ->get('/categories/{sector}/create', [CategoryController::class, 'create'])
+    ->get('/categories/create', [CategoryController::class, 'create'])
     ->name('categories.create');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-    ->post('/categories/{sector}', [CategoryController::class, 'store'])
+    ->post('/categories', [CategoryController::class, 'store'])
     ->name('categories.store');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
