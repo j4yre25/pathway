@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
+use Illuminate\Http\Request;
 
 class CreateNewAdmin implements CreatesNewUsers
 {
@@ -18,29 +19,65 @@ class CreateNewAdmin implements CreatesNewUsers
      */
     public function create(array $input): User
     {
+        // Determine the role based on the request
+        $role = $this->determineRole(request());
+
         // Validation rules for admin registration
-        Validator::make($input, [
+        $rules = [
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
-            'peso_first_name' => ['required', 'string', 'max:255'],
-            'peso_last_name' => ['required', 'string', 'max:255'],
-        ])->validate();
+        ];
 
-      
+        // Add role-specific validation rules
+        switch ($role) {
+            case 'peso':
+                $rules['peso_first_name'] = ['required', 'string', 'max:255'];
+                $rules['peso_last_name'] = ['required', 'string', 'max:255'];
+                break;
+            // You can add more roles and their specific validation rules here if needed
+            default:
+                // Handle the default case if necessary
+                break;
+        }
+
+        Validator::make($input, $rules)->validate();
 
         // Create the admin user
-        $user = User::create([
+        $userData = [
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
-            'role' => 'peso', 
-            'is_approved' =>  true,
-            'peso_first_name' => $input['peso_first_name'],
-            'peso_last_name' => $input['peso_last_name'],
-        ]);
+            'role' => $role,
+            'is_approved' => true,
+        ];
 
-        $user->assignRole('peso');
-        $user->update(['is_approved' => true]);
+        // Add role-specific fields
+        switch ($role) {
+            case 'peso':
+                $userData['peso_first_name'] = $input['peso_first_name'];
+                $userData['peso_last_name'] = $input['peso_last_name'];
+                break;
+            // Add more cases for other roles if needed
+            default:
+                // Handle the default case if necessary
+                break;
+        }
+
+        $user = User::create($userData);
+
+        // Assign the role to the user
+        $user->assignRole($role);
 
         return $user;
+    }
+
+    protected function determineRole(Request $request): string
+    {
+        // Determine the role based on the request path
+        if ($request->is('register/peso')) {
+            return 'peso';
+        }
+
+
+        return 'admin'; // Default role if none match
     }
 }
