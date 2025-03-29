@@ -12,8 +12,6 @@ import { onMounted, ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 
-// Determine the role based on the route
-const role = window.location.pathname.includes('institution') ? 'institution' : 'company';
 
 // Define the form with additional fields for user types
 const form = useForm({
@@ -35,15 +33,23 @@ const form = useForm({
     company_hr_dob: '',
     company_hr_contact_number: '',
     institution_type: '',
+    institution_name: '',
     institution_address: '',
     institution_contact_number: '',
     institution_president_last_name: '',
     institution_president_first_name: '',
     institution_career_officer_first_name: '',
+    graduate_school_graduated_from: '',
+    graduate_program_completed: '',
+    graduate_year_graduated: '',
+    graduate_first_name: '',
+    graduate_middle_initial: '',
+    graduate_last_name: '',
 });
 
 
 onMounted(() => {
+    
     const path = window.location.pathname;
     if (path.includes('institution')) {
         form.role = 'institution';
@@ -52,7 +58,10 @@ onMounted(() => {
     } else {
         form.role = 'company'; // Default to company if not specified
     }
+    console.log('Current Role:', form.role);
 });
+
+console.log(form.role);
 
 // Format the company contact number
 const formattedContactNumber = computed({
@@ -126,7 +135,8 @@ const submit = () => {
 
         <form @submit.prevent="submit" autocomplete="off">
             <!-- Company Fields -->
-            <div v-if="form.role === 'company'" class="space-y-12 grid grid-cols-3">
+            <div v-if="form.role === 'company'">
+            <div class="space-y-12 grid grid-cols-3">
                 <!-- Company Basic Information -->
                 <div class="col-span-1">
                     <h2 class="mt-12 text-lg font-semibold text-gray-900">Company Basic Information</h2>
@@ -236,10 +246,98 @@ const submit = () => {
                         </div>
                     </div>
                 </div>
+                
             </div>
 
-            <!-- Institution Fields -->
-            <div v-if="form.role === 'institution'" class="space-y-12 grid grid-cols-3">
+          
+
+            <div class="grid grid-cols-3 mt-8 border-t border-gray-200 pt-12">
+                <!-- Company Contact Information -->
+                <div class="col-span-1">
+                    <h2 class="text-lg font-semibold text-gray-900">Company Contact Information</h2>
+                    <p class="text-sm text-gray-600">
+                        Provide the official contact details of your company.
+                    </p>
+                </div>
+
+                <div class="col-span-2">
+                    <div>
+                        <div class="flex items-center gap-1">
+                            <InputLabel for="company_email" value="Company Email Address" />
+                            <span class="text-red-500">*</span>
+                        </div>
+                        <div>
+                            <TextInput 
+                                id="company_email"
+                                v-model="form.company_email" 
+                                type="email" 
+                                class="mt-1 mb-4 block w-full" 
+                                required/>
+                            <InputError class="mt-1" :message="form.errors.company_email" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center gap-1">
+                            <InputLabel for="company_contact_number" value="Company Contact Number" />  
+                            <span class="text-red-500">*</span>
+                        </div>
+                        <div>
+                            <TextInput
+                                id="company_contact_number"
+                                v-model="formattedContactNumber"
+                                v-mask="'# (###) ###-####'"
+                                type="tel"
+                                class="mt-1 mb-4 block w-full"
+                                required
+                            />
+                            <InputError class="mt-1" :message="form.errors.company_contact_number" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center gap-1">
+                            <InputLabel for="company_telephone_number" value="Company Telephone Number" />
+                        </div>
+                        <TextInput
+                            id="company_telephone_number"
+                            v-model="form.company_telephone_number"
+                            type="tel"
+                            class="mt-1 mb-4 block w-full"
+                        />
+                        <InputError class="mt-1" :message="form.errors.company_telephone_number" />
+                    </div>
+                </div>
+            </div>
+            
+             
+
+            <div class="grid grid-cols-3 mt-8 border-t border-gray-200 pt-12">
+                <!-- Company HR Information -->
+                <div class=" col-span-1">
+                    <h2 class="text-lg font-semibold text-gray-900">Personal Information</h2>
+                    <p class="text-sm text-gray-600"></p>
+                </div>
+
+                <div class="col-span-2">
+                    <!-- Full Name -->
+                    <div class="flex items-center gap-1">
+                        <InputLabel for="company_hr_full_name" value="Full Name" />
+                        <span class="text-red-500">*</span>
+                    </div>
+                    <div>
+                        <TextInput id="company_hr_full_name" v-model="form.company_hr_full_name" type="text" class="mt-1 mb-4 block w-full" required />
+                        <InputError class="mt-2" :message="form.errors.company_hr_full_name" />
+                    </div>
+
+                    
+                 
+                </div>
+            </div>
+            </div>
+
+             <!-- Institution Fields -->
+             <div v-if="form.role === 'institution'" class="space-y-12 grid grid-cols-3">
                 <div class="col-span-1">
                     <h2 class="mt-12 text-lg font-semibold text-gray-900">Institution Information</h2>
                     <p class="text-sm text-gray-600">
@@ -265,6 +363,23 @@ const submit = () => {
                                 <option value="institution">Institution</option>
                             </select>
                             <InputError class="mt-2" :message="form.errors.institution_type" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center gap-1">
+                            <InputLabel for="institution_name" value="College/University/Institution Name" />
+                            <span class="text-red-500">*</span>
+                        </div>
+                        <div>
+                            <TextInput
+                                id="institution_name"
+                                v-model="form.institution_name"
+                                type="text"
+                                class="mt-1 mb-4 block w-full"
+                                required
+                            />
+                            <InputError class="mt-2" :message="form.errors.institution_name" />
                         </div>
                     </div>
 
@@ -354,119 +469,116 @@ const submit = () => {
                     </div>
                 </div>
             </div>
+ <!-- Graduate Fields -->
+ <div v-if="form.role === 'graduate'" class="mt-4">
+                <!-- Graduate First Name -->
+                <InputLabel for="graduate_first_name" value="Graduate First Name" />
+                <TextInput
+                    id="graduate_first_name"
+                    v-model="form.graduate_first_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required/>
+                <InputError class="mt-2" :message="form.errors.graduate_first_name" />
 
-            <div class="grid grid-cols-3 mt-8 border-t border-gray-200 pt-12">
-                <!-- Company Contact Information -->
-                <div class="col-span-1">
-                    <h2 class="text-lg font-semibold text-gray-900">Company Contact Information</h2>
-                    <p class="text-sm text-gray-600">
-                        Provide the official contact details of your company.
-                    </p>
+                <!-- Graduate Middle Initial -->
+                <InputLabel for="graduate_last_name" value="Graduate Last Name" />
+                <TextInput
+                    id="graduate_middle_initial"
+                    v-model="form.graduate_middle_initial"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required/>  
+                <InputError class="mt-2" :message="form.errors.graduate_middle_initial" />
+
+                <!-- Graduate Last Name -->
+                <InputLabel for="graduate_last_name" value="Graduate Last Name" />
+                <TextInput
+                    id="graduate_last_name"
+                    v-model="form.graduate_last_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required/>
+                <InputError class="mt-2" :message="form.errors.graduate_last_name" />
+
+          
+
+               
+                <!-- Graduate Graduated From -->
+                <div class="mt-4">
+                    <InputLabel for="graduate_school_graduated_from" value="School Graduated From" />
+                    <select
+                        id="graduate_school_graduated_from"
+                        v-model="form.graduate_school_graduated_from"
+                        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                        required>
+                        <option value="" disabled>Select a School</option>
+                        <option v-for="institution in institutions" :key="institution.id" :value="institution.name">
+                            {{ institution.name }}
+                        </option>
+                    </select>
+                    <InputError class="mt-2" :message="form.errors.graduate_school_graduated_from" />
                 </div>
 
-                <div class="col-span-2">
+                <!-- Program Completed -->
+               
+
+                <!-- Year Graduated -->
+                <div class="mt-4">
+                    <InputLabel for="graduate_year_graduated" value="Year Graduated" />
+                    <select
+                        id="graduate_year_graduated"
+                        v-model="form.graduate_year_graduated"
+                        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                        required>
+                        <option value="" disabled>Select Year</option>
+                        <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
+                    </select>
+                    <InputError class="mt-2" :message="form.errors.graduate_year_graduated" />
+                </div>
+            </div>
+
+
+
+            <div class="grid grid-cols-3 ">
+                <div class=" col-span-1">
+                    <h2 class="text-lg font-semibold text-gray-900"></h2>
+                    <p class="text-sm text-gray-600"></p>
+                </div>
+
+                <div class=" col-span-2">
+                <!-- Gender -->
                     <div>
                         <div class="flex items-center gap-1">
-                            <InputLabel for="company_email" value="Company Email Address" />
+                            <InputLabel for="company_hr_gender" value="Gender" />
+                            <span class="text-red-500">*</span>
+                        </div>
+                        <div>
+                            <select id="company_hr_gender" v-model="form.company_hr_gender" class="mt-1 mb-4 block w-full" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <InputError class="" :message="form.errors.company_hr_gender" />
+                        </div>
+                    </div>
+                    <!-- Date of Birth -->
+                    <div>
+                        <div class="flex items-center gap-1">
+                            <InputLabel for="company_hr_dob" value="Date of Birth" />
                             <span class="text-red-500">*</span>
                         </div>
                         <div>
                             <TextInput 
-                                id="company_email"
-                                v-model="form.company_email" 
-                                type="email" 
+                                id="company_hr_dob" 
+                                v-model="form.company_hr_dob" 
+                                type="date" 
                                 class="mt-1 mb-4 block w-full" 
-                                required/>
-                            <InputError class="mt-1" :message="form.errors.company_email" />
+                                required />
+                            <InputError class="mt-2" :message="form.errors.company_hr_dob" />
                         </div>
                     </div>
-
-                    <div>
-                        <div class="flex items-center gap-1">
-                            <InputLabel for="company_contact_number" value="Company Contact Number" />  
-                            <span class="text-red-500">*</span>
-                        </div>
-                        <div>
-                            <TextInput
-                                id="company_contact_number"
-                                v-model="formattedContactNumber"
-                                v-mask="'# (###) ###-####'"
-                                type="tel"
-                                class="mt-1 mb-4 block w-full"
-                                required
-                            />
-                            <InputError class="mt-1" :message="form.errors.company_contact_number" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="flex items-center gap-1">
-                            <InputLabel for="company_telephone_number" value="Company Telephone Number" />
-                        </div>
-                        <TextInput
-                            id="company_telephone_number"
-                            v-model="form.company_telephone_number"
-                            type="tel"
-                            class="mt-1 mb-4 block w-full"
-                        />
-                        <InputError class="mt-1" :message="form.errors.company_telephone_number" />
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-3 mt-8 border-t border-gray-200 pt-12">
-                <!-- Company HR Information -->
-                <div class=" col-span-1">
-                    <h2 class="text-lg font-semibold text-gray-900">Personal Information</h2>
-                    <p class="text-sm text-gray-600"></p>
-                </div>
-
-                <div class="col-span-2">
-                    <!-- Full Name -->
-                    <div class="flex items-center gap-1">
-                        <InputLabel for="company_hr_full_name" value="Full Name" />
-                        <span class="text-red-500">*</span>
-                    </div>
-                    <div>
-                        <TextInput id="company_hr_full_name" v-model="form.company_hr_full_name" type="text" class="mt-1 mb-4 block w-full" required />
-                        <InputError class="mt-2" :message="form.errors.company_hr_full_name" />
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <!-- Gender -->
-                        <div>
-                            <div class="flex items-center gap-1">
-                                <InputLabel for="company_hr_gender" value="Gender" />
-                                <span class="text-red-500">*</span>
-                            </div>
-                            <div>
-                                <select id="company_hr_gender" v-model="form.company_hr_gender" class="mt-1 mb-4 block w-full" required>
-                                    <option value="">Select Gender</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                                <InputError class="" :message="form.errors.company_hr_gender" />
-                            </div>
-                        </div>
-                        <!-- Date of Birth -->
-                        <div>
-                            <div class="flex items-center gap-1">
-                                <InputLabel for="company_hr_dob" value="Date of Birth" />
-                                <span class="text-red-500">*</span>
-                            </div>
-                            <div>
-                                <TextInput 
-                                    id="company_hr_dob" 
-                                    v-model="form.company_hr_dob" 
-                                    type="date" 
-                                    class="mt-1 mb-4 block w-full" 
-                                    required />
-                                <InputError class="mt-2" :message="form.errors.company_hr_dob" />
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- HR Email -->
                     <div>
                         <div class="flex items-center gap-1">
@@ -536,6 +648,11 @@ const submit = () => {
                     </div>
                 </div>
             </div>
+
+
+               
+
+            
 
             <div class="flex items-center justify-end mt-8 border-t border-gray-200 pt-12">
                 <Link :href="route('login')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

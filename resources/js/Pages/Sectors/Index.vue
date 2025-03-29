@@ -58,6 +58,12 @@ const createSector = () => {
                 <PrimaryButton class="mr-2">Add Sectors</PrimaryButton>
               </Link>
 
+           
+                <Link :href="route('categories.create')" class="mr-2">
+                    <PrimaryButton>Add Categories</PrimaryButton>
+                </Link>
+        
+
 
               <Link
               :href="route('categories.index', { user: page.props.auth.user.id })"

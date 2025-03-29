@@ -29,8 +29,8 @@ Route::get('/', function () {
     ]);
 });
 Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/register', [AdminRegisterController::class, 'showRegistrationForm'])->name('admin.register');
-    Route::post('/admin/register', [AdminRegisterController::class, 'register'])->name('admin.register.submit');
+    Route::get('/register/peso', [AdminRegisterController::class, 'showRegistrationForm'])->name('admin.register');
+    Route::post('/register/peso', [AdminRegisterController::class, 'register'])->name('admin.register.submit');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -38,14 +38,44 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/hr/register', [HRRegisterController::class, 'register'])->name('hr.register.submit');
  });
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
-});
+ 
+
+ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    Route::get('/dashboard',  [DashboardController::class, 'index'])->name('dashboard');
+  
+ });
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage approval graduate'])->group(function () {
+              Route::get('/graduates', [GraduateController::class, 'index'])->name('graduates.index');
+  
+              // Show the form for creating a new graduate
+              Route::get('/graduates/create', [GraduateController::class, 'create'])->name('graduates.create');
+  
+              // Store a new graduate
+              Route::post('/graduates', [GraduateController::class, 'store'])->name('graduates.store');
+  
+              // Show a specific graduate
+              Route::get('/graduates/{graduate}', [GraduateController::class, 'show'])->name('graduates.show');
+  
+              // Show the form for editing a specific graduate
+              Route::get('/graduates/{graduate}/edit', [GraduateController::class, 'edit'])->name('graduates.edit');
+  
+              // Update a specific graduate
+              Route::patch('/graduates/{graduate}', [GraduateController::class, 'update'])->name('graduates.update');
+  
+              // Delete a specific graduate
+              Route::delete('/graduates/{graduate}', [GraduateController::class, 'destroy'])->name('graduates.destroy');
+              });
+  
+              Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
+              ->post('/graduates/batch-upload', [BatchUploadController::class, 'upload'])
+               ->name('graduates.batch.upload');
+  
+               Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
+               ->get('/graduates/batch-download', [BatchUploadController::class, 'download'])
+              ->name('graduates.batch.download');
+});  
 
 
 // Admin Routes

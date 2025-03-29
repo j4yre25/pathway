@@ -31,11 +31,14 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'dob',
+        'gender',
         // PESO
         'peso_first_name',
         'peso_last_name',
-        'graduate_first_name',
+        'graduate_first_sname',
         'graduate_last_name',
+        'graduate_middle_initial',
         'graduate_school_graduated_from',
         'graduate_program_completed',
         'graduate_year_graduated',
@@ -62,6 +65,7 @@ class User extends Authenticatable
         'institution_president_last_name',
         'institution_president_first_name',
         'institution_career_officer_first_name',
+        'institution_contact_number',
         // 'institution_career_officer_last_name',
     ];
 
@@ -115,7 +119,83 @@ class User extends Authenticatable
 
     }
 
+    public function portfolioItems()
+    {
+        return $this->hasMany(Portfolio::class);
+    }
 
+    /**
+     * Get the user's about me information.
+     */
+    public function aboutMe()
+    {
+        return $this->hasOne(AboutMe::class);
+    }
+
+    /**
+     * Get the user's profile section.
+     */
+    public function profileSection()
+    {
+        return $this->hasOne(ProfileSection::class);
+    }
+
+    /**
+     * Get the user's resumes.
+     */
+    public function resumes()
+    {
+        return $this->hasMany(Resume::class);
+    }
+
+    /**
+     * Get the user's next role preferences.
+     */
+    public function nextRole()
+    {
+        return $this->hasOne(NextRole::class);
+    }
+
+    /**
+     * Get the user's settings.
+     */
+    public function settings()
+    {
+        return $this->hasOne(Settings::class);
+    }
+
+    /**
+     * Get the user's dashboard.
+     */
+    public function dashboard()
+    {
+        return $this->hasOne(Dashboard::class);
+    }
+
+    /**
+     * Get the user's education entries.
+     */
+    public function education()
+    {
+        return $this->hasMany(Education::class);
+    }
+
+    /**
+     * Get the user's job applications.
+     */
+    public function jobApplications()
+    {
+        return $this->hasMany(JobApplication::class);
+    }
+
+    /**
+     * Get the user's institution.
+     */
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class);
+  
+    }
     
     
 

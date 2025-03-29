@@ -48,6 +48,7 @@ class CreateNewAdmin implements CreatesNewUsers
             'password' => Hash::make($input['password']),
             'role' => $role,
             'is_approved' => true,
+            
         ];
 
         // Add role-specific fields

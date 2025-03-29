@@ -59,6 +59,8 @@ class CreateNewUser implements CreatesNewUsers
                 $rules['institution_president_last_name'] = ['required', 'string', 'max:255'];
                 $rules['institution_president_first_name'] = ['required', 'string', 'max:255'];
                 $rules['institution_career_officer_first_name'] = ['required', 'string', 'max:255'];
+                $rules['company_hr_gender'] = ['required', 'string', 'in:Male,Female,Other'];
+                $rules['company_hr_dob'] = ['required', 'date'];
                 break;
             default:
                 // Handle the guest role
@@ -71,6 +73,7 @@ class CreateNewUser implements CreatesNewUsers
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
             'role' => $role,
+
         ];
     
         // Add role-specific fields
@@ -101,6 +104,9 @@ class CreateNewUser implements CreatesNewUsers
                 $userData['institution_president_last_name'] = $input['institution_president_last_name'];
                 $userData['institution_president_first_name'] = $input['institution_president_first_name'];
                 $userData['institution_career_officer_first_name'] = $input['institution_career_officer_first_name'];
+                $userData['company_hr_gender'] = $input['company_hr_gender'];
+                $userData['company_hr_dob'] = $input['company_hr_dob'];
+                
                 break;
             default:
                 // Handle the guest role by not adding any additional fields to the user data

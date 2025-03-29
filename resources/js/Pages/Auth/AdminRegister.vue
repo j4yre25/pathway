@@ -23,7 +23,11 @@ const form = useForm({
 // Handle form submission
 const submit = () => {
     form.post(route('admin.register.submit'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
+        onFinish: () => {
+            console.log("Form submission finished");
+            console.log(form.errors); // Log validation errors
+            form.reset('password', 'password_confirmation');
+        },
         onSuccess: () => {
             Inertia.visit(route('dashboard')); // Redirect to dashboard after successful registration
         },
