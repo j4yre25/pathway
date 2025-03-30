@@ -22,7 +22,7 @@ class ManageGraduatesApprovalController extends Controller
     public function approve(User $user)
     {
         // Check if the user has the role 'graduates'
-        if ($user->role === 'graduates') {
+        if ($user->role === 'graduate') {
             $user->is_approved = true; // Ensure this matches your database field
             $user->save();
     

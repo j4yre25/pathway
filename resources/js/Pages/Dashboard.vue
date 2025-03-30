@@ -2,12 +2,20 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 import { usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import Welcome from '@/Components/Welcome.vue';
 
 const { props } = usePage();
 const userNotApproved = computed(() => props.userNotApproved ?? false);
 console.log(props.userNotApproved)
+
+watch(userNotApproved, (newVal) => {
+    console.log('userNotApproved changed:', newVal);
+    if (!newVal) {
+        console.log('Redirecting to login...');
+        Inertia.visit(route('login'));
+    }
+});
 
 </script>
 
@@ -27,7 +35,6 @@ console.log(props.userNotApproved)
                         Your account is not approved yet. Some features may be disabled.
                     </div>
 
-                    <!-- Example of conditionally rendering features -->
                     <div v-if="!userNotApproved">
                         <Welcome />
                         <p>Welcome to your dashboard! You can access all features.</p>

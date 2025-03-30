@@ -16,41 +16,7 @@ class UserSeeder extends Seeder
     public function run()
     {
         $users = [
-            [
-                'email' => 'graduate@example.com',
-                'password' => 'password123',
-                'role' => 'graduate',
-                'graduate_first_name' => 'John',
-                'graduate_last_name' => 'Doe',
-                'graduate_school_graduated_from' => 'University A',
-                'graduate_program_completed' => 'Computer Science',
-                'graduate_year_graduated' => '2023',
-                'graduate_skills' => 'PHP, Laravel',
-            ],
-            [
-                'email' => 'company@example.com',
-                'password' => 'password123',
-                'role' => 'company',
-                'company_name' => 'Tech Corp',
-                'company_address' => '123 Tech Lane',
-                'company_sector' => 'Technology',
-                'company_category' => 'Software',
-                'company_contact_number' => '1234567890',
-                'company_hr_last_name' => 'Smith',
-                'company_hr_first_name' => 'Jane',
-                'company_hr_middle_initial' => 'A',
-            ],
-            [
-                'email' => 'institution@example.com',
-                'password' => 'password123',
-                'role' => 'institution',
-                'institution_type' => 'Educational',
-                'institution_address' => '456 Education St',
-                'institution_contact_number' => '0987654321',
-                'institution_president_last_name' => 'Johnson',
-                'institution_president_first_name' => 'Emily',
-                'institution_career_officer_first_name' => 'Michael',
-            ],
+       
             [
                 'email' => 'peso@example.com',
                 'password' => 'password123',

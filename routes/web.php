@@ -1,4 +1,5 @@
 <?php
+use Laravel\Fortify\Http\Controllers\CustomRegisteredUserController;
 
 use App\Http\Controllers\ManageGraduatesController;
 use App\Http\Controllers\JobsController;
@@ -12,15 +13,34 @@ use App\Http\Controllers\AdminRegisterController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\HRRegisterController;
-USE App\Http\Controllers\UserController;
 use App\Http\Controllers\GraduateController;
+use App\Http\Controllers\GraduateRegisterController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\SchoolYearController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\CareerOpportunityController;
 use App\Http\Controllers\ManageGraduatesApprovalController;
 use App\Http\Controllers\BatchUploadController;
+use App\Http\Controllers\UserController;
 
+use Laravel\Fortify\Features;
+use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
+use Laravel\Fortify\Http\Controllers\ConfirmablePasswordController;
+use Laravel\Fortify\Http\Controllers\ConfirmedPasswordStatusController;
+use Laravel\Fortify\Http\Controllers\ConfirmedTwoFactorAuthenticationController;
+use Laravel\Fortify\Http\Controllers\EmailVerificationNotificationController;
+use Laravel\Fortify\Http\Controllers\EmailVerificationPromptController;
+use Laravel\Fortify\Http\Controllers\NewPasswordController;
+use Laravel\Fortify\Http\Controllers\PasswordController;
+use Laravel\Fortify\Http\Controllers\PasswordResetLinkController;
+use Laravel\Fortify\Http\Controllers\ProfileInformationController;
+use Laravel\Fortify\Http\Controllers\RecoveryCodeController;
+use Laravel\Fortify\Http\Controllers\TwoFactorAuthenticatedSessionController;
+use Laravel\Fortify\Http\Controllers\TwoFactorAuthenticationController;
+use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
+use Laravel\Fortify\Http\Controllers\TwoFactorSecretKeyController;
+use Laravel\Fortify\Http\Controllers\VerifyEmailController;
+use Laravel\Fortify\RoutePath;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -28,7 +48,7 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
     ]);
 });
-Route::middleware(['auth'])->group(function () {
+Route::middleware([''])->group(function () {
     Route::get('/register/peso', [AdminRegisterController::class, 'showRegistrationForm'])->name('admin.register');
     Route::post('/register/peso', [AdminRegisterController::class, 'register'])->name('admin.register.submit');
 });
@@ -38,6 +58,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/hr/register', [HRRegisterController::class, 'register'])->name('hr.register.submit');
  });
 
+
+    Route::get('/register/graduates', [UserController::class, 'getUsers'])
+    ->name('register.getusers');
+    
  
 
  Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
@@ -88,10 +112,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
 // // User Routes
 // Route::prefix('user')->group(function () {
-//     Route::get('/login', [UserController::class, 'showLoginForm'])->name('user.login');
-//     Route::post('/login', [UserController::class, 'login'])->name('user.login.submit');
-//     Route::get('/register', [UserController::class, 'showRegistrationForm'])->name('user.register');
-//     Route::post('/register', [UserController::class, 'register'])->name('user.register.submit');
+//     Route::get('/login', [CustomRegisteredUserController::class, 'showLoginForm'])->name('user.login');
+//     Route::post('/login', [CustomRegisteredUserController::class, 'login'])->name('user.login.submit');
+//     Route::get('/register', [CustomRegisteredUserController::class, 'showRegistrationForm'])->name('user.register');
+//     Route::post('/register', [CustomRegisteredUserController::class, 'register'])->name('user.register.submit');
 // });
 
 // Route::middleware('admin')->group(function () {
@@ -316,3 +340,182 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             ->middleware('can:manage approval graduate')
             ->name('institution.manage_users.approve');
         });
+
+
+   
+
+
+    
+
+
+Route::group(['middleware' => config('fortify.middleware', ['web'])], function () {
+    $enableViews = config('fortify.views', true);
+
+    // Authentication...
+    if ($enableViews) {
+        Route::get(RoutePath::for('login', '/login'), [AuthenticatedSessionController::class, 'create'])
+            ->middleware(['guest:'.config('fortify.guard')])
+            ->name('login');
+    }
+
+    $limiter = config('fortify.limiters.login');
+    $twoFactorLimiter = config('fortify.limiters.two-factor');
+    $verificationLimiter = config('fortify.limiters.verification', '6,1');
+
+    Route::post(RoutePath::for('login', '/login'), [AuthenticatedSessionController::class, 'store'])
+        ->middleware(array_filter([
+            'guest:'.config('fortify.guard'),
+            $limiter ? 'throttle:'.$limiter : null,
+        ]))->name('login.store');
+
+    Route::post(RoutePath::for('logout', '/logout'), [AuthenticatedSessionController::class, 'destroy'])
+        ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+        ->name('logout');
+
+    // Password Reset...
+    if (Features::enabled(Features::registration())) {
+        if ($enableViews) {
+            // Default registration view
+        
+    
+            // Role-specific registration views
+
+    Route::get('/register/graduate', [CustomRegisteredUserController::class, 'create'])
+                ->middleware(['guest:'.config('fortify.guard')])
+                ->name('register.graduate');
+                
+     Route::post('/register/graduate', [CustomRegisteredUserController::class, 'store'])
+                ->middleware(['guest:'.config('fortify.guard')])
+                ->name('register.graduate.store');
+        
+ 
+    
+    Route::get('/register/graduate', [CustomRegisteredUserController::class, 'showGraduateDetails'])
+    ->name('register.showGraduateDetails');
+
+
+
+            Route::get('/register/company', [CustomRegisteredUserController::class, 'create'])
+                ->middleware(['guest:'.config('fortify.guard')])
+                ->name('register.company');
+    
+            Route::get('/register/institution', [CustomRegisteredUserController::class, 'create'])
+                ->middleware(['guest:'.config('fortify.guard')])
+                ->name('register.institution');
+        }
+    
+        // Default registration submission
+        Route::post('/register', [CustomRegisteredUserController::class, 'store'])
+            ->middleware(['guest:'.config('fortify.guard')])
+            ->name('register.store');
+    
+        // Role-specific registration submissions
+
+    
+        Route::post('/register/company', [CustomRegisteredUserController::class, 'store'])
+            ->middleware(['guest:'.config('fortify.guard')])
+            ->name('register.company.store');
+    
+        Route::post('/register/institution', [CustomRegisteredUserController::class, 'store'])
+            ->middleware(['guest:'.config('fortify.guard')])
+            ->name('register.institution.store');
+
+            Route::get('/register/users', [CustomRegisteredUserController::class, 'showUsers'])
+            ->name('register.users');
+            
+    }
+    // Email Verification...
+    if (Features::enabled(Features::emailVerification())) {
+        if ($enableViews) {
+            Route::get(RoutePath::for('verification.notice', '/email/verify'), [EmailVerificationPromptController::class, '__invoke'])
+                ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+                ->name('verification.notice');
+        }
+
+        Route::get(RoutePath::for('verification.verify', '/email/verify/{id}/{hash}'), [VerifyEmailController::class, '__invoke'])
+            ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard'), 'signed', 'throttle:'.$verificationLimiter])
+            ->name('verification.verify');
+
+        Route::post(RoutePath::for('verification.send', '/email/verification-notification'), [EmailVerificationNotificationController::class, 'store'])
+            ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard'), 'throttle:'.$verificationLimiter])
+            ->name('verification.send');
+    }
+
+    // Profile Information...
+    if (Features::enabled(Features::updateProfileInformation())) {
+        Route::put(RoutePath::for('user-profile-information.update', '/user/profile-information'), [ProfileInformationController::class, 'update'])
+            ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+            ->name('user-profile-information.update');
+    }
+
+    // Passwords...
+    if (Features::enabled(Features::updatePasswords())) {
+        Route::put(RoutePath::for('user-password.update', '/user/password'), [PasswordController::class, 'update'])
+            ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+            ->name('user-password.update');
+    }
+
+    // Password Confirmation...
+    if ($enableViews) {
+        Route::get(RoutePath::for('password.confirm', '/user/confirm-password'), [ConfirmablePasswordController::class, 'show'])
+            ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+            ->name('password.confirm');
+    }
+
+    Route::get(RoutePath::for('password.confirmation', '/user/confirmed-password-status'), [ConfirmedPasswordStatusController::class, 'show'])
+        ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+        ->name('password.confirmation');
+
+    Route::post(RoutePath::for('password.confirm', '/user/confirm-password'), [ConfirmablePasswordController::class, 'store'])
+        ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+        ->name('password.confirm.store');
+
+    // Two Factor Authentication...
+    if (Features::enabled(Features::twoFactorAuthentication())) {
+        if ($enableViews) {
+            Route::get(RoutePath::for('two-factor.login', '/two-factor-challenge'), [TwoFactorAuthenticatedSessionController::class, 'create'])
+                ->middleware(['guest:'.config('fortify.guard')])
+                ->name('two-factor.login');
+        }
+
+        Route::post(RoutePath::for('two-factor.login', '/two-factor-challenge'), [TwoFactorAuthenticatedSessionController::class, 'store'])
+            ->middleware(array_filter([
+                'guest:'.config('fortify.guard'),
+                $twoFactorLimiter ? 'throttle:'.$twoFactorLimiter : null,
+            ]))->name('two-factor.login.store');
+
+        $twoFactorMiddleware = Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword')
+            ? [config('fortify.auth_middleware', 'auth').':'.config('fortify.guard'), 'password.confirm']
+            : [config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')];
+
+        Route::post(RoutePath::for('two-factor.enable', '/user/two-factor-authentication'), [TwoFactorAuthenticationController::class, 'store'])
+            ->middleware($twoFactorMiddleware)
+            ->name('two-factor.enable');
+
+        Route::post(RoutePath::for('two-factor.confirm', '/user/confirmed-two-factor-authentication'), [ConfirmedTwoFactorAuthenticationController::class, 'store'])
+            ->middleware($twoFactorMiddleware)
+            ->name('two-factor.confirm');
+
+        Route::delete(RoutePath::for('two-factor.disable', '/user/two-factor-authentication'), [TwoFactorAuthenticationController::class, 'destroy'])
+            ->middleware($twoFactorMiddleware)
+            ->name('two-factor.disable');
+
+        Route::get(RoutePath::for('two-factor.qr-code', '/user/two-factor-qr-code'), [TwoFactorQrCodeController::class, 'show'])
+            ->middleware($twoFactorMiddleware)
+            ->name('two-factor.qr-code');
+
+        Route::get(RoutePath::for('two-factor.secret-key', '/user/two-factor-secret-key'), [TwoFactorSecretKeyController::class, 'show'])
+            ->middleware($twoFactorMiddleware)
+            ->name('two-factor.secret-key');
+
+        Route::get(RoutePath::for('two-factor.recovery-codes', '/user/two-factor-recovery-codes'), [RecoveryCodeController::class, 'index'])
+            ->middleware($twoFactorMiddleware)
+            ->name('two-factor.recovery-codes');
+
+        Route::post(RoutePath::for('two-factor.recovery-codes', '/user/two-factor-recovery-codes'), [RecoveryCodeController::class, 'store'])
+            ->middleware($twoFactorMiddleware);
+    }
+});
+
+
+

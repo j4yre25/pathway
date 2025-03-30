@@ -66,7 +66,7 @@ console.log(page.props.permissions.canManageInstitution)
                                     Dashboard
                                 </NavLink>
 
-                                <NavLink v-if="page.props.auth.user.is_approved" :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')" >
+                                <NavLink v-if="page.props.roles.isPeso || page.props.roles.isCompany || page.props.roles.isInstitution && page.props.auth.user.is_approved" :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')" >
                                     Jobs
                                 </NavLink>
 

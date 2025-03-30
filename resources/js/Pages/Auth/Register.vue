@@ -10,6 +10,16 @@ import { computed } from 'vue';
 import { MaskDirective } from 'vue-the-mask';
 import { onMounted, ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { defineProps } from 'vue';
+
+
+const props = defineProps ({
+    insti_users: Array,
+    school_year: Array,
+ 
+})
+
+console.log(props)
 
 
 
@@ -47,6 +57,17 @@ const form = useForm({
     graduate_last_name: '',
 });
 
+
+onMounted(async () => {
+    if (!props.initialUsers || props.initialUsers.length === 0) {
+        try {
+            const response = await axios.get('/users');
+            users.value = response.data;
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    }
+});
 
 onMounted(() => {
     
@@ -482,7 +503,7 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.graduate_first_name" />
 
                 <!-- Graduate Middle Initial -->
-                <InputLabel for="graduate_last_name" value="Graduate Last Name" />
+                <InputLabel for="graduate_last_name" value="Graduate Middle Initial" />
                 <TextInput
                     id="graduate_middle_initial"
                     v-model="form.graduate_middle_initial"
@@ -508,15 +529,20 @@ const submit = () => {
                 <div class="mt-4">
                     <InputLabel for="graduate_school_graduated_from" value="School Graduated From" />
                     <select
-                        id="graduate_school_graduated_from"
-                        v-model="form.graduate_school_graduated_from"
-                        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                        required>
-                        <option value="" disabled>Select a School</option>
-                        <option v-for="institution in institutions" :key="institution.id" :value="institution.name">
-                            {{ institution.name }}
-                        </option>
-                    </select>
+        id="graduate_school_graduated_from"
+        v-model="form.graduate_school_graduated_from"
+        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+        required
+    >
+        <option value="" disabled>Select a School</option>
+        <option 
+            v-for="user in insti_users" 
+            :key="user.id" 
+            :value="user.institution_name"
+        >
+            {{ user.institution_name }}
+        </option>
+    </select>
                     <InputError class="mt-2" :message="form.errors.graduate_school_graduated_from" />
                 </div>
 
@@ -532,7 +558,7 @@ const submit = () => {
                         class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                         required>
                         <option value="" disabled>Select Year</option>
-                        <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
+                        <option v-for="year in school_year" :key="year" :value="year">{{ year.school_year_range }}</option>
                     </select>
                     <InputError class="mt-2" :message="form.errors.graduate_year_graduated" />
                 </div>

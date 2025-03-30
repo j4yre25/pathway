@@ -93,7 +93,6 @@ const approveUser = (user) => {
                                 <span v-else class="text-red-500">Pending</span>
                             </td>
                                 <td class="border border-gray-200 px-6 py-4">
-                                <!-- Approve button (only show if the user is not approved) -->
                                 <PrimaryButton @click="approveUser(user)" v-if="!user.is_approved">
                                     Approve
                                 </PrimaryButton>
