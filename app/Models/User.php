@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -36,13 +37,17 @@ class User extends Authenticatable
         // PESO
         'peso_first_name',
         'peso_last_name',
-        'graduate_first_sname',
+
+
+        'graduate_first_name',
         'graduate_last_name',
         'graduate_middle_initial',
         'graduate_school_graduated_from',
         'graduate_program_completed',
         'graduate_year_graduated',
         'graduate_skills',
+        'graduate_professional_title',
+
         // Company
         'company_name',
         'company_street_address',

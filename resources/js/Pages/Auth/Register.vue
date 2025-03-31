@@ -58,6 +58,7 @@ const form = useForm({
 });
 
 
+
 onMounted(async () => {
     if (!props.initialUsers || props.initialUsers.length === 0) {
         try {
@@ -120,7 +121,7 @@ const formattedContactNumber = computed({
 
 // Handle form submission
 const submit = () => {
-    // Determine the route based on the role
+    
     let routeName;
     if (form.role === 'company') {
         routeName = 'register.company.store';
@@ -132,6 +133,9 @@ const submit = () => {
         console.error('Unknown role:', form.role);
         return; 
     }
+
+    console.log('Form Data:', form);
+
 
     form.post(route(routeName), {
         onFinish: () => {
@@ -503,7 +507,7 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.graduate_first_name" />
 
                 <!-- Graduate Middle Initial -->
-                <InputLabel for="graduate_last_name" value="Graduate Middle Initial" />
+                <InputLabel for="graduate_middle_initial" value="Graduate Middle Initial" />
                 <TextInput
                     id="graduate_middle_initial"
                     v-model="form.graduate_middle_initial"

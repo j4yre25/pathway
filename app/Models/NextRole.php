@@ -17,7 +17,7 @@ class NextRole extends Model
     protected $fillable = [
         'user_id',
         'availability',
-        'work_type',
+        'work_types',
         'locations',
         'right_to_work',
         'salary_expectation',
@@ -30,8 +30,9 @@ class NextRole extends Model
      * @var array
      */
     protected $casts = [
+        'work_types' => 'array',
         'locations' => 'array',
-        'salary_expectation' => 'array',
+        'sectors' => 'array',
     ];
 
     /**

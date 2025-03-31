@@ -21,6 +21,7 @@ use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\CareerOpportunityController;
 use App\Http\Controllers\ManageGraduatesApprovalController;
 use App\Http\Controllers\BatchUploadController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 
 use Laravel\Fortify\Features;
@@ -517,5 +518,17 @@ Route::group(['middleware' => config('fortify.middleware', ['web'])], function (
     }
 });
 
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+ 
+    
+    // Portfolio Routes
+    Route::post('/profile/portfolio', [ProfileController::class, 'storePortfolio'])->name('profile.portfolio.store');
+    Route::patch('/profile/portfolio/{portfolio}', [ProfileController::class, 'updatePortfolio'])->name('profile.portfolio.update');
+    Route::delete('/profile/portfolio/{portfolio}', [ProfileController::class, 'deletePortfolio'])->name('profile.portfolio.delete');
+  
+});
 
 

@@ -11,18 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('company_hr_full_name')->nullable();         
+        Schema::table('jobs', function (Blueprint $table) {
+            $table->dropColumn('salary'); 
+            $table->decimal('min_salary', 10, 2)->nullable()->after('vacancy');
+            $table->decimal('max_salary', 10, 2)->nullable()->after('min_salary');
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('jobs', function (Blueprint $table) {
             //
         });
     }

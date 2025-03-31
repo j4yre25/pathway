@@ -60,7 +60,8 @@ class JobsController extends Controller
             ],
             'location' => 'required|string|max:255',
             'vacancy' => 'required|integer',
-            'salary' => 'required|integer',
+            'min_salary' => 'required|integer',
+            'max_salary' => 'required|integer',
             'job_type' => 'required|string',
             'experience_level' => 'required|string',
             'description' => 'required|string',
@@ -74,7 +75,8 @@ class JobsController extends Controller
         $new_job->user_id = $user->id;
         $new_job->job_title = $validated['job_title'];
         $new_job->location = $validated['location'];
-        $new_job->salary = $validated['salary'];
+        $new_job->min_salary = $validated['min_salary'];
+        $new_job->max_salary = $validated['max_salary'];
         $new_job->job_type = $validated['job_type'];
         $new_job->experience_level = $validated['experience_level'];
         $new_job->skills = json_encode($validated['skills']);

@@ -22,6 +22,9 @@ const sector = page.props.sectors
 const showingNavigationDropdown = ref(false);
 console.log('Sector:', sector);
 
+console.log(props)
+console.log(page.props.auth.user);
+
 
 
 
@@ -62,20 +65,25 @@ console.log(page.props.permissions.canManageInstitution)
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')" :disabled="!page.props.auth.user.is_approved"
+                                >
                                     Dashboard
                                 </NavLink>
 
-                                <NavLink v-if="page.props.roles.isPeso || page.props.roles.isCompany || page.props.roles.isInstitution && page.props.auth.user.is_approved" :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')" >
+                                <NavLink  :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved"
+                                >
                                     Jobs
                                 </NavLink>
 
                                 <NavLink
                                 v-if="page.props.roles.isPeso"
                                 :href="route('sectors', { user: page.props.auth.user.id })"
-                                :active="route().current('sectors')">
+                                :active="route().current('sectors')"    >
                                 Sectors
                             </NavLink>
+
+                     
+                         
                             
 
 
@@ -241,15 +249,24 @@ console.log(page.props.permissions.canManageInstitution)
                                             Manage Account
                                         </div>
 
-                                        <DropdownLink :href="route('profile.show')">
+                                        <DropdownLink v-if="!page.props.roles.isGraduate" :href="route('profile.show')">
                                             Profile
+
+                                            
                                         </DropdownLink>
+
+
+                                        <DropdownLink     v-if="page.props.roles.isGraduate"
+                                :href="route('profile.index', { user: page.props.auth.user.id })"
+                                :active="route().current('profile.index')"    >
+                                Profile  </DropdownLink>
 
                                         <DropdownLink v-if="page.props.roles.isPeso" :href="route('admin.register')">
                                             Admin Registration 
                                         </DropdownLink>
 
-                                        <DropdownLink v-if="page.props.roles.isCompany" :href="route('hr.register')">
+                                        <DropdownLink v-if="page.props.roles.isCompany && page.props.auth.user.is_approved" :disabled="!page.props.auth.user.is_approved"
+                                        :href="route('hr.register')">
                                             Add Human Resource Officer (HRO)
 
                                         </DropdownLink>

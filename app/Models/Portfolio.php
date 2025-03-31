@@ -16,15 +16,10 @@ class Portfolio extends Model
      */
     protected $fillable = [
         'user_id',
-        'type',
         'title',
         'description',
-        'file_path',
-        'file_name',
-        'file_type',
-        'file_size',
-        'url',
-        'content',
+        'image_path',
+        'tags'
     ];
 
     /**
@@ -33,7 +28,7 @@ class Portfolio extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'content' => 'array',
+        'tags' => 'array'
     ];
 
     /**

@@ -15,7 +15,6 @@ class CreateNewGraduate implements CreatesNewUsers
     {
             $role = $this->determineRole(request());
 
-            // Validation rules for admin registration
             $rules = [
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'password' => $this->passwordRules(),
@@ -27,9 +26,7 @@ class CreateNewGraduate implements CreatesNewUsers
                         $rules['graduate_first_name'] = ['required', 'string', 'max:255'];
                         $rules['graduate_last_name'] = ['required', 'string', 'max:255'];
                         break;
-                // You can add more roles and their specific validation rules here if needed
                 default:
-                    // Handle the default case if necessary
                     break;
             }
     
