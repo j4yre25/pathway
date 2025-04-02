@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('graduate_year_graduated')->nullable()->change();
+            $table->string('personal_summary')->nullable(); // Adjust the type and constraints as needed
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('graduate_year_graduated')->nullable()->change();
+            //
         });
     }
 };

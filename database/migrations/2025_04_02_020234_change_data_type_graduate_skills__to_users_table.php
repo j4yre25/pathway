@@ -4,29 +4,23 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangeGraduateYearGraduatedToIntegerInUsersTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('graduate_year_graduated')->nullable()->change();
+            $table->json('graduate_skills')->nullable()->change();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->date('graduate_year_graduated')->nullable()->change();
+            $table->text('graduate_skills')->nullable()->change();
         });
     }
-}
+
+};

@@ -9,10 +9,18 @@ import InputError from '@/Components/InputError.vue';
 import TextArea from '@/Components/TextArea.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import axios from 'axios';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
+
+const showEmailSettings = ref(false);
+const showPasswordFields = ref(false);
 
 const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
+
+const sanitizedPersonalSummary = computed(() => {
+  return form.personal_summary.replace(/^"|"$/g, ''); 
+});
 
 // Props and form setup
 const props = defineProps({
@@ -24,14 +32,6 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
-  portfolioItems: {
-    type: Array,
-    default: () => []
-  },
-  portfolio: {
-    type: Object,
-    default: () => ({})
-  }
 });
 
 // Initialize form with portfolio data
@@ -42,10 +42,10 @@ const form = useForm({
   graduate_middle_initial: props.user.graduate_middle_initial || '',
   graduate_last_name: props.user?.graduate_last_name || '',
   email: props.user?.email || '',
-  professional_title: props.user?.graduate_professional_title || '',
-  personal_summary: props.  aboutMe?.personal_summary || '',
+  graduate_professional_title: props.user?.graduate_professional_title || '',
+  personal_summary: props.user?.personal_summary || '',
   experience_level: props.aboutMe?.experience_level || '',
-  skills: props.aboutMe?.skills || [],
+  graduate_skills: props.user?.graduate_skills || [],
   experience: props.aboutMe?.career_history || [],
   education: props.aboutMe?.education || [],
   portfolio: {
@@ -69,6 +69,7 @@ const form = useForm({
     institution: '',
     year: ''
   }
+ 
 });
 
 // Initialize portfolio items from props with reactive ref
@@ -113,7 +114,7 @@ const updatePassword = () => {
 
 // Initialize skills from aboutMe data
 const skillsInput = ref('');
-const skills = ref(props.aboutMe?.skills || []);
+const skills = ref(props.user?.graduate_skills || []);
 
 // Modal state
 const modalType = ref('');
@@ -124,7 +125,7 @@ const modalTitles = {
   experience: 'Experience Level',
   role: 'Add Experience',
   education: 'Add Education',
-  skills: 'Edit Skills',
+  graduate_skills: 'Edit Skills',
   uploadportfolio: 'Upload Portfolio',
   createportfolio: 'Create Portfolio',
   resume: 'Upload Resume'
@@ -138,6 +139,7 @@ console.log('User data:', page.props.user);
 // Modal functions
 const openModal = (type) => {
   modalType.value = type;
+  console.log('Modal opened with type:', modalType.value);
   loadUserData();
 };
 
@@ -165,17 +167,24 @@ const closeModal = () => {
     institution: '',
     year: ''
   };
+  showEmailSettings.value = false;
 };
+
 
 const saveModal = async () => {
   try {
+
+    console.log('Data being sent:', {
+      graduate_skills: form.graduate_skills,
+      // Include other fields as necessary
+    });
     switch (modalType.value) {
       case 'profile':
         form.put(route('profile.update'), {
           preserveScroll: true,
           onSuccess: () => {
+            console.log('Form Data:' , form)
             closeModal();
-            window.location.reload();
           }
         });
         break;
@@ -191,16 +200,17 @@ const saveModal = async () => {
         });
         break;
       case 'summary':
-        await form.patch(route('profile.update'), {
+        form.put(route('profile.update'), {
           preserveScroll: true,
           onSuccess: () => {
+            console.log('Personal Summary:', form.personal_summary);
             closeModal();
-            window.location.reload();
+            // window.location.reload();
           }
         });
         break;
       case 'experience':
-        await form.patch(route('profile.update'), {
+        form.put(route('profile.update'), {
           preserveScroll: true,
           onSuccess: () => {
             closeModal();
@@ -225,7 +235,7 @@ const saveModal = async () => {
         });
 
         try {
-          await form.patch(route('profile.update'), {
+          form.put(route('profile.update'), {
             about_me: {
               ...props.aboutMe,
               career_history: newExperience
@@ -260,7 +270,7 @@ const saveModal = async () => {
         });
 
         try {
-          await form.patch(route('profile.update'), {
+          form.put(route('profile.update'), {
             about_me: {
               ...props.aboutMe,
               education: newEducation
@@ -274,9 +284,10 @@ const saveModal = async () => {
         }
         break;
       case 'skills':
-        await form.patch(route('profile.update'), {
+        form.put(route('profile.update'), {
           preserveScroll: true,
           onSuccess: () => {
+            console.log('Skills saved successfully:', form.graduate_skills); // Log the skills being saved
             closeModal();
             skillsInput.value = '';
             window.location.reload();
@@ -325,55 +336,7 @@ const handleFileSelect = (event, section, index) => {
   }
 };
 
-const savePortfolio = async () => {
-  try {
-    if (modalType.value === 'uploadportfolio' && form.files) {
-      const formData = new FormData();
-      
-      // Handle file uploads
-      Array.from(form.files).forEach((file, index) => {
-        formData.append(`files[${index}]`, file);
-      });
-      
-      await axios.post(route('profile.portfolio.upload'), formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }).then(() => {
-        closeModal();
-        window.location.reload();
-      });
-      
-    } else if (modalType.value === 'createportfolio') {
-      const formData = new FormData();
-      
-      // Handle portfolio creation with sections
-      Object.keys(form.portfolio).forEach(section => {
-        form.portfolio[section].forEach((item, index) => {
-          if (item.file) {
-            formData.append(`${section}[${index}][file]`, item.file);
-          }
-          Object.keys(item).forEach(key => {
-            if (key !== 'file') {
-              formData.append(`${section}[${index}][${key}]`, item[key]);
-            }
-          });
-        });
-      });
-      
-      await axios.post(route('profile.portfolio.create'), formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }).then(() => {
-        closeModal();
-        window.location.reload();
-      });
-    }
-  } catch (error) {
-    console.error('Error saving portfolio:', error);
-  }
-};
+
 
 const editPortfolioItem = (item) => {
   // Implement edit portfolio item functionality
@@ -424,16 +387,18 @@ const capitalizeFirst = (str) => {
 // Add these functions for skills management
 const addSkill = () => {
   if (skillsInput.value.trim()) {
-    if (!form.skills) {
-      form.skills = [];
+    if (!form.graduate_skills) {
+      form.graduate_skills = [];
     }
-    form.skills.push(skillsInput.value.trim());
+    form.graduate_skills.push(skillsInput.value.trim());
+    console.log('Skills after adding:', form.graduate_skills); // Log the updated skills
+
     skillsInput.value = '';
   }
 };
 
 const removeSkill = (index) => {
-  form.skills.splice(index, 1);
+  form.graduate_skills.splice(index, 1);
 };
 
 // Add this function to load user data when opening modals
@@ -443,16 +408,16 @@ const loadUserData = () => {
     form.graduate_middle_initial = props.user?.graduate_middle_initial || '';
     form.graduate_last_name = props.user?.graduate_last_name || '';
     form.email = props.user?.email || '';
-    form.professional_title = props.user?.graduate_professional_title || '';
+    form.graduate_professional_title = props.user?.graduate_professional_title || '';
   } else if (modalType.value === 'summary') {
-    form.personal_summary = props.aboutMe?.personal_summary || '';
+    form.personal_summary = props.user?.personal_summary || '';
   } else if (modalType.value === 'experience') {
     form.experience_level = props.aboutMe?.experience_level || '';
     form.experience = props.aboutMe?.career_history || [];
   } else if (modalType.value === 'education') {
     form.education = props.aboutMe?.education || [];
   } else if (modalType.value === 'skills') {
-    form.skills = props.aboutMe?.skills || [];
+    form.graduate_skills = props.user?.graduate_skills || [];
   }
 };
 
@@ -496,7 +461,7 @@ const formatExperienceLevel = (level) => {
             <div class="space-y-2">
               <h1 class="text-2xl font-bold"  v-if="$page.props.user">
                 {{ capitalizeFirst($page.props.auth.user.graduate_first_name) }} 
-                <span v-if="$page.props.auth.user.role === 'graduate'">{{ capitalizeFirst($page.props.auth.user.graduate_middle_initial) }}</span>
+                <span v-if="$page.props.auth.user.role === 'graduate'">{{ capitalizeFirst($page.props.auth.user.graduate_middle_initial) }}.</span>
                 {{ capitalizeFirst($page.props.auth.user.graduate_last_name) }}
               </h1>
               <p class="text-lg">{{ form.graduate_professional_title || 'Add your professional title' }}</p>
@@ -544,7 +509,7 @@ const formatExperienceLevel = (level) => {
               Edit
             </button>
         </div>
-          <p class="whitespace-pre-line">{{ form.graduate_personal_summary || 'Add a brief summary about yourself...' }}</p>
+          <p class="whitespace-pre-line">{{ sanitizedPersonalSummary }}</p>
       </div>
 
         <!-- Experience Section -->
@@ -718,13 +683,13 @@ const formatExperienceLevel = (level) => {
               Edit
             </button>
           </div>
-          <div v-if="form.skills && form.skills.length" class="flex flex-wrap gap-2">
-            <span v-for="skill in form.skills" :key="skill" 
+          <div v-if="Array.isArray(form.graduate_skills) && form.graduate_skills.length" class="flex flex-wrap gap-2">
+            <span v-for="skill in form.graduate_skills" :key="skill" 
                   class="px-3 py-1 bg-gray-100 rounded-full text-sm">
               {{ skill }}
             </span>
           </div>
-          <p v-else class="text-center py-4">Add your skills</p>
+      <p v-else class="text-center py-4">Add your skills</p>
         </div>
       </div>
     </div>
@@ -779,14 +744,14 @@ const formatExperienceLevel = (level) => {
         </div>
         
         <div class="col-span-6 sm:col-span-4">
-          <InputLabel for="professional_title" value="Professional Title" />
+          <InputLabel for="graduate_professional_title" value="Professional Title" />
           <TextInput
-            id="professional_title"
+            id="graduate_professional_title"
             v-model="form.graduate_professional_title"
             type="text"
             class="mt-1 block w-full"
             placeholder="Professional Title" />
-          <InputError :message="form.errors.professional_title" class="mt-2 mb-5" />
+          <InputError :message="form.errors.graduate_professional_title" class="mt-2 mb-5" />
         </div>
 
         <div class="mt-6 flex gap-2">
@@ -802,31 +767,78 @@ const formatExperienceLevel = (level) => {
         <h2 class="text-lg font-semibold">{{ modalTitles.settings }}</h2>
         
         <!-- Email Section -->
-        <div class="col-span-6 sm:col-span-4 mb-4" @click="showEmailSettings = !showEmailSettings">
-          <InputLabel for="email" value="Email" />
-          <TextInput id="email" v-model="settingsForm.currentEmail" type="email" class="mt-1 block w-full" :placeholder="showEmailSettings ? 'Current Email' : settingsForm.currentEmail" readonly/>
+        <div class="col-span-6 sm:col-span-4 mb-4">
+          <div class="flex justify-between items-center">
+            <InputLabel for="email" value="Email" />
+            <PrimaryButton 
+              @click="showEmailSettings = !showEmailSettings"
+              class="text-sm text-indigo-600 hover:text-indigo-800"
+            >
+              {{ showEmailSettings ? 'Hide' : 'Change Email' }}
+            </PrimaryButton>
+          </div>
+          <TextInput 
+            id="email" 
+            v-model="settingsForm.currentEmail" 
+            type="email" 
+            class="mt-1 block w-full" 
+            readonly
+          />
+          <div v-if="showEmailSettings" class="mt-4 space-y-4">
+            <TextInput 
+              id="new_email" 
+              v-model="settingsForm.newEmail" 
+              type="email" 
+              class="mt-1 block w-full" 
+              placeholder="New Email"
+            />
+    
+          </div>
         </div>
         
-        <div v-if="showEmailSettings" class="mb-4">
-          <TextInput id="new_email" v-model="settingsForm.email" type="email" class="mt-1 block w-full" placeholder="New Email" />
+             <!-- Password Section -->
+             <div class="col-span-6 sm:col-span-4 mb-4">
+          <div class="flex justify-between items-center">
+            <InputLabel for="password" value="Password" />
+            <PrimaryButton 
+              @click="showPasswordFields = !showPasswordFields"
+              class="text-sm text-indigo-600 hover:text-indigo-800"
+            >
+              {{ showPasswordFields ? 'Hide' : 'Change Password' }}
+            </PrimaryButton>
+
+          </div>
+          <div v-if="showPasswordFields" class="mt-4 space-y-4">
+            <TextInput 
+              id="current_password" 
+              v-model="settingsForm.current_password" 
+              type="password" 
+              class="mt-1 block w-full" 
+              placeholder="Current Password" 
+              ref="currentPasswordInput" 
+            />
+            <InputError :message="settingsForm.errors.current_password" class="mt-2" />
+            <TextInput 
+              id="new_password" 
+              v-model="settingsForm.password" 
+              type="password" 
+              class="mt-1 block w-full" 
+              placeholder="New Password" 
+              ref="passwordInput" 
+            />
+            <InputError :message="settingsForm.errors.password" class="mt-2" />
+            <TextInput 
+              id="confirm_new_password" 
+              v-model="settingsForm.password_confirmation" 
+              type="password" 
+              class="mt-1 block w-full" 
+              placeholder="Confirm New Password" 
+            />
+            <InputError :message="settingsForm.errors.password_confirmation" class="mt-2" />
+          </div>
         </div>
         
-        <!-- Password Section -->
-        <div class="col-span-6 sm:col-span-4 mb-4" @click="showPasswordSettings= !showPasswordSettings">
-          <InputLabel for="password" value="Password" />
-          <TextInput id="password" type="password" class="mt-1 blo  ck w-full" placeholder="••••••••" readonly/>
-        </div>
-        
-        <div v-if="showPasswordSettings" class="mb-4">
-          <TextInput id="current_password" v-model="settingsForm.current_password" type="password" class="mt-1 block w-full" placeholder="Current Password" ref="currentPasswordInput" /> <InputError :message="settingsForm.errors.current_password" class="mt-2" />
-          <TextInput id="new_password" v-model="settingsForm.password" type="password" class="mt-1 block w-full" placeholder="New Password" ref="passwordInput" /> <InputError :message="settingsForm.errors.password" class="mt-2" />
-          <TextInput id="confirm_new_password" v-model="settingsForm.password_confirmation" type="password" class="mt-1 block w-full" placeholder="Confirm New Password" /> <InputError :message="settingsForm.errors.password_confirmation" class="mt-2" />
-        </div>
-        
-        <!-- Delete Account -->
-        <div class="col-span-6 sm:col-span-4">
-        <button class="px-4 py-2 rounded mt-4" @click="deleteAccount">Delete Account</button>
-        </div>
+    
 
         <div class="mt-6 flex gap-2">
           <button class="px-4 py-2 rounded" @click="updatePassword">Change Password</button>
@@ -1006,7 +1018,7 @@ const formatExperienceLevel = (level) => {
         <div class="mt-4">
           <h3 class="text-sm font-semibold mb-2">Current Skills</h3>
           <div class="flex flex-wrap gap-2">
-            <div v-for="(skill, index) in form.skills" :key="index" 
+            <div v-for="(skill, index) in form.graduate_skills" :key="index" 
                  class="flex items-center bg-gray-100 rounded-full px-3 py-1">
               <span class="mr-2">{{ skill }}</span>
               <button @click="removeSkill(index)" class="text-gray-500 hover:text-gray-700">&times;</button>
@@ -1271,7 +1283,7 @@ const formatExperienceLevel = (level) => {
       </div>
     </Modal>
 
-  <!-- Add Resume Modal -->
+  <!-- Add Resme Modal -->
   <Modal :show="modalType === 'resume'" @close="closeModal">
     <div class="p-6">
       <h2 class="text-lg font-semibold">{{ modalTitles.resume }}</h2>

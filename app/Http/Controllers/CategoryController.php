@@ -73,7 +73,6 @@ class CategoryController extends Controller
     }
 
     public function delete(Request $request, Category $category) {
-        Gate::authorize('delete', $category);
         $category->delete();
 
         return redirect()->route('categories', ['sector' => $category->sector_id])->with('flash.banner', 'Category deleted successfully.');

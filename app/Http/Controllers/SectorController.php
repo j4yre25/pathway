@@ -72,7 +72,6 @@ class SectorController extends Controller
 
     public function delete(Request $request, Sector $sector) {
 
-        Gate::authorize('delete', $sector);
 
         $sector->delete();
     

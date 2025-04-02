@@ -12,6 +12,7 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
+
 class User extends Authenticatable
 {
     use HasApiTokens;
@@ -34,6 +35,9 @@ class User extends Authenticatable
         'role',
         'dob',
         'gender',
+        'telephone_number',
+        'contact_number',
+
         // PESO
         'peso_first_name',
         'peso_last_name',
@@ -47,6 +51,7 @@ class User extends Authenticatable
         'graduate_year_graduated',
         'graduate_skills',
         'graduate_professional_title',
+        'personal_summary',
 
         // Company
         'company_name',
@@ -57,20 +62,14 @@ class User extends Authenticatable
         'company_zip_code',
         'company_company_email',
         'company_contact_number',
-        'company_telephone_number',
         'company_hr_full_name',
-        'company_hr_gender',
-        'company_hr_dob',
-        'company_hr_contact_number',
         // Institution
         'institution_type',
         'institution_name',
         'institution_address',
-        'institution_contact_number',
         'institution_president_last_name',
         'institution_president_first_name',
         'institution_career_officer_first_name',
-        'institution_contact_number',
         // 'institution_career_officer_last_name',
     ];
 
@@ -107,6 +106,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'graduate_year_graduated' => 'date',
             'is_approved' => 'boolean'
+            
         ];
     }
 
@@ -153,7 +153,10 @@ class User extends Authenticatable
         return $this->hasMany(Resume::class);
     }
 
+    
+
     /**
+     * 
      * Get the user's next role preferences.
      */
     public function nextRole()
@@ -200,6 +203,11 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Institution::class);
   
+    }
+
+    public function getGraduateSkillsAttribute($value)
+    {
+        return json_decode($value, true) ?? []; // Decode JSON to array
     }
     
     

@@ -23,12 +23,16 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'role' => ['nullable', 'string', 'max:255'],
             'peso_first_name' => ['nullable', 'string', 'max:255'],
             'peso_last_name' => ['nullable', 'string', 'max:255'],
-            'graduate_first_name' => ['nullable', 'string', 'max:255'],
+            'graduate_first_name' => ['nullable', 'string', 'max:255'],            
+            'graduate_middle_initial' => ['nullable', 'string', 'max:1'],
             'graduate_last_name' => ['nullable', 'string', 'max:255'],
             'graduate_school_graduated_from' => ['nullable', 'string', 'max:255'],
             'graduate_program_completed' => ['nullable', 'string', 'max:255'],
             'graduate_year_graduated' => ['nullable', 'date'],
-            'graduate_skills' => ['nullable', 'string'],
+            'graduate_skills' => ['nullable', 'array'],
+            'graduate_skills.*' => ['string', 'max:255'],
+            'personal_summary' => ['nullable', 'string', 'max:255'],
+            'graduate_professional_title' => 'nullable|string|max:255',
             'company_name' => ['nullable', 'string', 'max:255'],
             'company_address' => ['nullable', 'string', 'max:255'],
             'company_sector' => ['nullable', 'string', 'max:255'],
@@ -59,11 +63,14 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
                 'peso_first_name' => $input['peso_first_name'] ?? $user->peso_first_name,
                 'peso_last_name' => $input['peso_last_name'] ?? $user->peso_last_name,
                 'graduate_first_name' => $input['graduate_first_name'] ?? $user->graduate_first_name,
+                'graduate_middle_initial' => $input['graduate_middle_initial'] ?? $user->graduate_middle_initial,
                 'graduate_last_name' => $input['graduate_last_name'] ?? $user->graduate_last_name,
                 'graduate_school_graduated_from' => $input['graduate_school_graduated_from'] ?? $user->graduate_school_graduated_from,
                 'graduate_program_completed' => $input['graduate_program_completed'] ?? $user->graduate_program_completed,
                 'graduate_year_graduated' => $input['graduate_year_graduated'] ?? $user->graduate_year_graduated,
-                'graduate_skills' => $input['graduate_skills'] ?? $user->graduate_skills,
+                'graduate_skills' => $input['graduate_skills'] ?? $user->graduate_skills,                
+                'graduate_professional_title' => $input['graduate_professional_title'] ?? $user->graduate_professional_title,
+                'personal_summary' => $input['personal_summary'] ?? $user->personal_summary,
                 'company_name' => $input['company_name'] ?? $user->company_name,
                 'company_address' => $input['company_address'] ?? $user->company_address,
                 'company_sector' => $input['company_sector'] ?? $user->company_sector,
@@ -82,6 +89,8 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         }
     }
 
+
+    
     /**
      * Update the given verified user's profile information.
      *

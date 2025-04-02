@@ -1,7 +1,8 @@
 <?php
 
-namespace Laravel\Fortify\Http\Controllers;
+namespace App\Http\Controllers;
 
+use App\Models\SchoolYear;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ use Laravel\Fortify\Fortify;
 use App\Models\User; // Make sure to import your User model
 use Inertia\Inertia;
 
-class   CustomRegisteredUserController extends Controller
+class  CustomRegisteredUserController extends Controller
 {
     /**
      * The guard implementation.
@@ -41,11 +42,6 @@ class   CustomRegisteredUserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Laravel\Fortify\Contracts\RegisterViewResponse
      */
-
-     public function showUsers()
-     {
-         return $this->getUsers();
-     }
     public function create(Request $request): RegisterViewResponse
     {
         return app(RegisterViewResponse::class);
@@ -99,15 +95,19 @@ class   CustomRegisteredUserController extends Controller
         return 'guest';
     }
 
-    protected function getUsers()
+    public function showGraduateDetails()
     {
         $insti_users = User::all();
-
-        // Return the users data using Inertia
+        $school_year = SchoolYear::all();
+        
         return Inertia::render('Auth/Register', [
-            'insti_users' => $insti_users
+            'insti_users' => $insti_users,
+            'school_year' => $school_year,
         ]);
     }
+   
+
+
 
 }
 

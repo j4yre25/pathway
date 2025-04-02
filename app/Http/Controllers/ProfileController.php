@@ -28,11 +28,10 @@ class ProfileController extends Controller
    
         
         // Get related data for the profile
-        $aboutMe = $user->aboutMe;
+     
      
         return Inertia::render('Frontend/Profile', [
             'user' => $user,
-            'aboutMe' => $aboutMe,
         ]);
     }
 
@@ -52,7 +51,18 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+         $user = $request->user()->fill($request->validated());
+
+        $user->forceFill([
+            'graduate_first_name' => $request->input('graduate_first_name'),
+            'graduate_middle_initial' => $request->input('graduate_middle_initial'),
+            'graduate_last_name' => $request->input('graduate_last_name'),
+            'email' => $request->input('email'),
+            'graduate_professional_title' => $request->input('graduate_professional_title'),
+            'graduate_skills' => json_encode($request->input('graduate_skills')), // Store as JSON
+            'personal_summary' => json_encode($request->input('personal_summary')),
+        ]);
+    
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
@@ -184,4 +194,6 @@ class ProfileController extends Controller
 
         return redirect()->back();
     }
+
+    
 }

@@ -22,6 +22,7 @@ const form = useForm({
     peso_last_name: props.user.peso_last_name,
     graduate_first_name: props.user.graduate_first_name || '',
     graduate_last_name: props.user.graduate_last_name || '',
+    graduate_professional_title: props.user.graduate_professional_title || '',
     company_hr_first_name: props.user.company_hr_first_name || '',
     company_hr_last_name: props.user.company_hr_last_name || '',
     institution_president_first_name: props.user.institution_president_first_name || '',

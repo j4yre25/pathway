@@ -29,6 +29,13 @@ class CreateNewUser implements CreatesNewUsers
         $rules = [
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
+            'dob' => ['required', 'date'],
+            'gender' => ['required', 'string', 'in:Male,Female,Other'],
+            'contact_number' => ['required', 'digits_between:10,15'],
+            'telephone_number' => ['nullable', 'digits_between:7,15'],
+
+
+
         ];
     
         // Add role-specific validation rules
@@ -36,6 +43,10 @@ class CreateNewUser implements CreatesNewUsers
             case 'graduate':
                 $rules['graduate_first_name'] = ['required', 'string', 'max:255'];
                 $rules['graduate_last_name'] = ['required', 'string', 'max:255'];
+                $rules['graduate_middle_initial'] = ['required', 'string', 'max:255'];
+                $rules['graduate_school_graduated_from'] = ['required', 'string', 'max:255'];
+                $rules['graduate_program_completed'] = ['required', 'string', 'max:255'];
+                
                 break;
             case 'company':
                 $rules['company_name'] = ['required', 'string', 'max:255'];
@@ -45,22 +56,16 @@ class CreateNewUser implements CreatesNewUsers
                 $rules['company_province'] = ['required', 'string', 'max:255'];
                 $rules['company_zip_code'] = ['required', 'string', 'max:4'];
                 $rules['company_contact_number'] = ['required', 'digits_between:10,15'];
-                $rules['company_telephone_number'] = ['nullable', 'digits_between:7,15'];
                 $rules['company_hr_full_name'] = ['required', 'string', 'max:255'];
                 $rules['company_hr_gender'] = ['required', 'string', 'in:Male,Female,Other'];
-                $rules['company_hr_dob'] = ['required', 'date'];
-                $rules['company_hr_contact_number'] = ['required', 'digits_between:10,15'];
                 break;
             case 'institution':
                 $rules['institution_type'] = ['required', 'string'];
                 $rules['institution_name'] = ['required', 'string'];
                 $rules['institution_address'] = ['required', 'string'];
-                $rules['institution_contact_number'] = ['required', 'string'];
                 $rules['institution_president_last_name'] = ['required', 'string', 'max:255'];
                 $rules['institution_president_first_name'] = ['required', 'string', 'max:255'];
                 $rules['institution_career_officer_first_name'] = ['required', 'string', 'max:255'];
-                $rules['company_hr_gender'] = ['required', 'string', 'in:Male,Female,Other'];
-                $rules['company_hr_dob'] = ['required', 'date'];
                 break;
             default:
                 // Handle the guest role
@@ -73,6 +78,11 @@ class CreateNewUser implements CreatesNewUsers
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
             'role' => $role,
+            'dob' => $input['dob'],
+            'gender' => $input['gender'],
+            'contact_number' => $input['contact_number'],
+            'telephone_number' => $input['telephone_number'],
+
 
         ];
     
@@ -81,6 +91,9 @@ class CreateNewUser implements CreatesNewUsers
             case 'graduate':
                 $userData['graduate_first_name'] = $input['graduate_first_name'];
                 $userData['graduate_last_name'] = $input['graduate_last_name'];
+                $userData['graduate_middle_initial'] = $input['graduate_middle_initial'];
+                $userData['graduate_school_graduated_from'] = $input['graduate_school_graduated_from'];
+                $userData['graduate_program_completed'] = $input['graduate_program_completed'];
                 break;
             case 'company':
                 $userData['company_name'] = $input['company_name'];
@@ -89,11 +102,7 @@ class CreateNewUser implements CreatesNewUsers
                 $userData['company_city'] = $input['company_city'];
                 $userData['company_province'] = $input['company_province'];
                 $userData['company_zip_code'] = $input['company_zip_code'];
-                $userData['company_contact_number'] = $input['company_contact_number'];
-                $userData['company_telephone_number'] = $input['company_telephone_number'];
                 $userData['company_hr_full_name'] = $input['company_hr_full_name'];
-                $userData['company_hr_gender'] = $input['company_hr_gender'];
-                $userData['company_hr_dob'] = $input['company_hr_dob'];
                 $userData['company_hr_contact_number'] = $input['company_hr_contact_number'];
                 break;
             case 'institution':
@@ -104,8 +113,6 @@ class CreateNewUser implements CreatesNewUsers
                 $userData['institution_president_last_name'] = $input['institution_president_last_name'];
                 $userData['institution_president_first_name'] = $input['institution_president_first_name'];
                 $userData['institution_career_officer_first_name'] = $input['institution_career_officer_first_name'];
-                $userData['company_hr_gender'] = $input['company_hr_gender'];
-                $userData['company_hr_dob'] = $input['company_hr_dob'];
                 
                 break;
             default:

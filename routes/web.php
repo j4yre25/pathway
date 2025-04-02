@@ -1,5 +1,4 @@
 <?php
-use Laravel\Fortify\Http\Controllers\CustomRegisteredUserController;
 
 use App\Http\Controllers\ManageGraduatesController;
 use App\Http\Controllers\JobsController;
@@ -23,7 +22,8 @@ use App\Http\Controllers\ManageGraduatesApprovalController;
 use App\Http\Controllers\BatchUploadController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
-
+use App\Http\Controllers\CustomRegisteredUserController;
+use App\Http\Controllers\JobSearchController;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use Laravel\Fortify\Http\Controllers\ConfirmablePasswordController;
@@ -49,7 +49,7 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
     ]);
 });
-Route::middleware([''])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/register/peso', [AdminRegisterController::class, 'showRegistrationForm'])->name('admin.register');
     Route::post('/register/peso', [AdminRegisterController::class, 'register'])->name('admin.register.submit');
 });
@@ -60,8 +60,6 @@ Route::middleware(['auth'])->group(function () {
  });
 
 
-    Route::get('/register/graduates', [UserController::class, 'getUsers'])
-    ->name('register.getusers');
     
  
 
@@ -523,12 +521,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
  
-    
+    Route::get('/job-search', [JobSearchController::class, 'index'])->name('job-search.index');
+    Route::post('/job-search/results', [JobSearchController::class, 'search'])->name('jobs.search.results');
+
     // Portfolio Routes
-    Route::post('/profile/portfolio', [ProfileController::class, 'storePortfolio'])->name('profile.portfolio.store');
-    Route::patch('/profile/portfolio/{portfolio}', [ProfileController::class, 'updatePortfolio'])->name('profile.portfolio.update');
+    Route::post('/profile/portfolio/upload', [ProfileController::class, 'uploadPortfolio'])->name('profile.portfolio.upload');
+    Route::post('/profile/portfolio/create', [ProfileController::class, 'createPortfolio'])->name('profile.createPortfolio');
     Route::delete('/profile/portfolio/{portfolio}', [ProfileController::class, 'deletePortfolio'])->name('profile.portfolio.delete');
   
 });
+
+
 
 
