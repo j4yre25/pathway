@@ -1,5 +1,6 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import LoginCard from '@/Components/LoginCard.vue'; // UPDATE 04/04 This is the new component for the login form layout. Remove the authentication card component
 import Checkbox from '@/Components/Checkbox.vue';
