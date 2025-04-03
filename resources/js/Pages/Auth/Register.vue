@@ -108,6 +108,18 @@ const formattedContactNumber = computed({
     },
 });
 
+// Update 04/04
+const passwordCriteria = computed(() => {
+    const password = form.password;
+    return {
+        length: password.length >= 8, // Minimum 8 characters
+        uppercaseLowercase: /[a-z]/.test(password) && /[A-Z]/.test(password), // Upper & lower case
+        letter: /[a-zA-Z]/.test(password), // At least one letter
+        number: /\d/.test(password), // At least one number
+        symbol: /[@$!%*?&]/.test(password), // At least one special character
+    };
+});
+
 // Handle form submission
 const submit = () => {
     
@@ -645,6 +657,25 @@ const submit = () => {
                             <InputError class="mt-1" :message="form.errors.password" />
                         </div>
 
+                        <!-- Password validation tooltip UPDATE 04/04-->
+                        <div v-if="form.password" class="mt-2 p-3 bg-gray-800 text-white rounded-md w-64 text-sm shadow-lg">
+                            <p class="font-semibold text-gray-200">Password must meet the following:</p>
+                            <ul class="mt-1">
+                                <li :class="passwordCriteria.length ? 'text-green-400' : 'text-red-400'">
+                                    ✔ Minimum 8 characters
+                                </li>
+                                <li :class="passwordCriteria.uppercaseLowercase ? 'text-green-400' : 'text-red-400'">
+                                    ✔ Upper & lower case letters
+                                </li>
+                                <li :class="passwordCriteria.number ? 'text-green-400' : 'text-red-400'">
+                                    ✔ At least one number
+                                </li>
+                                <li :class="passwordCriteria.symbol ? 'text-green-400' : 'text-red-400'">
+                                    ✔ At least one special character (@$!%*?&)
+                                </li>
+                            </ul>
+                        </div>
+
                         <div class="flex items-center gap-1">
                             <InputLabel for="password_confirmation" value="Confirm Password" />
                             <span class="text-red-500">*</span>
@@ -661,11 +692,6 @@ const submit = () => {
                     </div>
                 </div>
             </div>
-
-
-               
-
-            
 
             <div class="flex items-center justify-end mt-8 border-t border-gray-200 pt-12">
               
