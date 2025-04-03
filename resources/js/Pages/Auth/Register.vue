@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/Components/InputError.vue';
@@ -11,7 +11,8 @@ import { MaskDirective } from 'vue-the-mask';
 import { onMounted, ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { defineProps } from 'vue';
-
+import Modal from '@/Components/Modal.vue';
+import { Inertia } from '@inertiajs/inertia';
 
 const props = defineProps ({
     insti_users: Array,
@@ -21,7 +22,7 @@ const props = defineProps ({
 
 console.log(props)
 
-
+const showModal = ref(false); 
 
 // Define the form with additional fields for user types
 const form = useForm({
@@ -133,10 +134,20 @@ const submit = () => {
             form.reset('password', 'password_confirmation');
         },
         onSuccess: () => {
-            Inertia.visit(route('login'));
-        },
-    });
+          
+                    showModal.value = true;
+                    console.log("showModal:", showModal.value);
+
+            }
+
+
+            });
 };
+
+const   redirectToLogin = () => {
+    Inertia.visit(route('login')); 
+};
+
 </script>
 
 <template>
@@ -146,6 +157,7 @@ const submit = () => {
         <template #logo>
             <AuthenticationCardLogo />
         </template>
+
 
         <form @submit.prevent="submit" autocomplete="off">
             <!-- Company Fields -->
@@ -674,5 +686,24 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
+        
     </AuthenticationCard>
+
+
+    <Modal v-if="showModal" :show="showModal" @close="redirectToLogin">
+        <template #default>
+            <div class="text-center">
+                <h2 class="text-lg font-semibold">Registration Successful</h2>
+                <p class="mt-2 text-gray-600">You have registered successfully. Click "Okay" to proceed to the login page.</p>
+                <button
+                    class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                    @click="redirectToLogin"
+                >
+                    Okay
+                </button>
+            </div>
+        </template>
+    </Modal>
+
+
 </template>
