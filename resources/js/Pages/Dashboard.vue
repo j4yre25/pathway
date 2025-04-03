@@ -4,6 +4,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { usePage } from '@inertiajs/vue3';
 import { computed, watch } from 'vue';
 import Welcome from '@/Components/Welcome.vue';
+import Modal from '../Components/Modal.vue';
 
 const { props } = usePage();
 const userNotApproved = computed(() => props.userNotApproved ?? false);
@@ -26,6 +27,8 @@ watch(userNotApproved, (newVal) => {
                 Dashboard
             </h2>
         </template>
+
+       
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
