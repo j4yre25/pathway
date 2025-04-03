@@ -566,8 +566,7 @@ const submit = () => {
 
                 </div>
 
-
-
+                <!-- UPDATE 04/04 Putting "gender" & "date of birth" in one row -->
                 <div class="grid grid-cols-3 ">
                     <div class=" col-span-1">
                         <h2 class="text-lg font-semibold text-gray-900"></h2>
@@ -575,7 +574,8 @@ const submit = () => {
                     </div>
 
                     <div class=" col-span-2">
-                    <!-- Gender -->
+                        <div class="grid grid-cols-2 gap-4">
+                        <!-- Gender -->
                         <div>
                             <div class="flex items-center gap-1">
                                 <InputLabel for="gender" value="Gender" />
@@ -607,6 +607,9 @@ const submit = () => {
                                 <InputError class="mt-2" :message="form.errors.dob" />
                             </div>
                         </div>
+                        </div>
+                        <!-- END UPDATE 04/04 Putting "gender" & "date of birth" in one row -->
+
                         <!-- HR Email -->
                         <div>
                             <div class="flex items-center gap-1">
