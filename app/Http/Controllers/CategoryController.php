@@ -24,6 +24,20 @@ class CategoryController extends Controller
             'sectors' => $sectors,
         ]);
     }    
+
+    public function list() {
+
+
+        $categories = Category::with('user')->get(); 
+
+    
+    
+        return Inertia::render('Categories/List', [
+            'categories' => $categories,
+        ]);
+        
+    }
+
     
     public function create(Sector $sector) {
         $sectors = Sector::all();
@@ -75,7 +89,7 @@ class CategoryController extends Controller
     public function delete(Request $request, Category $category) {
         $category->delete();
 
-        return redirect()->route('categories', ['sector' => $category->sector_id])->with('flash.banner', 'Category deleted successfully.');
+        return redirect()->route('categories.index', ['sector' => $category->sector_id])->with('flash.banner', 'Category deleted successfully.');
     }
 }
 

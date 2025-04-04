@@ -842,19 +842,6 @@ const redirectToLogin = () => {
             
             </form>
         
-        </template>
-
-
-
-            
-
-                <div class="flex items-center justify-end mt-8 border-t border-gray-200 pt-12">
-
-                    <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                        Register
-                    </PrimaryButton>
-                </div>
-            </form>
 
         </template>
     </AuthenticationCard>

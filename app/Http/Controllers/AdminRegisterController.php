@@ -30,6 +30,7 @@ class AdminRegisterController extends Controller
     {
         $creator->create($request->all());
 
-        return redirect()->route('dashboard')->with('success', 'Admin registration successful!');
+        redirect()->back()->with('flash.banner', 'Registered Successfully!');
+
     }
 }
