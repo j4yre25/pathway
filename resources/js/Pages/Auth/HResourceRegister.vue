@@ -11,10 +11,11 @@ import { computed } from 'vue';
 
 // Define the form with additional fields for user types
 const form = useForm({
-    company_hr_full_name: '',
-    company_hr_gender: '',
-    company_hr_dob: '',
-    company_hr_contact_number: '',
+    company_hr_first_name: '',
+    company_hr_last_name: '',
+    gender: '',
+    dob: '',
+    contact_number: '',
     email: '',
     password: '',
     password_confirmation: '',
@@ -26,7 +27,7 @@ const form = useForm({
 
 const formattedContactNumber = computed({
     get: () => {
-        let rawNumber = form.company_hr_contact_number.replace(/\D/g, ""); // Remove non-numeric characters
+        let rawNumber = form.contact_number.replace(/\D/g, ""); // Remove non-numeric characters
         
         // Ensure only the first 10 digits are considered
         if (rawNumber.length > 10) {
@@ -53,7 +54,7 @@ const formattedContactNumber = computed({
             rawValue = rawValue.slice(0, 10);
         }
 
-        form.company_hr_contact_number = rawValue;
+        form.contact_number = rawValue;
     },
 });
 
@@ -66,7 +67,7 @@ const passwordCriteria = computed(() => {
         uppercaseLowercase: /[a-z]/.test(password) && /[A-Z]/.test(password), // Upper & lower case
         letter: /[a-zA-Z]/.test(password), // At least one letter
         number: /\d/.test(password), // At least one number
-        symbol: /[@$!%*?&]/.test(password), // At least one special character
+        symbol: /[@$!%*?&.]/.test(password), // At least one special character
     };
 });
 
@@ -108,47 +109,60 @@ const submit = () => {
                     </div>
 
                     <div class="col-span-2">
-                        <!-- Full Name -->
-                        <div class="flex items-center gap-1">
-                            <InputLabel for="company_hr_full_name" value="Full Name" />
-                            <span class="text-red-500">*</span>
-                        </div>
-                        <div>
-                            <TextInput id="company_hr_full_name" v-model="form.company_hr_full_name" type="text" class="mt-1 mb-4 block w-full" required />
-                            <InputError class="mt-2" :message="form.errors.company_hr_full_name" />
-                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                               <div> <!-- First Name -->
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="company_hr_first_name" value= "First Name" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
+                                    <div>
+                                        <TextInput id="company_hr_first_name" v-model="form.company_hr_first_name" type="text" class="mt-1 mb-4 block w-full" required />
+                                        <InputError class="mt-2" :message="form.errors.company_hr_first_name" />
+                                    </div>
+                               </div>
+                               <div> <!-- First Name -->
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="company_hr_last_name" value= "Last Name" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
+                                    <div>
+                                        <TextInput id="company_hr_last_name" v-model="form.company_hr_last_name" type="text" class="mt-1 mb-4 block w-full" required />
+                                        <InputError class="mt-2" :message="form.errors.company_hr_last_name" />
+                                    </div>
+                               </div>
+                            </div>
 
                         <div class="grid grid-cols-2 gap-4">
                             <!-- Gender -->
                             <div>
                                 <div class="flex items-center gap-1">
-                                    <InputLabel for="company_hr_gender" value="Gender" />
+                                    <InputLabel for="gender" value="Gender" />
                                     <span class="text-red-500">*</span>
                                 </div>
                                 <div>
-                                    <select id="company_hr_gender" v-model="form.company_hr_gender" class="mt-1 mb-4 block w-full" required>
+                                    <select id="gender" v-model="form.gender" class="mt-1 mb-4 block w-full" required>
                                         <option value="">Select Gender</option>
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
                                         <option value="Other">Other</option>
                                     </select>
-                                    <InputError class="" :message="form.errors.company_hr_gender" />
+                                    <InputError class="" :message="form.errors.gender" />
                                 </div>
                             </div>
                             <!-- Date of Birth -->
                             <div>
                                 <div class="flex items-center gap-1">
-                                    <InputLabel for="company_hr_dob" value="Date of Birth" />
+                                    <InputLabel for="dob" value="Date of Birth" />
                                     <span class="text-red-500">*</span>
                                 </div>
                                 <div>
                                     <TextInput 
-                                        id="company_hr_dob" 
-                                        v-model="form.company_hr_dob" 
+                                        id="dob" 
+                                        v-model="form.dob" 
                                         type="date" 
                                         class="mt-1 mb-4 block w-full" 
                                         required />
-                                    <InputError class="mt-2" :message="form.errors.company_hr_dob" />
+                                    <InputError class="mt-2" :message="form.errors.dob" />
                                 </div>
                             </div>
                         </div>
@@ -173,17 +187,17 @@ const submit = () => {
                         <!-- HR Contact Number -->
                         <div>
                             <div class="flex items-center gap-1">
-                                <InputLabel for="company_hr_contact_number" value="Contact Number" />
+                                <InputLabel for="contact_number" value="Contact Number" />
                                 <span class="text-red-500">*</span>
                             </div>
                             <div>
                                 <TextInput 
-                                    id="company_hr_contact_number"
+                                    id="contact_number"
                                     v-model="formattedContactNumber"
                                     type="text"
                                     class="mt-1 mb-4 block w-full"
                                     required />
-                                <InputError class="mt-2" :message="form.errors.company_hr_contact_number" />
+                                <InputError class="mt-2" :message="form.errors.contact_number" />
                             </div>
                         </div>
 
@@ -219,7 +233,7 @@ const submit = () => {
                                         ✔ At least one number
                                     </li>
                                     <li :class="passwordCriteria.symbol ? 'text-green-400' : 'text-red-400'">
-                                        ✔ At least one special character (@$!%*?&)
+                                        ✔ At least one special character (@$!%*?&.)
                                     </li>
                                 </ul>
                             </div>

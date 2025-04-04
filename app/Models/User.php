@@ -62,7 +62,9 @@ class User extends Authenticatable
         'company_zip_code',
         'company_company_email',
         'company_contact_number',
-        'company_hr_full_name',
+        'company_hr_first_name',
+        'company_hr_last_name',
+
         // Institution
         'institution_type',
         'institution_name',
