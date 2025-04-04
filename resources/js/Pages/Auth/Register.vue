@@ -2,6 +2,7 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
+import LoginCard from '@/Components/LoginCard.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -49,6 +50,7 @@ const form = useForm({
     institution_president_last_name: '',
     institution_president_first_name: '',
     institution_career_officer_first_name: '',
+    institution_career_officer_last_name: '',
     graduate_school_graduated_from: '',
     graduate_program_completed: '',
     graduate_year_graduated: '',
@@ -442,7 +444,7 @@ const redirectToLogin = () => {
                 </div>
 
                 <!-- Institution Fields UPDATED 04/04/2025
-                     Separated the Password and Personal Information (Geneder, and etc.)
+                     Separated the Password and Personal Information (Gender, and etc.)
                      so it wont affect Institutuon. Naka Global abi -->
                 <div v-if="form.role === 'institution'" class="flex space-x-12">
                     <!-- Left Side: Welcome Section -->
@@ -505,11 +507,11 @@ const redirectToLogin = () => {
                             <!-- Mobile and Telephone Number -->
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <InputLabel for="mobile_number" value="Mobile Number" />
-                                    <TextInput id="mobile_number" v-model="form.mobile_number" type="text"
+                                    <InputLabel for="contact_number" value="Mobile Number" />
+                                    <TextInput id="contact_number" v-model="form.contact_number" type="text"
                                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                         required />
-                                    <InputError class="mt-2" :message="form.errors.mobile_number" />
+                                    <InputError class="mt-2" :message="form.errors.contact_number" />
                                 </div>
                                 <div>
                                     <InputLabel for="telephone_number" value="Telephone Number" />
@@ -589,10 +591,11 @@ const redirectToLogin = () => {
                                     <div class="flex items-center gap-1">
                                         <InputLabel for="confirm_password" value="Confirm Password" />
                                     </div>
-                                    <TextInput id="confirm_password" v-model="form.confirm_password" type="password"
+                                    <TextInput id="confirm_password" v-model="form.password_confirmation"
+                                        type="password"
                                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                         required />
-                                    <InputError class="mt-1" :message="form.errors.confirm_password" />
+                                    <InputError class="mt-1" :message="form.errors.password_confirmation" />
                                 </div>
                             </div>
                         </div>
@@ -789,7 +792,7 @@ const redirectToLogin = () => {
                 <p class="mt-2 text-gray-600">You have registered successfully. Click "Okay" to proceed to the login
                     page.</p>
                 <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                    @click="redirectToLogin">
+                    @click="() => { redirectToLogin(); showModal = false; }">
                     Okay
                 </button>
             </div>
