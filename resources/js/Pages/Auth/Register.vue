@@ -177,205 +177,205 @@ const   redirectToLogin = () => {
             <form @submit.prevent="submit" autocomplete="off">
                 <!-- Company Fields -->
                 <div v-if="form.role === 'company'">
-                <div class="space-y-12 grid grid-cols-3">
-                    <!-- Company Basic Information -->
-                    <div class="col-span-1">
-                        <h2 class="mt-12 text-lg font-semibold text-gray-900">Company Basic Information</h2>
-                        <p class="text-sm text-gray-600">
-                            Provide key details about your company.
-                        </p>
+                    <div class="space-y-12 grid grid-cols-3">
+                        <!-- Company Basic Information -->
+                        <div class="col-span-1">
+                            <h2 class="mt-12 text-lg font-semibold text-gray-900">Company Basic Information</h2>
+                            <p class="text-sm text-gray-600">
+                                Provide key details about your company.
+                            </p>
 
-                    </div>
-
-                    <!-- Right Column: Username Input -->
-                    <div class="col-span-2">
-                        <div class="flex items-center gap-1 col-span-6 sm:col-span-4">
-                            <InputLabel for="company_name" value="Company Name" />
-                            <span class="text-red-500">*</span>
-                        </div>
-                        <div>
-                            <TextInput
-                                id="company_name"
-                                v-model="form.company_name"
-                                type="text"
-                                class="mt-1 mb-4 block w-full"
-                                required />
-                            <InputError class="mt-2" :message="form.errors.company_name" />
                         </div>
 
-                        <!-- Company Address -->
-                        <div class="grid grid-cols-3 gap-4">
-                            <div class="col-span-2">
-                                <div class="flex items-center gap-1">
-                                    <InputLabel for="company_street_address" value="Street Address" />
-                                    <span class="text-red-500">*</span>
-                                </div>
-                                <div>
-                                    <TextInput 
-                                        id="company_street_address" 
-                                        v-model="form.company_street_address" 
-                                        type="text" 
-                                        class="mt-1 mb-4 block w-full" 
-                                        required />
-                                    <InputError class="mt-1" :message="form.errors.company_street_address" />
-                                </div>
-                            </div>
-
-                            <div>
-                                <div class="flex items-center gap-1">
-                                    <InputLabel for="company_brgy" value="Barangay" />
-                                    <span class="text-red-500">*</span>
-                                </div>
-                                <div>
-                                    <TextInput 
-                                        id="company_brgy" 
-                                        v-model="form.company_brgy" 
-                                        type="text" 
-                                        class="mt-1 mb-4 block w-full" 
-                                        required />
-                                    <InputError class="mt-1" :message="form.errors.company_brgy" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-5 gap-4">
-                            <div class="col-span-2">
-                                <div class="flex items-center gap-1">
-                                    <InputLabel for="company_city" value="City" />
-                                    <span class="text-red-500">*</span>
-                                </div>
-                                <div>
-                                    <TextInput 
-                                        id="company_city" 
-                                        v-model="form.company_city" 
-                                        type="text" 
-                                        class="mt-1 mb-4 block w-full" 
-                                        required />
-                                    <InputError class="mt-1" :message="form.errors.company_city" />
-                                </div>
-                            </div>
-
-                            <div class="col-span-2">
-                                <div class="flex items-center gap-1">
-                                    <InputLabel for="company_province" value="Province" />
-                                    <span class="text-red-500">*</span>
-                                </div>
-                                <div>
-                                    <TextInput 
-                                        id="company_province" 
-                                        v-model="form.company_province" 
-                                        type="text" 
-                                        class="mt-1 mb-4 block w-full" 
-                                        required />
-                                    <InputError class="mt-1" :message="form.errors.company_province" />
-                                </div>
-                            </div>
-
-                            <div>
-                                <div class="flex items-center gap-1">
-                                    <InputLabel for="company_zip_code" value="ZIP Code" />
-                                    <span class="text-red-500">*</span>
-                                </div>
-                                <div>
-                                    <TextInput 
-                                        id="company_zip_code" 
-                                        v-model="form.company_zip_code" 
-                                        type="text" 
-                                        class="mt-1 mb-4 block w-full" 
-                                        required />
-                                    <InputError class="mt-1" :message="form.errors.company_zip_code" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                </div>
-
-            
-
-                <div class="grid grid-cols-3 mt-8 border-t border-gray-200 pt-12">
-                    <!-- Company Contact Information -->
-                    <div class="col-span-1">
-                        <h2 class="text-lg font-semibold text-gray-900">Company Contact Information</h2>
-                        <p class="text-sm text-gray-600">
-                            Provide the official contact details of your company.
-                        </p>
-                    </div>
-
-                    <div class="col-span-2">
-                        <div>
-                            <div class="flex items-center gap-1">
-                                <InputLabel for="company_email" value="Company Email Address" />
-                                <span class="text-red-500">*</span>
-                            </div>
-                            <div>
-                                <TextInput 
-                                    id="company_email"
-                                    v-model="form.company_email" 
-                                    type="email" 
-                                    class="mt-1 mb-4 block w-full" 
-                                    required/>
-                                <InputError class="mt-1" :message="form.errors.company_email" />
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex items-center gap-1">
-                                <InputLabel for="company_contact_number" value="Company Contact Number" />  
+                        <!-- Right Column: Username Input -->
+                        <div class="col-span-2">
+                            <div class="flex items-center gap-1 col-span-6 sm:col-span-4">
+                                <InputLabel for="company_name" value="Company Name" />
                                 <span class="text-red-500">*</span>
                             </div>
                             <div>
                                 <TextInput
-                                    id="company_contact_number"
-                                    v-model="formattedContactNumber"
-                                    v-mask="'# (###) ###-####'"
+                                    id="company_name"
+                                    v-model="form.company_name"
+                                    type="text"
+                                    class="mt-1 mb-4 block w-full"
+                                    required />
+                                <InputError class="mt-2" :message="form.errors.company_name" />
+                            </div>
+
+                            <!-- Company Address -->
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="col-span-2">
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="company_street_address" value="Street Address" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
+                                    <div>
+                                        <TextInput 
+                                            id="company_street_address" 
+                                            v-model="form.company_street_address" 
+                                            type="text" 
+                                            class="mt-1 mb-4 block w-full" 
+                                            required />
+                                        <InputError class="mt-1" :message="form.errors.company_street_address" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="company_brgy" value="Barangay" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
+                                    <div>
+                                        <TextInput 
+                                            id="company_brgy" 
+                                            v-model="form.company_brgy" 
+                                            type="text" 
+                                            class="mt-1 mb-4 block w-full" 
+                                            required />
+                                        <InputError class="mt-1" :message="form.errors.company_brgy" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-5 gap-4">
+                                <div class="col-span-2">
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="company_city" value="City" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
+                                    <div>
+                                        <TextInput 
+                                            id="company_city" 
+                                            v-model="form.company_city" 
+                                            type="text" 
+                                            class="mt-1 mb-4 block w-full" 
+                                            required />
+                                        <InputError class="mt-1" :message="form.errors.company_city" />
+                                    </div>
+                                </div>
+
+                                <div class="col-span-2">
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="company_province" value="Province" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
+                                    <div>
+                                        <TextInput 
+                                            id="company_province" 
+                                            v-model="form.company_province" 
+                                            type="text" 
+                                            class="mt-1 mb-4 block w-full" 
+                                            required />
+                                        <InputError class="mt-1" :message="form.errors.company_province" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="company_zip_code" value="ZIP Code" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
+                                    <div>
+                                        <TextInput 
+                                            id="company_zip_code" 
+                                            v-model="form.company_zip_code" 
+                                            type="text" 
+                                            class="mt-1 mb-4 block w-full" 
+                                            required />
+                                        <InputError class="mt-1" :message="form.errors.company_zip_code" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                
+
+                    <div class="grid grid-cols-3 mt-8 border-t border-gray-200 pt-12">
+                        <!-- Company Contact Information -->
+                        <div class="col-span-1">
+                            <h2 class="text-lg font-semibold text-gray-900">Company Contact Information</h2>
+                            <p class="text-sm text-gray-600">
+                                Provide the official contact details of your company.
+                            </p>
+                        </div>
+
+                        <div class="col-span-2">
+                            <div>
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="company_email" value="Company Email Address" />
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <div>
+                                    <TextInput 
+                                        id="company_email"
+                                        v-model="form.company_email" 
+                                        type="email" 
+                                        class="mt-1 mb-4 block w-full" 
+                                        required/>
+                                    <InputError class="mt-1" :message="form.errors.company_email" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="company_contact_number" value="Company Contact Number" />  
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <div>
+                                    <TextInput
+                                        id="company_contact_number"
+                                        v-model="formattedContactNumber"
+                                        v-mask="'# (###) ###-####'"
+                                        type="tel"
+                                        class="mt-1 mb-4 block w-full"
+                                        required
+                                    />
+                                    <InputError class="mt-1" :message="form.errors.company_contact_number" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="telephone_number" value="Company Telephone Number" />
+                                </div>
+                                <TextInput
+                                    id="telephone_number"
+                                    v-model="form.telephone_number"
                                     type="tel"
                                     class="mt-1 mb-4 block w-full"
-                                    required
                                 />
-                                <InputError class="mt-1" :message="form.errors.company_contact_number" />
+                                <InputError class="mt-1" :message="form.errors.telephone_number" />
                             </div>
                         </div>
-
-                        <div>
-                            <div class="flex items-center gap-1">
-                                <InputLabel for="telephone_number" value="Company Telephone Number" />
-                            </div>
-                            <TextInput
-                                id="telephone_number"
-                                v-model="form.telephone_number"
-                                type="tel"
-                                class="mt-1 mb-4 block w-full"
-                            />
-                            <InputError class="mt-1" :message="form.errors.telephone_number" />
-                        </div>
                     </div>
-                </div>
-                
-                
-
-                <div class="grid grid-cols-3 mt-8 border-t border-gray-200 pt-12">
-                    <!-- Company HR Information -->
-                    <div class=" col-span-1">
-                        <h2 class="text-lg font-semibold text-gray-900">Personal Information</h2>
-                        <p class="text-sm text-gray-600"></p>
-                    </div>
-
-                    <div class="col-span-2">
-                        <!-- Full Name -->
-                        <div class="flex items-center gap-1">
-                            <InputLabel for="company_hr_full_name" value="Full Name" />
-                            <span class="text-red-500">*</span>
-                        </div>
-                        <div>
-                            <TextInput id="company_hr_full_name" v-model="form.company_hr_full_name" type="text" class="mt-1 mb-4 block w-full" required />
-                            <InputError class="mt-2" :message="form.errors.company_hr_full_name" />
-                        </div>
-
-                        
                     
+                    
+
+                    <div class="grid grid-cols-3 mt-8 border-t border-gray-200 pt-12">
+                        <!-- Company HR Information -->
+                        <div class=" col-span-1">
+                            <h2 class="text-lg font-semibold text-gray-900">Personal Information</h2>
+                            <p class="text-sm text-gray-600"></p>
+                        </div>
+
+                        <div class="col-span-2">
+                            <!-- Full Name -->
+                            <div class="flex items-center gap-1">
+                                <InputLabel for="company_hr_full_name" value="Full Name" />
+                                <span class="text-red-500">*</span>
+                            </div>
+                            <div>
+                                <TextInput id="company_hr_full_name" v-model="form.company_hr_full_name" type="text" class="mt-1 mb-4 block w-full" required />
+                                <InputError class="mt-2" :message="form.errors.company_hr_full_name" />
+                            </div>
+
+                            
+                        
+                        </div>
                     </div>
-                </div>
                 </div>
 
                 <!-- Institution Fields -->
@@ -496,8 +496,9 @@ const   redirectToLogin = () => {
                         </div>
                     </div>
                 </div>
-    <!-- Graduate Fields -->
-    <div v-if="form.role === 'graduate'" class="mt-4">
+
+                <!-- Graduate Fields -->
+                <div v-if="form.role === 'graduate'" class="mt-4">
                     <!-- Graduate First Name -->
                     <InputLabel for="graduate_first_name" value="Graduate First Name" />
                     <TextInput
@@ -527,29 +528,25 @@ const   redirectToLogin = () => {
                         class="mt-1 block w-full"
                         required/>
                     <InputError class="mt-2" :message="form.errors.graduate_last_name" />
-
-            
-
-                
+                        
                     <!-- Graduate Graduated From -->
                     <div class="mt-4">
                         <InputLabel for="graduate_school_graduated_from" value="School Graduated From" />
                         <select
-            id="graduate_school_graduated_from"
-            v-model="form.graduate_school_graduated_from"
-            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-            required
-        >
-            <option value="" disabled>Select a School</option>
-            <option v-for="user in insti_users"  :key="user.id" :value="user.institution_name">
-                {{ user.institution_name }}
-            </option>
-        </select>
+                            id="graduate_school_graduated_from"
+                            v-model="form.graduate_school_graduated_from"
+                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            required
+                            >
+                            <option value="" disabled>Select a School</option>
+                            <option v-for="user in insti_users"  :key="user.id" :value="user.institution_name">
+                                {{ user.institution_name }}
+                            </option>
+                        </select>
                         <InputError class="mt-2" :message="form.errors.graduate_school_graduated_from" />
                     </div>
 
                     <!-- Program Completed -->
-                
 
                     <!-- Year Graduated -->
                     <div class="mt-4">
@@ -563,63 +560,67 @@ const   redirectToLogin = () => {
                         <option v-for="year in school_year" :key="year" :value="year.school_year_range">{{ year.school_year_range }}</option>
                     </select>
                     <InputError class="mt-2" :message="form.errors.graduate_year_graduated" />
-                </div>
 
-                    <!-- Graduate Program Completed -->
-                    <div class="mt-4">
-                        <InputLabel for="graduate_program_completed" value="Program Completed" />
-                        <TextInput
-                            id="graduate_program_completed"
-                            v-model="form.graduate_program_completed"
-                            type="text"
-                            class="mt-1 block w-full"
-                            required/>
-                        <InputError class="mt-2" :message="form.errors.graduate_program_completed" />
                     </div>
 
-                </div>
+                        <!-- Graduate Program Completed -->
+                        <div class="mt-4">
+                            <InputLabel for="graduate_program_completed" value="Program Completed" />
+                            <TextInput
+                                id="graduate_program_completed"
+                                v-model="form.graduate_program_completed"
+                                type="text"
+                                class="mt-1 block w-full"
+                                required/>
+                            <InputError class="mt-2" :message="form.errors.graduate_program_completed" />
+                        </div>
 
-
-
-                <div class="grid grid-cols-3 ">
-                    <div class=" col-span-1">
-                        <h2 class="text-lg font-semibold text-gray-900"></h2>
-                        <p class="text-sm text-gray-600"></p>
                     </div>
 
-                    <div class=" col-span-2">
-                    <!-- Gender -->
-                        <div>
-                            <div class="flex items-center gap-1">
-                                <InputLabel for="gender" value="Gender" />
-                                <span class="text-red-500">*</span>
-                            </div>
-                            <div>
-                                <select id="gender" v-model="form.gender" class="mt-1 mb-4 block w-full" required>
-                                    <option value="">Select Gender</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                                <InputError class="" :message="form.errors.gender" />
-                            </div>
+                    <!-- UPDATE 04/04 Putting "gender" & "date of birth" in one row -->
+                    <div class="grid grid-cols-3 ">
+                        <div class=" col-span-1">
+                            <h2 class="text-lg font-semibold text-gray-900"></h2>
+                            <p class="text-sm text-gray-600"></p>
                         </div>
-                        <!-- Date of Birth -->
-                        <div>
-                            <div class="flex items-center gap-1">
-                                <InputLabel for="dob" value="Date of Birth" />
-                                <span class="text-red-500">*</span>
-                            </div>
+
+                        <div class=" col-span-2">
+                            <div class="grid grid-cols-2 gap-4">
+                            <!-- Gender -->
                             <div>
-                                <TextInput 
-                                    id="dob" 
-                                    v-model="form.dob" 
-                                    type="date" 
-                                    class="mt-1 mb-4 block w-full" 
-                                    required />
-                                <InputError class="mt-2" :message="form.errors.dob" />
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="gender" value="Gender" />
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <div>
+                                    <select id="gender" v-model="form.gender" class="mt-1 mb-4 block w-full" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <InputError class="" :message="form.errors.gender" />
+                                </div>
                             </div>
-                        </div>
+                            <!-- Date of Birth -->
+                            <div>
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="dob" value="Date of Birth" />
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <div>
+                                    <TextInput 
+                                        id="dob" 
+                                        v-model="form.dob" 
+                                        type="date" 
+                                        class="mt-1 mb-4 block w-full" 
+                                        required />
+                                    <InputError class="mt-2" :message="form.errors.dob" />
+                                </div>
+                            </div>
+                            </div>
+                            <!-- END UPDATE 04/04 Putting "gender" & "date of birth" in one row -->
+
                         <!-- HR Email -->
                         <div>
                             <div class="flex items-center gap-1">
@@ -708,15 +709,18 @@ const   redirectToLogin = () => {
                         </div>
                     </div>
                 </div>
+                
 
-            <div class="flex items-center justify-end mt-8 border-t border-gray-200 pt-12">
+                <div class="flex items-center justify-end mt-8 border-t border-gray-200 pt-12">
               
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
-                </PrimaryButton>
-            </div>
-        </form>
+                    <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                        Register
+                    </PrimaryButton>
+                </div>
+            
+            </form>
         
+        </template>
 
     </AuthenticationCard>
 
@@ -729,12 +733,11 @@ const   redirectToLogin = () => {
                 <button
                     class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
                     @click="redirectToLogin"
-                >
+                    >
                     Okay
                 </button>
             </div>
         </template>
     </Modal>
-
 
 </template>
