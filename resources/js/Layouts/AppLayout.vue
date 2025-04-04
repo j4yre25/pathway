@@ -68,6 +68,25 @@ console.log(page.props.permissions.canManageInstitution)
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
 
 
+                                <NavLink v-if="page.props.roles.isCompany || page.props.roles.isInstitution " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved"
+                                >
+                                    List of Jobs
+                                </NavLink>
+
+                                <NavLink v-if="page.props.roles.isCompany || page.props.roles.isInstitution " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved"
+                                >
+                                    Manage Applicants
+                                </NavLink>
+
+                                <NavLink v-if="page.props.roles.isCompany || page.props.roles.isInstitution " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved"
+                                >
+                                    Manage HR Accounts
+                                </NavLink>
+
+                                <NavLink v-if="page.props.roles.isCompany || page.props.roles.isInstitution " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved"
+                                >
+                                    Reports
+                                </NavLink>
 
                                 <NavLink v-if="page.props.roles.isPeso"
                                     :href="route('admin.manage_users', { user: page.props.auth.user.id })"
@@ -75,7 +94,7 @@ console.log(page.props.permissions.canManageInstitution)
                                     Manage Users
 
 
-
+                                </NavLink>
 
 
                                 <NavLink v-if="page.props.roles.isPeso"
