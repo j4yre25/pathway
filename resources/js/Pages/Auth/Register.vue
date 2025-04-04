@@ -6,13 +6,11 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { computed } from 'vue';
-import { MaskDirective } from 'vue-the-mask';
-import { onMounted, ref } from 'vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import { onMounted, ref, computed } from 'vue';
 import { defineProps } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import { Inertia } from '@inertiajs/inertia';
+
 
 const props = defineProps ({
     insti_users: Array,
@@ -22,6 +20,7 @@ const props = defineProps ({
 
 console.log(props)
 
+const isPasswordFocused = ref(false);
 const showModal = ref(false); 
 
 // Define the form with additional fields for user types
@@ -680,12 +679,14 @@ const   redirectToLogin = () => {
                                     v-model="form.password" 
                                     type="password" 
                                     class="mt-1 block w-full" 
-                                    required />
+                                    required 
+                                    @focus="isPasswordFocused = true"
+                                    @blur="isPasswordFocused = false" />
                                 <InputError class="mt-1" :message="form.errors.password" />
                             </div>
 
                             <!-- Password validation tooltip UPDATE 04/04-->
-                            <div v-if="form.password" class="mt-2 p-3 bg-gray-800 text-white rounded-md w-64 text-sm shadow-lg">
+                            <div v-if="isPasswordFocused && form.password" class="mt-2 p-3 bg-gray-800 text-white rounded-md w-64 text-sm shadow-lg">
                                 <p class="font-semibold text-gray-200">Password must meet the following:</p>
                                 <ul class="mt-1">
                                     <li :class="passwordCriteria.length ? 'text-green-400' : 'text-red-400'">
