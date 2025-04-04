@@ -72,7 +72,22 @@ console.log(page.props.permissions.canManageInstitution)
 
                                 <NavLink v-if="page.props.roles.isPeso || page.props.roles.isCompany || page.props.roles.isInstitution " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved"
                                 >
-                                    Jobs
+                                    List of Jobs
+                                </NavLink>
+
+                                <NavLink v-if="page.props.roles.isPeso || page.props.roles.isCompany || page.props.roles.isInstitution " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved"
+                                >
+                                    Manage Applicants
+                                </NavLink>
+
+                                <NavLink v-if="page.props.roles.isPeso || page.props.roles.isCompany || page.props.roles.isInstitution " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved"
+                                >
+                                    Manage HR Accounts
+                                </NavLink>
+
+                                <NavLink v-if="page.props.roles.isPeso || page.props.roles.isCompany || page.props.roles.isInstitution " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved"
+                                >
+                                    Reports
                                 </NavLink>
 
                                 <NavLink
