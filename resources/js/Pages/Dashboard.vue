@@ -45,5 +45,7 @@ watch(userNotApproved, (newVal) => {
                 </div>
             </div>
         </div>
+
+        
     </AppLayout>
 </template>

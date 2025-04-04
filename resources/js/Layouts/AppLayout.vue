@@ -68,11 +68,12 @@ console.log(page.props.permissions.canManageInstitution)
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
 
 
+
                                 <NavLink v-if="page.props.roles.isPeso"
                                     :href="route('admin.manage_users', { user: page.props.auth.user.id })"
                                     :active="route().current('admin.manage_users')">
                                     Manage Users
-                                </NavLink>
+
 
 
 

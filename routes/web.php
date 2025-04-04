@@ -9,9 +9,11 @@ use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminRegisterController;
+use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\HRRegisterController;
+use App\Http\Controllers\ManageHRController;
 use App\Http\Controllers\GraduateController;
 use App\Http\Controllers\GraduateRegisterController;
 use App\Http\Controllers\InstitutionController;
@@ -129,12 +131,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 //     'verified',
 // ]);
 
-
+// Companies Routes
+// Jobs Routes
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}', [JobsController::class, 'index'])
     ->name('jobs');
-
-//  Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}', [JobsController::class, 'index'])
-//     ->name('jobs');
 
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}/create', [JobsController::class, 'create'])
@@ -159,6 +159,42 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('/jobs/edit/{job}', [JobsController::class, 'delete'])
     ->name('jobs.delete');
+
+//Manage Applicants Routes
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    // View all applicants for a specific job
+    Route::get('/jobs/{job}/applicants', [ApplicantController::class, 'index'])->name('applicants');
+
+    // View details of a specific applicant
+    Route::get('/applicants/{applicant}', [ApplicantController::class, 'show'])->name('applicants.show');
+
+    // Update an applicant's status (e.g., mark as hired)
+    Route::put('/applicants/{applicant}', [ApplicantController::class, 'update'])->name('applicants.update');
+
+    // Delete an applicant
+    Route::delete('/applicants/{applicant}', [ApplicantController::class, 'delete'])->name('applicants.delete');
+});  
+
+// Manage HR Accounts 
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    // View all HR accounts
+    Route::get('/hr-accounts', [ManageHRController::class, 'index'])->name('hr-accounts.index');
+
+    // Create a new HR account
+    Route::post('/hr-accounts', [ManageHRController::class, 'store'])->name('hr-accounts.store');
+
+    // View details of a specific HR account
+    Route::get('/hr-accounts/{hrAccount}', [ManageHRController::class, 'show'])->name('hr-accounts.show');
+
+    // Update an HR account
+    Route::put('/hr-accounts/{hrAccount}', [ManageHRController::class, 'update'])->name('hr-accounts.update');
+
+    // Delete an HR account
+    Route::delete('/hr-accounts/{hrAccount}', [ManageHRController::class, 'delete'])->name('hr-accounts.delete');
+});
+
+
 
 
 // Manage Users (PESO)
