@@ -15,7 +15,7 @@ const props = defineProps({
 
 const open = ref(false)
 
-const deleteCategory= (r) => {
+const archiveCategory= (r) => {
     router.delete(route('categories.delete', { category: props.category.id }));
 };
 
@@ -24,16 +24,16 @@ const deleteCategory= (r) => {
 <template>
     <ActionSection>
         <template #title>
-            Delete Category
+            Archive Category
         </template>
 
         <template #description>
-                This section to delete your category
+                This section to archive your category
         </template>
 
         <template #content>
             <DangerButton @click ="open = true">
-                Delete Category
+                Archive Category
 
             </DangerButton>
 
@@ -43,12 +43,12 @@ const deleteCategory= (r) => {
                 </template>
 
                 <template #content>
-                        Are you sure you want to delete this category #{{ category.id }} {{ category.name }}
+                        Are you sure you want to archive this category #{{ category.id }} {{ category.name }}
                 </template>
 
                 <template #footer>
-                        <DangerButton @click="deleteCategory()" class="mr-2">
-                            Delete Category
+                        <DangerButton @click="archiveCategory()" class="mr-2">
+                            Archive Category
                         </DangerButton>
                         <SecondaryButton @click="open = false">Cancel</SecondaryButton>
                 </template>

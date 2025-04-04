@@ -21,7 +21,7 @@ const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
-    role: 'hr', 
+    role: 'hr',
     terms: false,
 });
 
@@ -29,8 +29,9 @@ const form = useForm({
 
 const formattedContactNumber = computed({
     get: () => {
-        let rawNumber = form.contact_number.replace(/\D/g, ""); // Remove non-numeric characters
-        
+        let rawNumber = form.company_hr_contact_number.replace(/\D/g, ""); // Remove non-numeric characters
+
+
         // Ensure only the first 10 digits are considered
         if (rawNumber.length > 10) {
             rawNumber = rawNumber.slice(0, 10);
@@ -92,6 +93,7 @@ const submit = () => {
 </script>
 
 <template>
+
     <Head title="Human Resource Officer Register" />
 
     <AuthenticationCard>
@@ -107,10 +109,11 @@ const submit = () => {
                         <h2 class="text-lg font-semibold text-gray-900">Personal Information</h2>
                         <p class="text-sm text-gray-600"></p>
 
-                        
+
                     </div>
 
                     <div class="col-span-2">
+
                         <div class="grid grid-cols-2 gap-4">
                                <div> <!-- First Name -->
                                     <div class="flex items-center gap-1">
@@ -134,6 +137,7 @@ const submit = () => {
                                </div>
                             </div>
 
+
                         <div class="grid grid-cols-2 gap-4">
                             <!-- Gender -->
                             <div>
@@ -142,8 +146,8 @@ const submit = () => {
                                     <span class="text-red-500">*</span>
                                 </div>
                                 <div>
-                                    <select id="gender" v-model="form.gender" class="mt-1 mb-4 block w-full" required>
-                                        <option value="">Select Gender</option>
+                       <select id="gender" v-model="form.gender" class="mt-1 mb-4 block w-full" required>
+                          <option value="">Select Gender</option>
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
                                         <option value="Other">Other</option>
@@ -158,6 +162,7 @@ const submit = () => {
                                     <span class="text-red-500">*</span>
                                 </div>
                                 <div>
+
                                     <TextInput 
                                         id="dob" 
                                         v-model="form.dob" 
@@ -165,6 +170,7 @@ const submit = () => {
                                         class="mt-1 mb-4 block w-full" 
                                         required />
                                     <InputError class="mt-2" :message="form.errors.dob" />
+
                                 </div>
                             </div>
                         </div>
@@ -176,11 +182,7 @@ const submit = () => {
                                 <span class="text-red-500">*</span>
                             </div>
                             <div>
-                                <TextInput 
-                                    id="email" 
-                                    v-model="form.email" 
-                                    type="email" 
-                                    class="mt-1 mb-4 block w-full" 
+                                <TextInput id="email" v-model="form.email" type="email" class="mt-1 mb-4 block w-full"
                                     required />
                                 <InputError class="mt-2" :message="form.errors.email" />
                             </div>
@@ -193,6 +195,7 @@ const submit = () => {
                                 <span class="text-red-500">*</span>
                             </div>
                             <div>
+
                                 <TextInput 
                                     id="contact_number"
                                     v-model="formattedContactNumber"
@@ -212,6 +215,7 @@ const submit = () => {
                                 <span class="text-red-500">*</span>
                             </div>
                             <div class="mb-2">
+
                                 <TextInput 
                                     id="password" 
                                     v-model="form.password" 
@@ -224,13 +228,16 @@ const submit = () => {
                             </div>
 
                             <!-- Password validation tooltip UPDATE 04/04-->
+
                             <div v-if="isPasswordFocused && form.password" class="mt-2 p-3 bg-gray-800 text-white rounded-md w-64 text-sm shadow-lg">
+
                                 <p class="font-semibold text-gray-200">Password must meet the following:</p>
                                 <ul class="mt-1">
                                     <li :class="passwordCriteria.length ? 'text-green-400' : 'text-red-400'">
                                         ✔ Minimum 8 characters
                                     </li>
-                                    <li :class="passwordCriteria.uppercaseLowercase ? 'text-green-400' : 'text-red-400'">
+                                    <li
+                                        :class="passwordCriteria.uppercaseLowercase ? 'text-green-400' : 'text-red-400'">
                                         ✔ Upper & lower case letters
                                     </li>
                                     <li :class="passwordCriteria.number ? 'text-green-400' : 'text-red-400'">
@@ -248,17 +255,13 @@ const submit = () => {
                                 <span class="text-red-500">*</span>
                             </div>
                             <div class="mb-2">
-                                <TextInput 
-                                    id="password_confirmation" 
-                                    v-model="form.password_confirmation" 
-                                    type="password" 
-                                    class="mt-1 mb-4 block w-full" 
-                                    required />
+                                <TextInput id="password_confirmation" v-model="form.password_confirmation"
+                                    type="password" class="mt-1 mb-4 block w-full" required />
                                 <InputError class="mt-1" :message="form.errors.password_confirmation" />
                             </div>
                         </div>
                     </div>
-                    </div>
+                </div>
                 <div class="flex items-center justify-end mt-8">
                     <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                         Register

@@ -46,6 +46,14 @@ class ManageUsersController extends Controller
         return redirect()->route('admin.manage_users')->with('flash.banner', 'User  approved successfully.');
     }
 
+    public function disapprove(User $user)
+    {
+        $user->is_approved = false; 
+        $user->save();
+
+         return redirect()->back()->with('success', 'User disapproved successfully.');
+    }
+
     public function delete(Request $request, User $user) {
 
         // Gate::authorize('delete', $job);
