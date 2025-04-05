@@ -10,14 +10,14 @@ class Job extends Model
 
 
     public function sector()
-{
-    return $this->belongsTo(Sector::class);
-}
+    {
+        return $this->belongsTo(Sector::class);
+    }
 
-public function category()
-{
-    return $this->belongsTo(Category::class);
-}
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -95,12 +95,12 @@ public function category()
     public function scopeMatchingPreferences($query, NextRole $nextRole)
     {
         return $query->where('work_type', $nextRole->work_type)
-                     ->where('sector', $nextRole->sector)
-                     ->where(function($query) use ($nextRole) {
-                         foreach ($nextRole->locations as $location) {
-                             $query->orWhere('location', 'like', "%{$location}%");
-                         }
-                     });
+            ->where('sector', $nextRole->sector)
+            ->where(function ($query) use ($nextRole) {
+                foreach ($nextRole->locations as $location) {
+                    $query->orWhere('location', 'like', "%{$location}%");
+                }
+            });
     }
 
     /**
@@ -128,7 +128,7 @@ public function category()
     }
 
     public function JobApplication()
-{
-    return $this->hasMany(JobApplication::class);
-}
+    {
+        return $this->hasMany(JobApplication::class);
+    }
 }
