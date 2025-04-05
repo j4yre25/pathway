@@ -4,7 +4,6 @@ import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import LoginCard from '@/Components/LoginCard.vue'; // UPDATE 04/04 This is the new component for the login form layout. Remove the authentication card component
 import Checkbox from '@/Components/Checkbox.vue';
-import LoginCard from '@/Components/LoginCard.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';

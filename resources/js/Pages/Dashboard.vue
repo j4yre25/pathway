@@ -5,7 +5,7 @@ import { usePage } from "@inertiajs/vue3";
 import { computed, watch, ref } from "vue";
 import Welcome from "@/Components/Welcome.vue";
 import Modal from "../Components/Modal.vue";
-import CompanyDashboard from "@/Pages/Company/CompanyDashboard.vue";
+import CompanyDashboard from "../Pages/Company/CompanyDashboard.vue";
 import { Inertia } from "@inertiajs/inertia";
 
 const { props } = usePage();
@@ -30,10 +30,6 @@ const handleLogout = () => {
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Dashboard
             </h2>
-
-            <!-- <div class="py-12">
-                    <CompanyDashboard :summary="props.summary" />
-            </div> -->
         </template>
 
         <div class="py-12">
@@ -56,6 +52,10 @@ const handleLogout = () => {
                             </button>
                         </template>
                     </Modal>
+                    <CompanyDashboard
+                        v-if="props.auth.user.role === 'company'"
+                        :summary="props.summary"
+                    />
                 </div>
             </div>
         </div>
