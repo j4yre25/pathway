@@ -590,7 +590,51 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/resume', [ProfileController::class, 'updateResume'])->name('profile.resume');
 });
 
+// Profile Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
 
+    // Education Routes
+    Route::post('/profile/education', [EducationController::class, 'addEducation'])->name('education.add');
+    Route::put('/profile/education/{id}', [EducationController::class, 'updateEducation'])->name('education.update');
+    Route::delete('/profile/education/{id}', [EducationController::class, 'removeEducation'])->name('education.remove');
+
+    // Experience Routes
+    Route::post('/profile/experience', [ExperienceController::class, 'addExperience'])->name('experience.add');
+    Route::put('/profile/experience/{id}', [ExperienceController::class, 'updateExperience'])->name('experience.update');
+    Route::delete('/profile/experience/{id}', [ExperienceController::class, 'removeExperience'])->name('experience.remove');
+
+    // Skill Routes
+    Route::post('/profile/skills', [SkillController::class, 'addSkill'])->name('skills.add');
+    Route::put('/profile/skills/{id}', [SkillController::class, 'updateSkill'])->name('skills.update');
+    Route::delete('/profile/skills/{id}', [SkillController::class, 'removeSkill'])->name('skills.remove');
+
+    // Certification Routes
+    Route::post('/profile/certifications', [CertificationController::class, 'addCertification'])->name('certifications.add');
+    Route::put('/profile/certifications/{id}', [CertificationController::class, 'updateCertification'])->name('certifications.update');
+    Route::delete('/profile/certifications/{id}', [CertificationController::class, 'removeCertification'])->name('certifications.remove');
+
+    // Achievement Routes
+    Route::post('/profile/achievements', [AchievementController::class, 'addAchievement'])->name('achievements.add');
+    Route::put('/profile/achievements/{id}', [AchievementController::class, 'updateAchievement'])->name('achievements.update');
+    Route::delete('/profile/achievements/{id}', [AchievementController::class, 'removeAchievement'])->name('achievements.remove');
+
+    // Testimonial Routes
+    Route::post('/profile/testimonials', [TestimonialController::class, 'addTestimonial'])->name('testimonials.add');
+    Route::put('/profile/testimonials/{id}', [TestimonialController::class, 'updateTestimonial'])->name('testimonials.update');
+    Route::delete('/profile/testimonials/{id}', [TestimonialController::class, 'removeTestimonial'])->name('testimonials.remove');
+
+    // Employment Preferences Routes
+    Route::post('/profile/employment-preferences', [EmploymentPreferencesController::class, 'updateEmploymentPreferences'])->name('employment.preferences.update');
+
+    // Career Goals Routes
+    Route::post('/profile/career-goals', [CareerGoalsController::class, 'saveCareerGoals'])->name('career.goals.save');
+
+    // Resume Routes
+    Route::post('/profile/resume', [ResumeController::class, 'uploadResume'])->name('resume.upload');
+    Route::delete('/profile/resume', [ResumeController::class, 'removeResume'])->name('resume.remove');
+});
 
 
 
