@@ -56,8 +56,8 @@ class CreateNewUser implements CreatesNewUsers
                 $rules['company_province'] = ['required', 'string', 'max:255'];
                 $rules['company_zip_code'] = ['required', 'string', 'max:4'];
                 $rules['company_contact_number'] = ['required', 'digits_between:10,15'];
-                $rules['company_hr_full_name'] = ['required', 'string', 'max:255'];
-                $rules['company_hr_gender'] = ['required', 'string', 'in:Male,Female,Other'];
+                $rules['company_hr_first_name'] = ['required', 'string', 'max:255'];
+                $rules['company_hr_last_name'] = ['required', 'string', 'max:255'];
                 break;
             case 'institution':
                 $rules['institution_type'] = ['required', 'string'];
@@ -106,8 +106,8 @@ class CreateNewUser implements CreatesNewUsers
                 $userData['company_city'] = $input['company_city'];
                 $userData['company_province'] = $input['company_province'];
                 $userData['company_zip_code'] = $input['company_zip_code'];
-                $userData['company_hr_full_name'] = $input['company_hr_full_name'];
-                $userData['company_hr_contact_number'] = $input['company_hr_contact_number'];
+                $userData['company_hr_first_name'] = $input['company_hr_first_name'];
+                $userData['company_hr_last_name'] = $input['company_hr_last_name'];
                 break;
             case 'institution':
                 $userData['institution_type'] = $input['institution_type'];

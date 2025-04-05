@@ -9,34 +9,23 @@ class Portfolio extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'user_id',
-        'title',
-        'description',
-        'image_path',
-        'tags'
+        'graduate_full_name',
+        'graduate_professional_title',
+        'graduate_email',
+        'graduate_phone',
+        'graduate_location',
+        'graduate_about_me',
+        'graduate_picture_url',
+        'graduate_skills',
+        'graduate_career_goals',
+        'graduate_employment_preferences',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
-        'tags' => 'array'
+        'graduate_skills' => 'array',
+        'graduate_career_goals' => 'array',
+        'graduate_employment_preferences' => 'array',
     ];
-
-    /**
-     * Get the user that owns the portfolio item.
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 }
-

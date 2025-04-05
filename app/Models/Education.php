@@ -24,6 +24,12 @@ class Education extends Model
         'grade',
         'activities',
         'description',
+        'graduate_education_institution_id',
+        'graduate_education_program',
+        'graduate_education_field_of_study',
+        'graduate_education_start_date',
+        'graduate_education_end_date',
+        'graduate_education_description',
     ];
 
     /**
@@ -34,6 +40,8 @@ class Education extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+        'graduate_education_start_date' => 'date',
+        'graduate_education_end_date' => 'date',
     ];
 
     /**

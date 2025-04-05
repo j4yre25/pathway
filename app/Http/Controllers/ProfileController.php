@@ -3,31 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
-use App\Models\Portfolio;
+use App\Http\Requests\EducationUpdateRequest;
+use App\Http\Requests\SkillUpdateRequest;
 use App\Models\User;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Education;
+use App\Models\Skill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use Inertia\Response;
-
+use App\Models\Experience;
+use App\Models\Certification;
+use App\Models\Achievement;
+use App\Models\Testimonial;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile.
-     *
-     * @return \Inertia\Response
-     */
+    // Show the profile settings page
     public function index()
     {
         $user = Auth::user();
-   
-        
-        // Get related data for the profile
      
      
         return Inertia::render('Frontend/Profile', [
@@ -35,165 +29,354 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): Response
-    {
-        return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => session('status'),
-        ]);
-    }
-
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-         $user = $request->user()->fill($request->validated());
-
-        $user->forceFill([
-            'graduate_first_name' => $request->input('graduate_first_name'),
-            'graduate_middle_initial' => $request->input('graduate_middle_initial'),
-            'graduate_last_name' => $request->input('graduate_last_name'),
-            'email' => $request->input('email'),
-            'graduate_professional_title' => $request->input('graduate_professional_title'),
-            'graduate_skills' => json_encode($request->input('graduate_skills')), // Store as JSON
-            'personal_summary' => json_encode($request->input('personal_summary')),
-        ]);
-    
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
-
-        return Redirect::route('profile.update');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
+    // Update profile information
+    public function updateProfile(Request $request)
     {
         $request->validate([
-            'password' => ['required', 'current_password'],
+            'fullName' => 'required|string|max:255',
+            'graduate_professional_title' => 'nullable|string|max:255',
+            'graduate_email' => 'required|email|max:255',
+            'graduate_phone' => 'nullable|string|max:20',
+            'graduate_location' => 'nullable|string|max:255',
+            'graduate_birthdate' => 'nullable|date',
+            'graduate_gender' => 'nullable|string|max:10',
+            'graduate_ethnicity' => 'nullable|string|max:255',
+            'graduate_address' => 'nullable|string|max:255',
+            'graduate_about_me' => 'nullable|string',
+            'graduate_picture_url' => 'nullable|string|max:255',
         ]);
 
-        $user = $request->user();
+        $user = auth()->user();
+        $user->update($request->all());
 
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        return response()->json(['message' => 'Profile updated successfully.']);
     }
 
-    /**
-     * Upload portfolio files.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function uploadPortfolio(Request $request)
+    // Add education
+    public function addEducation(Request $request)
     {
-        $user = Auth::user();
-        
         $request->validate([
-            'files' => ['required', 'array'],
-            'files.*' => ['file', 'max:5120'], // 5MB max
+            'graduate_education_institution_id' => 'required|string|max:255',
+            'graduate_education_program' => 'required|string|max:255',
+            'graduate_education_field_of_study' => 'required|string|max:255',
+            'graduate_education_start_date' => 'required|date',
+            'graduate_education_end_date' => 'nullable|date',
+            'graduate_education_description' => 'nullable|string',
         ]);
 
-        foreach ($request->file('files') as $file) {
-            $path = $file->store('portfolios/' . $user->id, 'public');
-            
-            $portfolio = new Portfolio([
-                'user_id' => $user->id,
-                'file_name' => $file->getClientOriginalName(),
-                'file_path' => $path,
-                'file_type' => $file->getClientMimeType(),
-                'file_size' => $file->getSize(),
-            ]);
+        $education = new Education($request->all());
+        $education->user_id = auth()->id(); // Assuming you have a user_id field
+        $education->save();
 
-        }
-
-        return redirect()->back();
+        return response()->json(['message' => 'Education added successfully.']);
     }
 
-    /**
-     * Create a portfolio with work samples and awards.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function createPortfolio(Request $request)
+    // Update education
+    public function updateEducation(Request $request, $id)
     {
-        $user = Auth::user();
-
-        
-        $validated = $request->validate([
-            'work_samples' => ['nullable', 'array'],
-            'work_samples.*.title' => ['required', 'string', 'max:255'],
-            'work_samples.*.description' => ['nullable', 'string'],
-            'work_samples.*.file' => ['nullable', 'file', 'max:5120'], // 5MB max
-            
-            'awards' => ['nullable', 'array'],
-            'awards.*.name' => ['required', 'string', 'max:255'],
-            'awards.*.file' => ['nullable', 'file', 'max:5120'], // 5MB max
+        $request->validate([
+            'graduate_education_institution_id' => 'required|string|max:255',
+            'graduate_education_program' => 'required|string|max:255',
+            'graduate_education_field_of_study' => 'required|string|max:255',
+            'graduate_education_start_date' => 'required|date',
+            'graduate_education_end_date' => 'nullable|date',
+            'graduate_education_description' => 'nullable|string',
         ]);
 
-        // Process work samples
-        if (isset($validated['work_samples'])) {
-            foreach ($validated['work_samples'] as $sample) {
-                $filePath = null;
-                if (isset($sample['file']) && $sample['file']) {
-                    $filePath = $sample['file']->store('portfolios/' . $user->id . '/samples', 'public');
-                }
-                
-                $portfolio = new Portfolio([
-                    'user_id' => $user->id,
-                    'type' => 'work_sample',
-                    'title' => $sample['title'],
-                    'description' => $sample['description'] ?? null,
-                    'file_path' => $filePath,
-                    'file_name' => $filePath ? $sample['file']->getClientOriginalName() : null,
-                    'file_type' => $filePath ? $sample['file']->getClientMimeType() : null,
-                    'file_size' => $filePath ? $sample['file']->getSize() : null,
-                ]);
+        $education = Education::findOrFail($id);
+        $education->update($request->all());
 
-                // Fix: Use portfolioItems() relationship method
-            }
-        }
-
-        // Process awards
-        if (isset($validated['awards'])) {
-            foreach ($validated['awards'] as $award) {
-                $filePath = null;
-                if (isset($award['file']) && $award['file']) {
-                    $filePath = $award['file']->store('portfolios/' . $user->id . '/awards', 'public');
-                }
-                
-                $portfolio = new Portfolio([
-                    'user_id' => $user->id,
-                    'type' => 'award',
-                    'title' => $award['name'],
-                    'file_path' => $filePath,
-                    'file_name' => $filePath ? $award['file']->getClientOriginalName() : null,
-                    'file_type' => $filePath ? $award['file']->getClientMimeType() : null,
-                    'file_size' => $filePath ? $award['file']->getSize() : null,
-                ]);
-
-                // Fix: Use portfolioItems() relationship method
-            }
-        }
-
-        return redirect()->back();
+        return response()->json(['message' => 'Education updated successfully.']);
     }
 
-    
+    // Remove education
+    public function removeEducation($id)
+    {
+        $education = Education::findOrFail($id);
+        $education->delete();
+
+        return response()->json(['message' => 'Education removed successfully.']);
+    }
+
+    // Add experience
+    public function addExperience(Request $request)
+    {
+        $request->validate([
+            'graduate_experience_title' => 'required|string|max:255',
+            'graduate_experience_company' => 'required|string|max:255',
+            'graduate_experience_start_date' => 'required|date',
+            'graduate_experience_end_date' => 'nullable|date',
+            'graduate_experience_address' => 'nullable|string|max:255',
+            'graduate_experience_achievements' => 'nullable|string',
+            'graduate_experience_skills_tech' => 'nullable|string',
+        ]);
+
+        $experience = new Experience($request->all());
+        $experience->user_id = auth()->id(); // Assuming you have a user_id field
+        $experience->save();
+
+        return response()->json(['message' => 'Experience added successfully.']);
+    }
+
+    // Update experience
+    public function updateExperience(Request $request, $id)
+    {
+        $request->validate([
+            'graduate_experience_title' => 'required|string|max:255',
+            'graduate_experience_company' => 'required|string|max:255',
+ 'graduate_experience_start_date' => 'required|date',
+            'graduate_experience_end_date' => 'nullable|date',
+            'graduate_experience_address' => 'nullable|string|max:255',
+            'graduate_experience_achievements' => 'nullable|string',
+            'graduate_experience_skills_tech' => 'nullable|string',
+        ]);
+
+        $experience = Experience::findOrFail($id);
+        $experience->update($request->all());
+
+        return response()->json(['message' => 'Experience updated successfully.']);
+    }
+
+    // Remove experience
+    public function removeExperience($id)
+    {
+        $experience = Experience::findOrFail($id);
+        $experience->delete();
+
+        return response()->json(['message' => 'Experience removed successfully.']);
+    }
+
+    // Add skill
+    public function addSkill(Request $request)
+    {
+        $request->validate([
+            'graduate_skills_name' => 'required|string|max:255',
+            'graduate_skills_proficiency' => 'required|integer|min:1|max:100',
+            'graduate_skills_type' => 'required|string|max:255',
+            'graduate_skills_years_experience' => 'required|integer|min:0',
+        ]);
+
+        $skill = new Skill($request->all());
+        $skill->user_id = auth()->id(); // Assuming you have a user_id field
+        $skill->save();
+
+        return response()->json(['message' => 'Skill added successfully.']);
+    }
+
+    // Update skill
+    public function updateSkill(Request $request, $id)
+    {
+        $request->validate([
+            'graduate_skills_name' => 'required|string|max:255',
+            'graduate_skills_proficiency' => 'required|integer|min:1|max:100',
+            'graduate_skills_type' => 'required|string|max:255',
+            'graduate_skills_years_experience' => 'required|integer|min:0',
+        ]);
+
+        $skill = Skill::findOrFail($id);
+        $skill->update($request->all());
+
+        return response()->json(['message' => 'Skill updated successfully.']);
+    }
+
+    // Remove skill
+    public function removeSkill($id)
+    {
+        $skill = Skill::findOrFail($id);
+        $skill->delete();
+
+        return response()->json(['message' => 'Skill removed successfully.']);
+    }
+
+    // Add certification
+    public function addCertification(Request $request)
+    {
+        $request->validate([
+            'graduate_certification_name' => 'required|string|max:255',
+            'graduate_certification_issuer' => 'required|string|max:255',
+            'graduate_certification_issue_date' => 'required|date',
+            'graduate_certification_expiry_date' => 'nullable|date',
+            'graduate_certification_credential_id' => 'nullable|string|max:255',
+            'graduate_certification_credential_url' => 'nullable|string|max:255',
+        ]);
+
+        $certification = new Certification($request->all());
+        $certification->user_id = auth()->id(); // Assuming you have a user_id field
+        $certification->save();
+
+        return response()->json(['message' => 'Certification added successfully.']);
+    }
+
+    // Update certification
+    public function updateCertification(Request $request, $id)
+    {
+        $request->validate([
+            'graduate_certification_name' => 'required|string|max:255',
+            'graduate_certification_issuer' => 'required|string|max:255',
+            'graduate_certification_issue_date' => 'required|date',
+            'graduate_certification_expiry_date' => 'nullable|date',
+            'graduate_certification_credential_id' => 'nullable|string|max:255',
+            'graduate_certification_credential_url' => 'nullable|string|max:255',
+        ]);
+
+        $certification = Certification::findOrFail($id);
+        $certification->update($request->all());
+
+        return response()->json(['message' => 'Certification updated successfully.']);
+    }
+
+    // Remove certification
+    public function removeCertification($id)
+    {
+        $certification = Certification::findOrFail($id);
+        $certification->delete();
+
+        return response()->json(['message' => 'Certification removed successfully.']);
+    }
+
+    // Add achievement
+    public function addAchievement(Request $request)
+    {
+        $request->validate([
+            'graduate_achievement_title' => 'required|string|max:255',
+            'graduate_achievement_issuer' => 'required|string|max:255',
+            'graduate_achievement_date' => 'required|date',
+            'graduate_achievement_description' => 'nullable|string',
+            'graduate_achievement_url' => 'nullable|string|max:255',
+            'graduate_achievement_type' => 'nullable|string|max:255',
+        ]);
+
+        $achievement = new Achievement($request->all());
+        $achievement->user_id = auth()->id(); // Assuming you have a user_id field $achievement->save();
+
+        return response()->json(['message' => 'Achievement added successfully.']);
+    }
+
+    // Update achievement
+    public function updateAchievement(Request $request, $id)
+    {
+        $request->validate([
+            'graduate_achievement_title' => 'required|string|max:255',
+            'graduate_achievement_issuer' => 'required|string|max:255',
+            'graduate_achievement_date' => 'required|date',
+            'graduate_achievement_description' => 'nullable|string',
+            'graduate_achievement_url' => 'nullable|string|max:255',
+            'graduate_achievement_type' => 'nullable|string|max:255',
+        ]);
+
+        $achievement = Achievement::findOrFail($id);
+        $achievement->update($request->all());
+
+        return response()->json(['message' => 'Achievement updated successfully.']);
+    }
+
+    // Remove achievement
+    public function removeAchievement($id)
+    {
+        $achievement = Achievement::findOrFail($id);
+        $achievement->delete();
+
+        return response()->json(['message' => 'Achievement removed successfully.']);
+    }
+
+    // Add testimonial
+    public function addTestimonial(Request $request)
+    {
+        $request->validate([
+            'graduate_testimonials_name' => 'required|string|max:255',
+            'graduate_testimonials_role_title' => 'required|string|max:255',
+            'graduate_testimonials_relationship' => 'required|string|max:255',
+            'graduate_testimonials_testimonial' => 'required|string',
+        ]);
+
+        $testimonial = new Testimonial($request->all());
+        $testimonial->user_id = auth()->id(); // Assuming you have a user_id field
+        $testimonial->save();
+
+        return response()->json(['message' => 'Testimonial added successfully.']);
+    }
+
+    // Update testimonial
+    public function updateTestimonial(Request $request, $id)
+    {
+        $request->validate([
+            'graduate_testimonials_name' => 'required|string|max:255',
+            'graduate_testimonials_role_title' => 'required|string|max:255',
+            'graduate_testimonials_relationship' => 'required|string|max:255',
+            'graduate_testimonials_testimonial' => 'required|string',
+        ]);
+
+        $testimonial = Testimonial::findOrFail($id);
+        $testimonial->update($request->all());
+
+        return response()->json(['message' => 'Testimonial updated successfully.']);
+    }
+
+    // Remove testimonial
+    public function removeTestimonial($id)
+    {
+        $testimonial = Testimonial::findOrFail($id);
+        $testimonial->delete();
+
+        return response()->json(['message' => 'Testimonial removed successfully.']);
+    }
+
+    // Update employment preferences
+    public function updateEmploymentPreferences(Request $request)
+    {
+        $request->validate([
+            'jobTypes' => 'array',
+            'salaryExpectations' => 'array',
+            'preferredLocations' => 'array',
+            'workEnvironment' => 'array',
+            'availability' => 'array',
+            'additionalNotes' => 'nullable|string',
+        ]);
+
+        $user = auth()->user();
+        $user->employmentPreferences()->update($request->all()); // Assuming you have a relationship set up
+
+        return response()->json(['message' => 'Employment preferences updated successfully.']);
+    }
+
+    // Save career goals
+    public function saveCareerGoals(Request $request)
+    {
+        $request->validate([
+            'shortTermGoals' => 'nullable|string',
+            'longTermGoals' => 'nullable|string',
+            'industriesOfInterest' => 'array',
+            'careerPath' => 'nullable|string',
+        ]);
+
+        $user = auth()->user();
+        $user->careerGoals()->update($request->all()); // Assuming you have a relationship set up
+
+        return response()->json(['message' => 'Career goals saved successfully.']);
+    }
+
+    // Upload resume
+    public function uploadResume(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,doc,docx|max:2048',
+        ]);
+
+        $user = auth()->user();
+        if ($request->hasFile('file')) {
+            $path = $request->file('file')->store('resumes', 'public');
+            $user->resume()->update(['file' => $path]); // Assuming you have a relationship set up
+        }
+
+        return response()->json(['message' => 'Resume uploaded successfully.']);
+    }
+
+    // Remove resume
+    public function removeResume()
+    {
+        $user = auth()->user();
+        $user->resume()->delete(); // Assuming you have a relationship set up
+
+        return response()->json(['message' => 'Resume removed successfully.']);
+    }
 }

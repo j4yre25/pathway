@@ -24,6 +24,13 @@ class Experience extends Model
         'end_month',
         'end_year',
         'job_description',
+        'graduate_experience_title',
+        'graduate_experience_company',
+        'graduate_experience_start_date',
+        'graduate_experience_end_date',
+        'graduate_experience_address',
+        'graduate_experience_achievements',
+        'graduate_experience_skills_tech',
     ];
 
     /**
