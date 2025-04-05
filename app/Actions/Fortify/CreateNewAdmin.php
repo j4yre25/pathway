@@ -27,6 +27,7 @@ class CreateNewAdmin implements CreatesNewUsers
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
             'dob' => ['required', 'date'],
+            'is_approved' => ['boolean'],
             'gender' => ['required', 'string', 'in:Male,Female,Other'],
             'contact_number' => ['required', 'digits_between:10,15'],
             'telephone_number' => ['nullable', 'digits_between:7,15'],
@@ -71,6 +72,7 @@ class CreateNewAdmin implements CreatesNewUsers
                 // Handle the default case if necessary
                 break;
         }
+
 
         $user = User::create($userData);
 

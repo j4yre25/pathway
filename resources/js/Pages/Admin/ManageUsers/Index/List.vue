@@ -24,11 +24,16 @@ const props = defineProps({
 
 const filters = ref({
     role: 'all',
+    date_from: '',
+    date_to: '',
+    status: 'all',
 
 });
 
 
 const applyFilters = () => {
+    console.log('Filters:', filters.value);
+
     router.get(route('admin.manage_users.list'), filters.value, { preserveState: true });
 };
 
@@ -65,11 +70,34 @@ const showModal = ref(false);
                         <select v-model="filters.role" id="role"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                             <option value="all">All</option>
+                            <option value="peso">Peso</option>
                             <option value="company">Company</option>
                             <option value="institution">Institution</option>
                         </select>
                     </div>
-             
+
+                    <div>
+                        <label for="date_from" class="block text-sm font-medium text-gray-700">Date From</label>
+                        <input v-model="filters.date_from" type="date" id="date_from"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    </div>
+                    <div>
+                        <label for="date_to" class="block text-sm font-medium text-gray-700">Date To</label>
+                        <input v-model="filters.date_to" type="date" id="date_to"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    </div>
+
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                        <select v-model="filters.status" id="status"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            <option value="all">All</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+
+
                     <div class="flex items-end">
                         <PrimaryButton type="submit">Apply Filters</PrimaryButton>
                     </div>
@@ -81,14 +109,15 @@ const showModal = ref(false);
                 <table class="min-w-full bg-white border border-gray-200">
                     <thead>
                         <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                            <th class="border border-gray-200 px-6 py-3 text-left">ID</th>
-                            <th class="border border-gray-200 px-6 py-3 text-left">Role</th>
+                            <th class="border border-gray-200 px-6 py-3 text-left">User Level</th>
                             <th class="border border-gray-200 px-6 py-3 text-left">Name</th>
+                            <th class="border border-gray-200 px-6 py-3 text-left">Date Creation</th>
+                            <th class="border border-gray-200 px-6 py-3 text-left">Status</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-600 text-sm font-light">
-                        <tr v-for="user in filteredUsers" :key="user.id" class="border-b border-gray-200 hover:bg-gray-100">
-                            <td class="border border-gray-200 px-6 py-4">{{ user.id }}</td>
+                        <tr v-for="user in filteredUsers" :key="user.id"
+                            class="border-b border-gray-200 hover:bg-gray-100">
                             <td class="border border-gray-200 px-6 py-4">{{ user.role }}</td>
                             <td class="border border-gray-200 px-6 py-4">
                                 <!-- Conditionally display the name based on role -->
@@ -100,10 +129,27 @@ const showModal = ref(false);
                                     {{ user.institution_career_officer_first_name }} {{
                                         user.institution_career_officer_last_name }}
                                 </template>
+                                <template v-else-if="user.role === 'peso'">
+                                    {{ user.peso_first_name }} {{ user.peso_last_name }}
+
+                                </template>
                                 <template v-else>
                                     {{ user.name }}
                                 </template>
                             </td>
+                            
+                            <td class="border border-gray-200 px-6 py-4">
+                                {{ new Date(user.created_at).toLocaleDateString() }}
+                            </td>
+
+                            <!-- Status -->
+                            <td class="border border-gray-200 px-6 py-4">
+                                <span :class="user.is_approved ? 'text-green-600' : 'text-red-600'"
+                                    class="font-semibold">
+                                    {{ user.is_approved ? 'Active' : 'Inactive' }}
+                                </span>
+                            </td>
+
 
 
 

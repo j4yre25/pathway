@@ -24,17 +24,20 @@ class ManageUsersController extends Controller
     public function list (Request $request) {
         $query = User::query();
 
-    // Filter by user level (role)
+        // role
     if ($request->has('role') && $request->role !== 'all') {
         $query->where('role', $request->role);
     }
+    else {
+        $query->where('role', '!=', 'graduate');
+    }
 
-    // Filter by date creation
+        // date
     if ($request->has('date_from') && $request->has('date_to')) {
         $query->whereBetween('created_at', [$request->date_from, $request->date_to]);
     }
 
-    // Filter by status (active/inactive)
+        // status
     if ($request->has('status') && $request->status !== 'all') {
         $query->where('is_approved', $request->status === 'active');
     }
