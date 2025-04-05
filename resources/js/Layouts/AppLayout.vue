@@ -67,16 +67,36 @@ console.log(page.props.permissions.canManageInstitution)
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
 
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')" :disabled="!page.props.auth.user.is_approved"
-                                >
-                                    Dashboard
+                                <NavLink v-if="page.props.roles.isCompany || page.props.roles.isInstitution && page.props.auth.user.is_approved " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved">
+
+                                    List of Jobs
                                 </NavLink>
+
+
+                                <NavLink v-if="page.props.roles.isCompany || page.props.roles.isInstitution  && page.props.auth.user.is_approved" :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved">
+                                    Manage Applicants
+                                </NavLink>
+
+                                <NavLink v-if="page.props.roles.isCompany || page.props.roles.isInstitution && page.props.auth.user.is_approved " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved">
+                                    Manage HR Accounts
+                                </NavLink>
+
+
+                                <NavLink v-if="page.props.roles.isCompany || page.props.roles.isInstitution && page.props.auth.user.is_approved " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved">
+                                    Reports
+                                </NavLink>
+
+
 
                                 <NavLink v-if="page.props.roles.isPeso"
                                     :href="route('admin.manage_users', { user: page.props.auth.user.id })"
                                     :active="route().current('admin.manage_users')">
                                     Manage Users
-                                </NavLink>  
+
+                                  </NavLink>
+
+
+
 
                                 <NavLink v-if="page.props.roles.isPeso"
                                     :href="route('sectors', { user: page.props.auth.user.id })"
@@ -92,7 +112,7 @@ console.log(page.props.permissions.canManageInstitution)
 
 
                                 <NavLink
-                                    v-if="page.props.roles.isPeso || page.props.roles.isCompany || page.props.roles.isInstitution"
+                                    v-if="page.props.roles.isPeso || page.props.roles.isCompany || page.props.roles.isInstitution && page.props.auth.user.is_approved"
                                     :href="route('jobs', { user: page.props.auth.user.id })"
                                     :active="route().current('jobs')" :disabled="!page.props.auth.user.is_approved">
                                     Manage Job Posting

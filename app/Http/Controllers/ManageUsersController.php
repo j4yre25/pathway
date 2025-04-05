@@ -21,12 +21,30 @@ class ManageUsersController extends Controller
 
     }
 
-    public function list () {
-        $all_users = User::all();
+    public function list (Request $request) {
+        $query = User::query();
 
-        return Inertia::render('Admin/ManageUsers/Index/List', [
-            'all_users' => $all_users
-        ]);
+    // Filter by user level (role)
+    if ($request->has('role') && $request->role !== 'all') {
+        $query->where('role', $request->role);
+    }
+
+    // Filter by date creation
+    if ($request->has('date_from') && $request->has('date_to')) {
+        $query->whereBetween('created_at', [$request->date_from, $request->date_to]);
+    }
+
+    // Filter by status (active/inactive)
+    if ($request->has('status') && $request->status !== 'all') {
+        $query->where('is_approved', $request->status === 'active');
+    }
+
+    $all_users = $query->get();
+
+    return Inertia::render('Admin/ManageUsers/Index/List', [
+        'all_users' => $all_users,
+        'filters' => $request->only(['role', 'date_from', 'date_to', 'status']),
+    ]);
 
     }
 
