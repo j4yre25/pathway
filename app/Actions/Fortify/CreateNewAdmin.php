@@ -26,6 +26,10 @@ class CreateNewAdmin implements CreatesNewUsers
         $rules = [
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
+            'dob' => ['required', 'date'],
+            'gender' => ['required', 'string', 'in:Male,Female,Other'],
+            'contact_number' => ['required', 'digits_between:10,15'],
+            'telephone_number' => ['nullable', 'digits_between:7,15'],
         ];
 
         // Add role-specific validation rules
@@ -48,6 +52,11 @@ class CreateNewAdmin implements CreatesNewUsers
             'password' => Hash::make($input['password']),
             'role' => $role,
             'is_approved' => true,
+            'dob' => $input['dob'],
+            'gender' => $input['gender'],
+            'contact_number' => $input['contact_number'],
+            'telephone_number' => $input['telephone_number'],
+    
             
         ];
 
@@ -56,7 +65,7 @@ class CreateNewAdmin implements CreatesNewUsers
             case 'peso':
                 $userData['peso_first_name'] = $input['peso_first_name'];
                 $userData['peso_last_name'] = $input['peso_last_name'];
-                break;
+              
             // Add more cases for other roles if needed
             default:
                 // Handle the default case if necessary
@@ -74,7 +83,7 @@ class CreateNewAdmin implements CreatesNewUsers
     protected function determineRole(Request $request): string
     {
         // Determine the role based on the request path
-        if ($request->is('register/peso')) {
+        if ($request->is('peso/register')) {
             return 'peso';
         }
 

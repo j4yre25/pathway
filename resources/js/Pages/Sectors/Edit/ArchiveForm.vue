@@ -15,7 +15,7 @@ const props = defineProps({
 
 const open = ref(false)
 
-const deleteSector= (r) => {
+const archiveSector= (r) => {
     router.delete(route('sectors.delete', { sector: props.sector.id }));
 };
 
@@ -24,16 +24,16 @@ const deleteSector= (r) => {
 <template>
     <ActionSection>
         <template #title>
-            Delete Sector
+            Archive Sector
         </template>
 
         <template #description>
-                This section to delete your sector
+                This section to archive your sector
         </template>
 
         <template #content>
             <DangerButton @click ="open = true">
-                Delete Sector
+                Archive Sector
 
             </DangerButton>
 
@@ -48,12 +48,12 @@ const deleteSector= (r) => {
                 </template>
 
                 <template #content>
-                        Are you sure you want to delete this sector #{{ sector.id }} {{ sector.name }}
+                        Are you sure you want to archive this sector #{{ sector.id }} {{ sector.name }}
                 </template>
 
                 <template #footer>
-                        <DangerButton @click="deleteSector()" class="mr-2">
-                            Delete Sector
+                        <DangerButton @click="archiveSector()" class="mr-2">
+                            Archive Sector
                         </DangerButton>
                         <SecondaryButton @click="open = false">Cancel</SecondaryButton>
                         

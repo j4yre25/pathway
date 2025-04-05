@@ -18,23 +18,30 @@ class CreateNewHR implements CreatesNewUsers
      */
     public function create(array $input): User
     {
-        // Validation rules for admin registration
-        Validator::make($input, [
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => $this->passwordRules(),
-            'hr_first_name' => ['required', 'string', 'max:255'],
-            'hr_last_name' => ['required', 'string', 'max:255'],
-        ])->validate();
+Validator::make($input, [
+        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+        'password' => $this->passwordRules(),
+        'company_hr_first_name' => ['required', 'string', 'max:255'],    // Update 04/04
+        'company_hr_last_name' => ['required', 'string', 'max:255'],    // Update 04/04
+        'gender' => ['required', 'string', 'in:Male,Female,Other'], // Update 04/04
+        'dob' => ['required', 'date'], // Update 04/04
+        'contact_number' => ['required', 'string', 'max:15', 'regex:/^[0-9]{10,15}$/'], // Update 04/04
+    ])->validate();
 
-        // Create the admin user
-        $user = User::create([
-            'email' => $input['email'],
-            'password' => Hash::make($input['password']),
-            'role' => 'hr', 
-            'is_approved' => 1, 
-            'hr_first_name' => $input['hr_first_name'],
-            'hr_last_name' => $input['hr_last_name'],
-        ]);
+    // Create the HR user
+    $user = User::create([
+        'email' => $input['email'],
+        'password' => Hash::make($input['password']),
+        'role' => 'hr',
+        'is_approved' => 1,
+        'company_hr_first_name' => $input['company_hr_first_name'], // Update 04/04
+        'company_hr_last_name' => $input['company_hr_last_name'], // Update 04/04
+        'gender' => $input['gender'], // Update 04/04
+        'dob' => $input['dob'], // Update 04/04
+        'contact_number' => $input['contact_number'], // Update 04/04
+    ]);
+
+
 
         $user->assignRole('company');
         return $user;
