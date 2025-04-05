@@ -16,14 +16,14 @@ trait PasswordValidationRules
         return [
             'required',
             'string',
-            'max:20', // Maximum of 30 characters (applied separately)
-            Password::min(8) // Minimum of 8 characters
+            'max:20', 
+            Password::min(8) 
                     ->mixedCase() // Requires uppercase & lowercase letters
                     ->letters() // Requires at least one letter
                     ->numbers() // Requires at least one number
                     ->symbols() // Requires at least one special character (@$!%*?&)
                     ->uncompromised(), // Checks against breached passwords
-            'confirmed', // Ensures password confirmation matches
+            'confirmed', 
         ];
     }
 }

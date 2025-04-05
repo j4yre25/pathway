@@ -7,11 +7,13 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
-USE App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminRegisterController;
+use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\HRRegisterController;
+use App\Http\Controllers\ManageHRController;
 use App\Http\Controllers\GraduateController;
 use App\Http\Controllers\GraduateRegisterController;
 use App\Http\Controllers\InstitutionController;
@@ -55,62 +57,59 @@ use App\Http\Controllers\EmploymentPreferencesController;
 use App\Http\Controllers\CareerGoalsController;
 use App\Http\Controllers\ResumeController;
 
+    
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
+    return Inertia::render('Auth/Login');
 });
 Route::middleware(['auth'])->group(function () {
-    Route::get('/register/peso', [AdminRegisterController::class, 'showRegistrationForm'])->name('admin.register');
-    Route::post('/register/peso', [AdminRegisterController::class, 'register'])->name('admin.register.submit');
+    Route::get('/peso/register', [AdminRegisterController::class, 'showRegistrationForm'])->name('admin.register');
+    Route::post('/peso/register', [AdminRegisterController::class, 'register'])->name('admin.register.submit');
 });
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/hr/register', [HRRegisterController::class, 'showRegistrationForm'])->name('hr.register');
     Route::post('/hr/register', [HRRegisterController::class, 'register'])->name('hr.register.submit');
- });
+});
 
 
-    
- 
 
- Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
     Route::get('/dashboard',  [DashboardController::class, 'index'])->name('dashboard');
-  
- });
+});
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
     Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage approval graduate'])->group(function () {
-              Route::get('/graduates', [GraduateController::class, 'index'])->name('graduates.index');
-  
-              // Show the form for creating a new graduate
-              Route::get('/graduates/create', [GraduateController::class, 'create'])->name('graduates.create');
-  
-              // Store a new graduate
-              Route::post('/graduates', [GraduateController::class, 'store'])->name('graduates.store');
-  
-              // Show a specific graduate
-              Route::get('/graduates/{graduate}', [GraduateController::class, 'show'])->name('graduates.show');
-  
-              // Show the form for editing a specific graduate
-              Route::get('/graduates/{graduate}/edit', [GraduateController::class, 'edit'])->name('graduates.edit');
-  
-              // Update a specific graduate
-              Route::patch('/graduates/{graduate}', [GraduateController::class, 'update'])->name('graduates.update');
-  
-              // Delete a specific graduate
-              Route::delete('/graduates/{graduate}', [GraduateController::class, 'destroy'])->name('graduates.destroy');
-              });
-  
-              Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-              ->post('/graduates/batch-upload', [BatchUploadController::class, 'upload'])
-               ->name('graduates.batch.upload');
-  
-               Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-               ->get('/graduates/batch-download', [BatchUploadController::class, 'download'])
-              ->name('graduates.batch.download');
-});  
+        Route::get('/graduates', [GraduateController::class, 'index'])->name('graduates.index');
+
+        // Show the form for creating a new graduate
+        Route::get('/graduates/create', [GraduateController::class, 'create'])->name('graduates.create');
+
+        // Store a new graduate
+        Route::post('/graduates', [GraduateController::class, 'store'])->name('graduates.store');
+
+        // Show a specific graduate
+        Route::get('/graduates/{graduate}', [GraduateController::class, 'show'])->name('graduates.show');
+
+        // Show the form for editing a specific graduate
+        Route::get('/graduates/{graduate}/edit', [GraduateController::class, 'edit'])->name('graduates.edit');
+
+        // Update a specific graduate
+        Route::patch('/graduates/{graduate}', [GraduateController::class, 'update'])->name('graduates.update');
+
+        // Delete a specific graduate
+        Route::delete('/graduates/{graduate}', [GraduateController::class, 'destroy'])->name('graduates.destroy');
+    });
+
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
+        ->post('/graduates/batch-upload', [BatchUploadController::class, 'upload'])
+        ->name('graduates.batch.upload');
+
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
+        ->get('/graduates/batch-download', [BatchUploadController::class, 'download'])
+        ->name('graduates.batch.download');
+});
 
 
 // Admin Routes
@@ -142,55 +141,90 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 //     'verified',
 // ]);
 
-
+// Companies Routes
+// Jobs Routes
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}', [JobsController::class, 'index'])
     ->name('jobs');
 
-//  Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}', [JobsController::class, 'index'])
-//     ->name('jobs');
-    
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}/create', [JobsController::class, 'create'])
-->name('jobs.create');
+    ->name('jobs.create');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('/jobs/{user}', [JobsController::class, 'store'])
-->name('jobs.store');
+    ->name('jobs.store');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->get('/jobs/manage/{user}', [JobsController::class, 'manage'])
-->name('jobs.manage');
+    ->name('jobs.manage');
 
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/view/{job}', [JobsController::class, 'view'])
-->name('jobs.view');    
+    ->name('jobs.view');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/edit/{job}', [JobsController::class, 'edit'])
-->name('jobs.edit');    
+    ->name('jobs.edit');
 
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->put('/jobs/edit/{job}', [JobsController::class, 'update'])
-->name('jobs.update');    
+    ->name('jobs.update');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('/jobs/edit/{job}', [JobsController::class, 'delete'])
-->name('jobs.delete');    
+    ->name('jobs.delete');
+
+//Manage Applicants Routes
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    // View all applicants for a specific job
+    Route::get('/jobs/{job}/applicants', [ApplicantController::class, 'index'])->name('applicants');
+
+    // View details of a specific applicant
+    Route::get('/applicants/{applicant}', [ApplicantController::class, 'show'])->name('applicants.show');
+
+    // Update an applicant's status (e.g., mark as hired)
+    Route::put('/applicants/{applicant}', [ApplicantController::class, 'update'])->name('applicants.update');
+
+    // Delete an applicant
+    Route::delete('/applicants/{applicant}', [ApplicantController::class, 'delete'])->name('applicants.delete');
+});  
+
+// Manage HR Accounts 
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    // View all HR accounts
+    Route::get('/hr-accounts', [ManageHRController::class, 'index'])->name('hr-accounts.index');
+
+    // Create a new HR account
+    Route::post('/hr-accounts', [ManageHRController::class, 'store'])->name('hr-accounts.store');
+
+    // View details of a specific HR account
+    Route::get('/hr-accounts/{hrAccount}', [ManageHRController::class, 'show'])->name('hr-accounts.show');
+
+    // Update an HR account
+    Route::put('/hr-accounts/{hrAccount}', [ManageHRController::class, 'update'])->name('hr-accounts.update');
+
+    // Delete an HR account
+    Route::delete('/hr-accounts/{hrAccount}', [ManageHRController::class, 'delete'])->name('hr-accounts.delete');
+});
+
+
 
 
 // Manage Users (PESO)
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->get('/admin/manage-users', [ManageUsersController::class, 'index'])
-->name('admin.manage_users');
+    ->name('admin.manage_users');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->get('/admin/manage-users/list', [ManageUsersController::class, 'list'])
-->name('admin.manage_users.list');        
+    ->name('admin.manage_users.list');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->get('/admin/manage-users/edit/{user}', [ManageUsersController::class, 'edit'])
-->name('admin.manage_users.edit');    
+    ->name('admin.manage_users.edit');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->delete('/admin/manage-users/{user}', [ManageUsersController::class, 'delete'])
-->name('admin.manage_users.delete');    
+    ->name('admin.manage_users.delete');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->post('/admin/manage-users/{user}/approve', [ManageUsersController::class, 'approve'])
     ->name('admin.manage_users.approve');
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->post('/admin/manage-users/{user}/disapprove', [ManageUsersController::class, 'disapprove'])
+    ->name('admin.manage_users.disapprove');
 
-    
 
 // Manage Graduates
 // Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/manage-graduates', [ManageGraduatesController::class, 'index'])
@@ -213,29 +247,35 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/{user}', [SectorController::class, 'index'])
-->name('sectors');
+    ->name('sectors');
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/{user}/list', [SectorController::class, 'list'])
+    ->name('sectors.list');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/{user}/create', [SectorController::class, 'create'])
-->name('sectors.create');
+    ->name('sectors.create');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('/sectors/{user}', [SectorController::class, 'store'])
-->name('sectors.store');
-   
+    ->name('sectors.store');
+
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/edit/{sector}', [SectorController::class, 'edit'])
-->name('sectors.edit');    
+    ->name('sectors.edit');
 
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->put('/sectors/edit/{sector}', [SectorController::class, 'update'])
-->name('sectors.update');    
+    ->name('sectors.update');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('/sectors/edit/{sector}', [SectorController::class, 'delete'])
-->name('sectors.delete');
+    ->name('sectors.delete');
 
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
     ->get('/categories', [CategoryController::class, 'index'])
     ->name('categories.index');
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/categories/list', [CategoryController::class, 'list'])
+    ->name('categories.list');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
     ->get('/categories/create', [CategoryController::class, 'create'])
@@ -257,39 +297,42 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     ->delete('/categories/edit/{category}', [CategoryController::class, 'delete'])
     ->name('categories.delete');
 
-    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
     ->get('/sectors/{sector}/categories', [CategoryController::class, 'index'])
     ->name('sectors.categories.index');
+
+
+    
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
-  Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage approval graduate'])->group(function () {
-            Route::get('/graduates', [GraduateController::class, 'index'])->name('graduates.index');
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage approval graduate'])->group(function () {
+        Route::get('/graduates', [GraduateController::class, 'index'])->name('graduates.index');
 
-            // Show the form for creating a new graduate
-            Route::get('/graduates/create', [GraduateController::class, 'create'])->name('graduates.create');
+        // Show the form for creating a new graduate
+        Route::get('/graduates/create', [GraduateController::class, 'create'])->name('graduates.create');
 
-            // Store a new graduate
-            Route::post('/graduates', [GraduateController::class, 'store'])->name('graduates.store');
+        // Store a new graduate
+        Route::post('/graduates', [GraduateController::class, 'store'])->name('graduates.store');
 
-            // Show a specific graduate
-            Route::get('/graduates/{graduate}', [GraduateController::class, 'show'])->name('graduates.show');
+        // Show a specific graduate
+        Route::get('/graduates/{graduate}', [GraduateController::class, 'show'])->name('graduates.show');
 
-            // Show the form for editing a specific graduate
-            Route::get('/graduates/{graduate}/edit', [GraduateController::class, 'edit'])->name('graduates.edit');
+        // Show the form for editing a specific graduate
+        Route::get('/graduates/{graduate}/edit', [GraduateController::class, 'edit'])->name('graduates.edit');
 
-            // Update a specific graduate
-            Route::patch('/graduates/{graduate}', [GraduateController::class, 'update'])->name('graduates.update');
+        // Update a specific graduate
+        Route::patch('/graduates/{graduate}', [GraduateController::class, 'update'])->name('graduates.update');
 
-            // Delete a specific graduate
-            Route::delete('/graduates/{graduate}', [GraduateController::class, 'destroy'])->name('graduates.destroy');
-            });
+        // Delete a specific graduate
+        Route::delete('/graduates/{graduate}', [GraduateController::class, 'destroy'])->name('graduates.destroy');
+    });
 
-            Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-            ->post('/graduates/batch-upload', [BatchUploadController::class, 'upload'])
-             ->name('graduates.batch.upload');
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
+        ->post('/graduates/batch-upload', [BatchUploadController::class, 'upload'])
+        ->name('graduates.batch.upload');
 
-             Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-             ->get('/graduates/batch-download', [BatchUploadController::class, 'download'])
-            ->name('graduates.batch.download');
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
+        ->get('/graduates/batch-download', [BatchUploadController::class, 'download'])
+        ->name('graduates.batch.download');
 
 
 
@@ -299,15 +342,15 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
         // Institution Routes
         Route::middleware(['can:manage institution'])->group(function () {
-        Route::get('/institutions', [InstitutionController::class, 'index'])->name('institutions.index');
-        Route::get('/institutions/create', [InstitutionController::class, 'create'])->name('institutions.create');
-        Route::post('/institutions', [InstitutionController::class, 'store'])->name('institutions.store');
-        Route::get('/institutions/{institution}', [InstitutionController::class, 'show'])->name('institutions.show');
-        Route::get('/institutions/{institution}/edit', [InstitutionController::class, 'edit'])->name('institutions.edit');
-        Route::put('/institutions/{institution}', [InstitutionController::class, 'update'])->name('institutions.update');
-        Route::delete('/institutions/{institution}', [InstitutionController::class, 'destroy'])->name('institutions.destroy');
+            Route::get('/institutions', [InstitutionController::class, 'index'])->name('institutions.index');
+            Route::get('/institutions/create', [InstitutionController::class, 'create'])->name('institutions.create');
+            Route::post('/institutions', [InstitutionController::class, 'store'])->name('institutions.store');
+            Route::get('/institutions/{institution}', [InstitutionController::class, 'show'])->name('institutions.show');
+            Route::get('/institutions/{institution}/edit', [InstitutionController::class, 'edit'])->name('institutions.edit');
+            Route::put('/institutions/{institution}', [InstitutionController::class, 'update'])->name('institutions.update');
+            Route::delete('/institutions/{institution}', [InstitutionController::class, 'destroy'])->name('institutions.destroy');
         });
-    
+
         // School Years Routes
         Route::middleware(['can:manage institution'])->group(function () {
             Route::get('/school-years', [SchoolYearController::class, 'index'])->name('school-years.index');
@@ -318,7 +361,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             Route::put('/school-years/{school_year}', [SchoolYearController::class, 'update'])->name('school-years.update');
             Route::delete('/school-years/{school_year}', [SchoolYearController::class, 'destroy'])->name('school-years.destroy');
         });
-    
+
         // Programs Routes
         Route::middleware(['can:manage institution'])->group(function () {
             Route::get('/programs', [ProgramController::class, 'index'])->name('programs.index');
@@ -329,7 +372,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             Route::put('/programs/{program}', [ProgramController::class, 'update'])->name('programs.update');
             Route::delete('/programs/{program}', [ProgramController::class, 'destroy'])->name('programs.destroy');
         });
-    
+
         // Career Opportunities Routes
         Route::middleware(['can:manage institution'])->group(function () {
             Route::get('/career-opportunities', [CareerOpportunityController::class, 'index'])->name('career-opportunities.index');
@@ -343,20 +386,20 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     });
 
     // Manage Graduates Approval Routes
-   
-        Route::get('/manage-users', [ManageGraduatesApprovalController::class, 'index'])
-            ->middleware('can:manage approval graduate')
-            ->name('institution.manage_users');
-        Route::post('/manage-users/{user}/approve', [ManageGraduatesApprovalController::class, 'approve'])
-            ->middleware('can:manage approval graduate')
-            ->name('institution.manage_users.approve');
-        });
+
+    Route::get('/manage-users', [ManageGraduatesApprovalController::class, 'index'])
+        ->middleware('can:manage approval graduate')
+        ->name('institution.manage_users');
+    Route::post('/manage-users/{user}/approve', [ManageGraduatesApprovalController::class, 'approve'])
+        ->middleware('can:manage approval graduate')
+        ->name('institution.manage_users.approve');
+});
 
 
-   
 
 
-    
+
+
 
 
 Route::group(['middleware' => config('fortify.middleware', ['web'])], function () {
@@ -365,7 +408,7 @@ Route::group(['middleware' => config('fortify.middleware', ['web'])], function (
     // Authentication...
     if ($enableViews) {
         Route::get(RoutePath::for('login', '/login'), [AuthenticatedSessionController::class, 'create'])
-            ->middleware(['guest:'.config('fortify.guard')])
+            ->middleware(['guest:' . config('fortify.guard')])
             ->name('login');
     }
 
@@ -375,129 +418,128 @@ Route::group(['middleware' => config('fortify.middleware', ['web'])], function (
 
     Route::post(RoutePath::for('login', '/login'), [AuthenticatedSessionController::class, 'store'])
         ->middleware(array_filter([
-            'guest:'.config('fortify.guard'),
-            $limiter ? 'throttle:'.$limiter : null,
+            'guest:' . config('fortify.guard'),
+            $limiter ? 'throttle:' . $limiter : null,
         ]))->name('login.store');
 
     Route::post(RoutePath::for('logout', '/logout'), [AuthenticatedSessionController::class, 'destroy'])
-        ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+        ->middleware([config('fortify.auth_middleware', 'auth') . ':' . config('fortify.guard')])
         ->name('logout');
 
     // Password Reset...
     if (Features::enabled(Features::registration())) {
         if ($enableViews) {
             // Default registration view
-        
-    
+
+
             // Role-specific registration views
 
-    Route::get('/register/graduate', [CustomRegisteredUserController::class, 'create'])
-                ->middleware(['guest:'.config('fortify.guard')])
+            Route::get('/register/graduate', [CustomRegisteredUserController::class, 'create'])
+                ->middleware(['guest:' . config('fortify.guard')])
                 ->name('register.graduate');
-                
-     Route::post('/register/graduate', [CustomRegisteredUserController::class, 'store'])
-                ->middleware(['guest:'.config('fortify.guard')])
+
+            Route::post('/register/graduate', [CustomRegisteredUserController::class, 'store'])
+                ->middleware(['guest:' . config('fortify.guard')])
                 ->name('register.graduate.store');
-        
- 
-    
-    Route::get('/register/graduate', [CustomRegisteredUserController::class, 'showGraduateDetails'])
-    ->name('register.showGraduateDetails');
+
+
+
+            Route::get('/register/graduate', [CustomRegisteredUserController::class, 'showGraduateDetails'])
+                ->name('register.showGraduateDetails');
 
 
 
             Route::get('/register/company', [CustomRegisteredUserController::class, 'create'])
-                ->middleware(['guest:'.config('fortify.guard')])
+                ->middleware(['guest:' . config('fortify.guard')])
                 ->name('register.company');
-    
+
             Route::get('/register/institution', [CustomRegisteredUserController::class, 'create'])
-                ->middleware(['guest:'.config('fortify.guard')])
+                ->middleware(['guest:' . config('fortify.guard')])
                 ->name('register.institution');
         }
-    
+
         // Default registration submission
         Route::post('/register', [CustomRegisteredUserController::class, 'store'])
-            ->middleware(['guest:'.config('fortify.guard')])
+            ->middleware(['guest:' . config('fortify.guard')])
             ->name('register.store');
-    
+
         // Role-specific registration submissions
 
-    
+
         Route::post('/register/company', [CustomRegisteredUserController::class, 'store'])
-            ->middleware(['guest:'.config('fortify.guard')])
+            ->middleware(['guest:' . config('fortify.guard')])
             ->name('register.company.store');
-    
+
         Route::post('/register/institution', [CustomRegisteredUserController::class, 'store'])
-            ->middleware(['guest:'.config('fortify.guard')])
+            ->middleware(['guest:' . config('fortify.guard')])
             ->name('register.institution.store');
 
-            Route::get('/register/users', [CustomRegisteredUserController::class, 'showUsers'])
+        Route::get('/register/users', [CustomRegisteredUserController::class, 'showUsers'])
             ->name('register.users');
-            
     }
     // Email Verification...
     if (Features::enabled(Features::emailVerification())) {
         if ($enableViews) {
             Route::get(RoutePath::for('verification.notice', '/email/verify'), [EmailVerificationPromptController::class, '__invoke'])
-                ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+                ->middleware([config('fortify.auth_middleware', 'auth') . ':' . config('fortify.guard')])
                 ->name('verification.notice');
         }
 
         Route::get(RoutePath::for('verification.verify', '/email/verify/{id}/{hash}'), [VerifyEmailController::class, '__invoke'])
-            ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard'), 'signed', 'throttle:'.$verificationLimiter])
+            ->middleware([config('fortify.auth_middleware', 'auth') . ':' . config('fortify.guard'), 'signed', 'throttle:' . $verificationLimiter])
             ->name('verification.verify');
 
         Route::post(RoutePath::for('verification.send', '/email/verification-notification'), [EmailVerificationNotificationController::class, 'store'])
-            ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard'), 'throttle:'.$verificationLimiter])
+            ->middleware([config('fortify.auth_middleware', 'auth') . ':' . config('fortify.guard'), 'throttle:' . $verificationLimiter])
             ->name('verification.send');
     }
 
     // Profile Information...
     if (Features::enabled(Features::updateProfileInformation())) {
         Route::put(RoutePath::for('user-profile-information.update', '/user/profile-information'), [ProfileInformationController::class, 'update'])
-            ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+            ->middleware([config('fortify.auth_middleware', 'auth') . ':' . config('fortify.guard')])
             ->name('user-profile-information.update');
     }
 
     // Passwords...
     if (Features::enabled(Features::updatePasswords())) {
         Route::put(RoutePath::for('user-password.update', '/user/password'), [PasswordController::class, 'update'])
-            ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+            ->middleware([config('fortify.auth_middleware', 'auth') . ':' . config('fortify.guard')])
             ->name('user-password.update');
     }
 
     // Password Confirmation...
     if ($enableViews) {
         Route::get(RoutePath::for('password.confirm', '/user/confirm-password'), [ConfirmablePasswordController::class, 'show'])
-            ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+            ->middleware([config('fortify.auth_middleware', 'auth') . ':' . config('fortify.guard')])
             ->name('password.confirm');
     }
 
     Route::get(RoutePath::for('password.confirmation', '/user/confirmed-password-status'), [ConfirmedPasswordStatusController::class, 'show'])
-        ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+        ->middleware([config('fortify.auth_middleware', 'auth') . ':' . config('fortify.guard')])
         ->name('password.confirmation');
 
     Route::post(RoutePath::for('password.confirm', '/user/confirm-password'), [ConfirmablePasswordController::class, 'store'])
-        ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+        ->middleware([config('fortify.auth_middleware', 'auth') . ':' . config('fortify.guard')])
         ->name('password.confirm.store');
 
     // Two Factor Authentication...
     if (Features::enabled(Features::twoFactorAuthentication())) {
         if ($enableViews) {
             Route::get(RoutePath::for('two-factor.login', '/two-factor-challenge'), [TwoFactorAuthenticatedSessionController::class, 'create'])
-                ->middleware(['guest:'.config('fortify.guard')])
+                ->middleware(['guest:' . config('fortify.guard')])
                 ->name('two-factor.login');
         }
 
         Route::post(RoutePath::for('two-factor.login', '/two-factor-challenge'), [TwoFactorAuthenticatedSessionController::class, 'store'])
             ->middleware(array_filter([
-                'guest:'.config('fortify.guard'),
-                $twoFactorLimiter ? 'throttle:'.$twoFactorLimiter : null,
+                'guest:' . config('fortify.guard'),
+                $twoFactorLimiter ? 'throttle:' . $twoFactorLimiter : null,
             ]))->name('two-factor.login.store');
 
         $twoFactorMiddleware = Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword')
-            ? [config('fortify.auth_middleware', 'auth').':'.config('fortify.guard'), 'password.confirm']
-            : [config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')];
+            ? [config('fortify.auth_middleware', 'auth') . ':' . config('fortify.guard'), 'password.confirm']
+            : [config('fortify.auth_middleware', 'auth') . ':' . config('fortify.guard')];
 
         Route::post(RoutePath::for('two-factor.enable', '/user/two-factor-authentication'), [TwoFactorAuthenticationController::class, 'store'])
             ->middleware($twoFactorMiddleware)
@@ -552,7 +594,7 @@ Route::group(['middleware' => config('fortify.middleware', ['web'])], function (
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
- 
+
     Route::get('/job-search', [JobSearchController::class, 'index'])->name('job-search.index');
     Route::post('/job-search/results', [JobSearchController::class, 'search'])->name('jobs.search.results');
 
@@ -626,7 +668,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile/testimonials/{id}', [TestimonialController::class, 'removeTestimonial'])->name('testimonials.remove');
 
     // Employment Preferences Routes
-    Route::post('/profile/employment-preferences', [EmploymentPreferencesController::class, 'updateEmploymentPreferences'])->name('employment.preferences.update');
+    // Route::post('/profile/employment-preferences', [EmploymentPreferencesController::class, 'updateEmploymentPreferences'])->name('employment.preferences.update');
 
     // Career Goals Routes
     Route::post('/profile/career-goals', [CareerGoalsController::class, 'saveCareerGoals'])->name('career.goals.save');
@@ -635,7 +677,3 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/resume', [ResumeController::class, 'uploadResume'])->name('resume.upload');
     Route::delete('/profile/resume', [ResumeController::class, 'removeResume'])->name('resume.remove');
 });
-
-
-
-

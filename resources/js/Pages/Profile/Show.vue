@@ -85,21 +85,7 @@ const isDeleteAccountOpen = ref(false);
                     </div>
 
                     <!-- Delete Account Section -->
-                    <template v-if="$page.props.jetstream.hasAccountDeletionFeatures">
-                        <h2 id="accordion-collapse-heading-5">
-                            <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border border-gray-200  dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 hover:text-white" data-accordion-target="#accordion-collapse-body-5" aria-expanded="false" aria-controls="accordion-collapse-body-5" @click="isDeleteAccountOpen = !isDeleteAccountOpen">
-                                <h3 class="text-lg font-medium text-gray-900 hover:text-white"> Delete Account </h3>
-                                <svg data-accordion-icon class="w-3 h-3 shrink-0" :class="{ 'rotate-180': isDeleteAccountOpen }" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                </svg>
-                            </button>
-                        </h2>
-                        <div id="accordion-collapse-body-5" :class="{ 'hidden': !isDeleteAccountOpen }" aria-labelledby="accordion-collapse-heading-5">
-                            <div class="p-5 border border-t-0 border-gray-200 dark:border-gray-700">
-                                <DeleteUserForm />
-                                <SectionBorder />
-                            </div>
-                        </div>
-                    </template>
+                    
                 </div>
             </div>
         </div>

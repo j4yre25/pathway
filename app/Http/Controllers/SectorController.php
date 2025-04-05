@@ -23,6 +23,16 @@ class SectorController extends Controller
 
         
     }
+    public function list() {
+
+
+        $sectors = Sector::with('user')->get(); 
+        return Inertia::render('Sectors/List', [
+            'sectors' => $sectors
+        ]);
+
+        
+    }
     
     public function create(User $user) {
 
@@ -78,9 +88,8 @@ class SectorController extends Controller
         $user_id = $request->user()->id;
 
      
-        // return redirect()->route('sectors')->with('flash.banner', 'Sector deleted successfully.');
-        return Redirect(route('sectors', ['user' => $user_id]))->with('flash.banner', 'Sector deleted successfully.');
-
+        return Redirect(route('sectors', ['user' => $user_id]))->with('flash.banner', 'Sector archived successfully.');
+        
     }
     
 }

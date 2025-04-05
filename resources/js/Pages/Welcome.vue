@@ -35,7 +35,7 @@ function handleImageError() {
                         <Link
                             v-if="$page.props.auth.user"
                             :href="route('dashboard')"
-                            class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
+                            class="text-black"
                         >
                             Dashboard
                         </Link>
@@ -43,12 +43,16 @@ function handleImageError() {
                         <template v-else>
                             <Link
                                 :href="route('login')"
-                                class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-black dark:hover:text-white/80 dark:focus-visible:ring-white"
+                                class="text-black"
                             >
                                 Log in
                             </Link>
 
+<<<<<<< HEAD
                            
+=======
+                            <!-- REMOVE LINK FOR REGISTER -->
+>>>>>>> 6f3cd7f8841184333d13531bc6b3872553462d72
                         </template>
                     </nav>
                 </header>

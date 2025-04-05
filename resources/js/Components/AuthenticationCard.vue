@@ -4,8 +4,9 @@
             <slot name="logo" />
         </div>
 
-        <div class="w-full sm:max-w-5xl mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg ">
-            <slot />
+        <!-- UPDATE 04/04 This if for the registration form layout -->
+        <div class="w-full sm:max-w-4xl mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg ">
+            <slot name="registerForm"/> 
         </div>
     </div>
 </template>

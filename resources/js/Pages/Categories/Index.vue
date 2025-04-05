@@ -4,11 +4,14 @@ import { usePage } from '@inertiajs/vue3';
 import Container from '@/Components/Container.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import MyCategories from './MyCategories.vue';
+import { Link } from '@inertiajs/vue3';
+
 
 const page = usePage();
 
 const props = defineProps({
     sectors: Array, // Ensure the sectors prop is defined
+    categories: Array
 });
 
 // Access the sectors directly from props
@@ -27,6 +30,9 @@ console.log('Sectors:', sectors); // Debugging
             <div class="mt-8">
                 <Link :href="route('categories.create')" class="mr-2">
                     <PrimaryButton>Add Categories</PrimaryButton>
+                </Link>
+                <Link :href="route('categories.list')" class="mr-2">
+                    <PrimaryButton>List of Categories</PrimaryButton>
                 </Link>
             </div>
 

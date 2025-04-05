@@ -54,7 +54,7 @@ class  CustomRegisteredUserController extends Controller
      * @param  \Laravel\Fortify\Contracts\CreatesNewUsers  $creator
      * @return \Laravel\Fortify\Contracts\RegisterResponse
      */
-    public function store(Request $request, CreatesNewUsers $creator): RegisterResponse
+    public function store(Request $request, CreatesNewUsers $creator)
     {
         if (config('fortify.lowercase_usernames') && $request->has(Fortify::username())) {
             $request->merge([
@@ -70,10 +70,10 @@ class  CustomRegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        $this->guard->login($user, $request->boolean('remember'));
+        // $this->guard->login($user, $request->boolean('remember'));
 
-        return app(RegisterResponse::class);
-    }
+        redirect()->back()->with('flash.banner', 'Registered Successfully!');
+        }
 
     /**
      * Determine the role based on the route or request.
