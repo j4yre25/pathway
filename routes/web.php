@@ -9,6 +9,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminRegisterController;
+use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SectorController;
@@ -68,6 +69,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
     Route::get('/dashboard',  [DashboardController::class, 'index'])->name('dashboard');
 });
+
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
     Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage approval graduate'])->group(function () {
@@ -132,6 +134,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 // ]);
 
 // Companies Routes
+// Dashboar Contents 
+// Route::middleware(['auth' , config('jetstream.auth_session'), 'verified',])->group(function () {
+//     Route::get('/dashboard', [ApplicationController::class, 'summary'])->name('dashboard');
+// });
 // Jobs Routes
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}', [JobsController::class, 'index'])
     ->name('jobs');

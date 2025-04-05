@@ -9,4 +9,4 @@
             <slot name="loginForm"/>
         </div>
     </div>
-</template>
+</template>a
