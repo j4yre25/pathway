@@ -44,12 +44,9 @@ use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
 use Laravel\Fortify\Http\Controllers\TwoFactorSecretKeyController;
 use Laravel\Fortify\Http\Controllers\VerifyEmailController;
 use Laravel\Fortify\RoutePath;
-
+    
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-    ]);
+    return Inertia::render('Auth/Login');
 });
 Route::middleware(['auth'])->group(function () {
     Route::get('/peso/register', [AdminRegisterController::class, 'showRegistrationForm'])->name('admin.register');
