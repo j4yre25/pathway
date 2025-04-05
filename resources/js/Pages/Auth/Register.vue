@@ -2,6 +2,7 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
+import LoginCard from '@/Components/LoginCard.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -49,6 +50,7 @@ const form = useForm({
     institution_president_last_name: '',
     institution_president_first_name: '',
     institution_career_officer_first_name: '',
+    institution_career_officer_last_name: '',
     graduate_school_graduated_from: '',
     graduate_program_completed: '',
     graduate_year_graduated: '',
