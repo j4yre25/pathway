@@ -46,12 +46,28 @@ class User extends Authenticatable
         'graduate_first_name',
         'graduate_last_name',
         'graduate_middle_initial',
-        'graduate_school_graduated_from',
-        'graduate_program_completed',
-        'graduate_year_graduated',
-        'graduate_skills',
         'graduate_professional_title',
-        'personal_summary',
+        'graduate_email',
+        'graduate_phone',
+        'graduate_location', 
+        'graduate_birthdate',
+        'graduate_gender',
+        'graduate_ethnicity',
+        'graduate_address',
+        'graduate_about_me',
+        'graduate_picture_url',
+       
+        'graduate_education_institution_id', 
+        'graduate_education_program',
+        'graduate_education_field_of_study',
+        'graduate_education_start_date',
+        'graduate_education_end_date', 
+        'graduate_education_description',
+        
+        'graduate_skills_name', 
+        'graduate_skills_proficiency',
+        'graduate_skills_type',
+        'graduate_skills_years_experience', 
 
         // Company
         'company_name',
@@ -124,46 +140,6 @@ class User extends Authenticatable
 
     }
 
-    public function portfolioItems()
-    {
-        return $this->hasMany(Portfolio::class);
-    }
-
-    /**
-     * Get the user's about me information.
-     */
-    public function aboutMe()
-    {
-        return $this->hasOne(AboutMe::class);
-    }
-
-    /**
-     * Get the user's profile section.
-     */
-    public function profileSection()
-    {
-        return $this->hasOne(ProfileSection::class);
-    }
-
-    /**
-     * Get the user's resumes.
-     */
-    public function resumes()
-    {
-        return $this->hasMany(Resume::class);
-    }
-
-    
-
-    /**
-     * 
-     * Get the user's next role preferences.
-     */
-    public function nextRole()
-    {
-        return $this->hasOne(NextRole::class);
-    }
-
     /**
      * Get the user's settings.
      */
@@ -210,6 +186,57 @@ class User extends Authenticatable
         return json_decode($value, true) ?? []; // Decode JSON to array
     }
     
-    
+    public function skills()
+    {
+        return $this->hasMany(Skill::class);
+    }
 
+    // Relationship with Education
+    public function educationEntries()
+    {
+        return $this->hasMany(Education::class);
+    }
+
+    // Relationship with Experience
+    public function experienceEntries()
+    {
+        return $this->hasMany(Experience::class);
+    }
+
+
+    // Relationship with Certifications
+    public function certifications()
+    {
+        return $this->hasMany(Certification::class);
+    }
+
+    // Relationship with Achievements
+    public function achievements()
+    {
+        return $this->hasMany(Achievement::class);
+    }
+
+    // Relationship with Testimonials
+    public function testimonials()
+    {
+        return $this->hasMany(Testimonial::class);
+    }
+
+    // Relationship with Employment Preferences
+    public function employmentPreferences()
+    {
+        return $this->hasOne(EmploymentPreference::class);
+    }
+
+    // Relationship with Career Goals
+    public function careerGoals()
+    {
+        return $this->hasOne(CareerGoal::class);
+    }
+
+    // Relationship with Resume
+    public function resume()
+    {
+        return $this->hasOne(Resume::class);
+    }
 }

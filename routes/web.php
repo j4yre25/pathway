@@ -41,7 +41,19 @@ use Laravel\Fortify\Http\Controllers\TwoFactorAuthenticationController;
 use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
 use Laravel\Fortify\Http\Controllers\TwoFactorSecretKeyController;
 use Laravel\Fortify\Http\Controllers\VerifyEmailController;
+use Laravel\Fortify\Http\Controllers\VerifyEmailAddressController;
+use App\Http\Controllers\PortfolioController;
+use App\Http\Controllers\JobInboxController;
 use Laravel\Fortify\RoutePath;
+use App\Http\Controllers\EducationController;
+use App\Http\Controllers\ExperienceController;
+use App\Http\Controllers\SkillController;
+use App\Http\Controllers\CertificationController;
+use App\Http\Controllers\AchievementController;
+use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\EmploymentPreferencesController;
+use App\Http\Controllers\CareerGoalsController;
+use App\Http\Controllers\ResumeController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -514,6 +526,26 @@ Route::group(['middleware' => config('fortify.middleware', ['web'])], function (
         Route::post(RoutePath::for('two-factor.recovery-codes', '/user/two-factor-recovery-codes'), [RecoveryCodeController::class, 'store'])
             ->middleware($twoFactorMiddleware);
     }
+
+    Route::middleware('auth:sanctum')->group(function () {
+        // Fetch job opportunities
+        Route::get('/job-opportunities', [JobInboxController::class, 'getJobOpportunities']);
+    
+        // Fetch job applications
+        Route::get('/job-applications', [JobInboxController::class, 'getJobApplications']);
+    
+        // Fetch notifications
+        Route::get('/notifications', [JobInboxController::class, 'getNotifications']);
+    
+        // Apply for a job
+        Route::post('/apply-for-job', [JobInboxController::class, 'applyForJob']);
+    
+        // Archive a job opportunity
+        Route::post('/archive-job-opportunity', [JobInboxController::class, 'archiveJobOpportunity']);
+    
+        // Mark notification as read
+        Route::post('/mark-notification-as-read', [JobInboxController::class, 'markNotificationAsRead']);
+    });
 });
 
 
@@ -525,11 +557,40 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/job-search/results', [JobSearchController::class, 'search'])->name('jobs.search.results');
 
     // Portfolio Routes
-    Route::post('/profile/portfolio/upload', [ProfileController::class, 'uploadPortfolio'])->name('profile.portfolio.upload');
-    Route::post('/profile/portfolio/create', [ProfileController::class, 'createPortfolio'])->name('profile.createPortfolio');
-    Route::delete('/profile/portfolio/{portfolio}', [ProfileController::class, 'deletePortfolio'])->name('profile.portfolio.delete');
+    Route::get('/portfolio', [ProfileController::class, 'showPortfolio'])->name('portfolio');
+    Route::get('/portfolio/{id}', [PortfolioController::class, 'show']);
+    Route::put('/portfolio/{id}', [PortfolioController::class, 'update']);
+
+    // JobInbox Routes
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/job-inbox', [JobInboxController::class, 'inbox'])->name('job.inbox');
+        Route::get('/job-opportunities', [JobInboxController::class, 'getJobOpportunities']);
+        Route::get('/job-applications', [JobInboxController::class, 'getJobApplications']);
+        Route::get('/notifications', [JobInboxController::class, 'getNotifications']);
+        Route::post('/apply-for-job', [JobInboxController::class, 'applyForJob']);
+        Route::post('/archive-job-opportunity', [JobInboxController::class, 'archiveJobOpportunity']);
+        Route::post('/mark-notification-as-read', [JobInboxController::class, 'markNotificationAsRead']);
+    });
   
 });
+
+// Profile Settings Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+    Route::put('/profile/education', [ProfileController::class, 'updateEducation'])->name('profile.education');
+    Route::put('/profile/skills', [ProfileController::class, 'updateSkills'])->name('profile.skills');
+    Route::put('/profile/projects', [ProfileController::class, 'updateProjects'])->name('profile.projects');
+    Route::put('/profile/certifications', [ProfileController::class, 'updateCertifications'])->name('profile.certifications');
+    Route::put('/profile/achievements', [ProfileController::class, 'updateAchievements'])->name('profile.achievements');
+    Route::put('/profile/testimonials', [ProfileController::class, 'updateTestimonials'])->name('profile.testimonials');
+    Route::put('/profile/employment-preferences', [ProfileController::class, 'updateEmploymentPreferences'])->name('profile.employment-preferences');
+    Route::put('/profile/career-goals', [ProfileController::class, 'updateCareerGoals'])->name('profile.career-goals');
+    Route::put('/profile/resume', [ProfileController::class, 'updateResume'])->name('profile.resume');
+});
+
+
 
 
 

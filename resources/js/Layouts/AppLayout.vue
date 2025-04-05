@@ -81,14 +81,6 @@ console.log(page.props.permissions.canManageInstitution)
                                 :active="route().current('sectors')"    >
                                 Sectors
                             </NavLink>
-
-                     
-                         
-                            
-
-
-
-
                     
                              <NavLink v-if="page.props.roles.isPeso" :href="route('admin.manage_users' , { user: page.props.auth.user.id })" :active="route().current('admin.manage_users')">
                                     Manage Users
@@ -251,8 +243,6 @@ console.log(page.props.permissions.canManageInstitution)
 
                                         <DropdownLink v-if="!page.props.roles.isGraduate" :href="route('profile.show')">
                                             Profile
-
-                                            
                                         </DropdownLink>
 
 
