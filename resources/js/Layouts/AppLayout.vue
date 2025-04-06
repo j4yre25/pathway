@@ -102,7 +102,7 @@ console.log(page.props.permissions.canManageInstitution)
                                     Manage Job Posting
                                 </NavLink>
 
-                                <NavLink v-if="page.props.roles.isPeso || page.props.roles.isCompany || page.props.roles.isInstitution " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved"
+                                <NavLink v-if="page.props.roles.isCompany || page.props.roles.isInstitution " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved"
                                 >
                                     Manage Applicants
                                 </NavLink>

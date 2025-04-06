@@ -10,8 +10,8 @@ import TextArea from '@/Components/TextArea.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import axios from 'axios';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import Datepicker from 'vue3-datepicker';
-import '@fortawesome/fontawesome-free/css/all.css';
+// import Datepicker from 'vue3-datepicker';
+// import '@fortawesome/fontawesome-free/css/all.css';
 
 // Active section state
 const activeSection = ref('general');
