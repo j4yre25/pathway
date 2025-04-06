@@ -120,7 +120,7 @@ const redirectTodDashboard = () => {
             <form @submit.prevent="submit">
                 <div class="grid grid-cols-3 mt-8 pt-5">
                     <div class=" col-span-1">
-                        <h2 class="text-lg font-semibold text-gray-900">Personal Information</h2>
+                        <h2 class="text-lg font-semibold text-gray-900">PESO Registration</h2>
                         <p class="text-sm text-gray-600"></p>
 
 

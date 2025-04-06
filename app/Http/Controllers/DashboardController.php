@@ -20,7 +20,11 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard', [
             'userNotApproved' => !$user->is_approved,
-
+            'summary' => [
+                'total_jobs' => 10,
+                'total_applications' => 25,
+                'total_hires' => 5
+            ],
         ]);
 
     

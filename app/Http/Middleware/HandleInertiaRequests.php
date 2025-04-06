@@ -70,4 +70,13 @@ class HandleInertiaRequests extends Middleware
             //
         ]);
     }
+    public function handle($request, \Closure $next)
+{
+    // Example: Restrict access to routes for non-PESO users
+    if ($request->routeIs('admin.manage_users.*') && !$request->user()?->hasRole('peso')) {
+        abort(403, 'Unauthorized');
+    }
+
+    return parent::handle($request, $next);
+}
 }

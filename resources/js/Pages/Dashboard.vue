@@ -8,9 +8,8 @@ import Modal from "../Components/Modal.vue";
 import CompanyDashboard from "@/Pages/Company/CompanyDashboard.vue";
 import { Inertia } from "@inertiajs/inertia";
 
-const { props } = usePage();
-const userNotApproved = computed(() => props.userNotApproved ?? false);
-console.log(props.userNotApproved);
+const page = usePage()
+const userNotApproved = computed(() => page.props.userNotApproved ?? false);
 const showModal = ref(false);
 
 if (userNotApproved.value) {
@@ -31,9 +30,9 @@ const handleLogout = () => {
                 Dashboard
             </h2>
 
-            <!-- <div class="py-12">
-                    <CompanyDashboard :summary="props.summary" />
-            </div> -->
+            <div v-if="page.props.roles.isCompany" class="py-12">
+                    <CompanyDashboard :summary="page.props.summary" />
+            </div>
         </template>
 
         <div class="py-12">
