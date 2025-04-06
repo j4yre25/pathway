@@ -37,7 +37,7 @@ console.log('Sectors:', sectors); // Debugging
             </div>
 
             <div class="mt-8">
-                <div v-for="sector in sectors" :key="sector.id">
+                <div v-for="sector in sectors" :key="sector.id" class="mb-8">
                     <h2>Sector: {{ sector.name }}</h2>
                     <MyCategories :categories="sector.categories" /> <!-- Pass categories for each sector -->
                 </div>
