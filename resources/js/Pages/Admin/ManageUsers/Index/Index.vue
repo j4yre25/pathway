@@ -125,7 +125,7 @@ const disapproveUser = (user) => {
                                 <DangerButton v-if="user.is_approved" @click="disapproveUser(user)">
                                     Disapprove
                                 </DangerButton>
-                                <DangerButton @click="open = true">
+                                <DangerButton class="ml-2" @click="open = true">
                                     Archive User
 
                                 </DangerButton>
