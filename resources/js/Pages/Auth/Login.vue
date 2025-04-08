@@ -8,7 +8,8 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-
+import Modal from '@/Components/Modal.vue';
+import { ref } from 'vue';
 
 defineProps({
     canResetPassword: Boolean,
@@ -21,18 +22,37 @@ const form = useForm({
     remember: false,
 });
 
+
+const showModal = ref(false); 
+const modalTitle = ref(''); 
+const modalMessage = ref('');
+
+
 const submit = () => {
     form.transform(data => ({
         ...data,
         remember: form.remember ? 'on' : '',
     })).post(route('login'), {
         onFinish: () => form.reset('password'),
+        onError: (errors) => {
+            console.log('Errors:', errors); // Debugging
+            if (errors.password) {
+                modalTitle.value = 'Login Error';
+                modalMessage.value = errors.password; // Set the password error message
+                showModal.value = true; 
+            } else if (errors.email) {
+                modalTitle.value = 'Login Error';
+                modalMessage.value = errors.email; // Set the password error message
+                showModal.value = true
+            }
+        },
         onSuccess: () => {
 
             Inertia.visit(route('dashboard'));
         },
     });
 };
+
 </script>
 
 <template>
@@ -94,5 +114,15 @@ const submit = () => {
             </form>
         </template>
     </LoginCard>
-    <!--  -->
+    <Modal v-if="showModal" :show="showModal" @close="showModal = false">
+        <template #title>
+            {{ modalTitle }}
+        </template>
+        <template #content>
+            <p>{{ modalMessage }}</p>
+        </template>
+        <template #footer>
+            <PrimaryButton @click="showModal = false">Close</PrimaryButton>
+        </template>
+    </Modal>
 </template>
