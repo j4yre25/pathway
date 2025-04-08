@@ -57,9 +57,9 @@ const handleLogout = () => {
                             </button>
                         </template>
                     </Modal>
+                    
                     <CompanyDashboard
-                        v-if="props.auth.user.role === 'company'"
-                        :summary="props.summary"
+                        v-if="page.props.auth.user.role === 'company'"
                     />
                 </div>
             </div>

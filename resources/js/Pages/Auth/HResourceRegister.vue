@@ -29,7 +29,7 @@ const form = useForm({
 
 const formattedContactNumber = computed({
     get: () => {
-        let rawNumber = form.company_hr_contact_number.replace(/\D/g, ""); // Remove non-numeric characters
+        let rawNumber = form.contact_number.replace(/\D/g, ""); // Remove non-numeric characters
 
 
         // Ensure only the first 10 digits are considered
