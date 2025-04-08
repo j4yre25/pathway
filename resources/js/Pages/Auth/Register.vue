@@ -421,11 +421,11 @@ const redirectToLogin = () => {
                             <!-- Mobile and Telephone Number -->
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <InputLabel for="mobile_number" value="Mobile Number" />
-                                    <TextInput id="mobile_number" v-model="form.mobile_number" type="text"
+                                    <InputLabel for="contact_number" value="Mobile Number" />
+                                    <TextInput id="contact_number" v-model="form.contact_number" type="text"
                                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                         required />
-                                    <InputError class="mt-2" :message="form.errors.mobile_number" />
+                                    <InputError class="mt-2" :message="form.errors.contact_number" />
                                 </div>
                                 <div>
                                     <InputLabel for="telephone_number" value="Telephone Number" />
