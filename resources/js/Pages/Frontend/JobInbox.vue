@@ -20,21 +20,21 @@ const setActiveSection = (section) => {
             <div class="flex border-b border-gray-200 mb-6">
             <button 
                 class="py-2 px-4" 
-                :class="{'text-purple-600 border-b-2 border-purple-600': activeSection === 'opportunities'}"
+                :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'opportunities'}"
                 @click="setActiveSection('opportunities')"
             >
                 Opportunities
             </button>
             <button 
                 class="py-2 px-4" 
-                :class="{'text-purple-600 border-b-2 border-purple-600': activeSection === 'applications'}"
+                :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'applications'}"
                 @click="setActiveSection('applications')"
             >
                 Applications
             </button>
             <button 
             class="py-2 px-4 relative" 
-            :class="{'text-purple-600 border-b-2 border-purple-600': activeSection === 'notifications'}"
+            :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'notifications'}"
             @click="setActiveSection('notifications')"
           >
             Notifications
@@ -76,28 +76,29 @@ const setActiveSection = (section) => {
                 <div class="lg:col-span-2 space-y-4">
                 <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
                     <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold">Senior Full Stack Developer <span class="ml-2 text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full">New</span></h2>
+                    <h2 class="text-xl font-bold">{{ newJobOne }} <span class="ml-2 text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full">New</span></h2>
                     <div class="text-right">
-                        <span class="text-2xl font-bold text-purple-600">92%</span>
+                        <span class="text-2xl font-bold text-indigo-600">{{ newJobOnePercent }}</span>
                         <p class="text-sm text-gray-500">Match</p>
                     </div>
                     </div>
-                    <p class="text-gray-600 mb-2">Tech Innovations Inc.</p>
+                    <p class="text-gray-600 mb-2">{{ CompanyName }}</p>
                     <div class="flex items-center text-gray-600 mb-2">
-                    <i class="fas fa-map-marker-alt mr-2"></i> San Francisco, CA (Remote)
+                    <i class="fas fa-map-marker-alt mr-2"></i> {{ CompanyLocation }} (Remote)
+                    <i class="fas fa-map-marker-alt mr-2"></i> {{ JobLocation }} {{ JobType }}
                     </div>
                     <div class="flex items-center text-gray-600 mb-2">
-                    <i class="fas fa-dollar-sign mr-2"></i> $120,000 - $160,000
+                    <i class="fas fa-dollar-sign mr-2"></i> {{ SalaryRange }}
                     </div>
                     <div class="flex items-center text-gray-600 mb-2">
-                    <i class="fas fa-clock mr-2"></i> Full-time
+                    <i class="fas fa-clock mr-2"></i> {{ JobType }}
                     </div>
                     <div class="flex items-center text-gray-600 mb-4">
                     <i class="fas fa-calendar-alt mr-2"></i> Posted 2 days ago
                     </div>
-                    <p class="text-gray-700 mb-4">We are looking for a senior full stack developer to join our team and help build innovative solutions for our clients. The ideal candidate will have experience with React, Node.js, and cloud technologies.</p>
+                    <p class="text-gray-700 mb-4">{{ JobDescription }}></p>
                     <div class="flex space-x-4">
-                    <button class="px-4 py-2 bg-purple-600 text-white rounded-md">View</button>
+                    <button class="px-4 py-2 bg-indigo-600 text-white rounded-md">View</button>
                     <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md">Apply</button>
                     <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md">Archive</button>
                     </div>
@@ -106,7 +107,7 @@ const setActiveSection = (section) => {
                     <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold">Frontend Developer <span class="ml-2 text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Viewed</span></h2>
                     <div class="text-right">
-                        <span class="text-2xl font-bold text-purple-600">86%</span>
+                        <span class="text-2xl font-bold text-indigo-600">86%</span>
                         <p class="text-sm text-gray-500">Match</p>
                     </div>
                     </div>
@@ -125,7 +126,7 @@ const setActiveSection = (section) => {
                     </div>
                     <p class="text-gray-700 mb-4">Join our frontend team to create beautiful and responsive interfaces for our enterprise clients. Experience with React, TypeScript, and modern CSS frameworks required.</p>
                     <div class="flex space-x-4">
-                    <button class="px-4 py-2 bg-purple-600 text-white rounded-md">View</button>
+                    <button class="px-4 py-2 bg-indigo-600 text-white rounded-md">View</button>
                     <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md">Apply</button>
                     <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md">Archive</button>
                     </div>
@@ -136,7 +137,7 @@ const setActiveSection = (section) => {
                 <p class="text-gray-600 mb-4">Overview of your job opportunities</p>
                 <div class="flex justify-between items-center mb-4">
                     <div class="text-center">
-                    <i class="fas fa-briefcase text-2xl text-purple-600 mb-2"></i>
+                    <i class="fas fa-briefcase text-2xl text-indigo-600 mb-2"></i>
                     <p class="text-lg font-bold">5</p>
                     <p class="text-gray-600">Total Jobs</p>
                     </div>
@@ -191,29 +192,29 @@ const setActiveSection = (section) => {
                             <div class="bg-white p-4 rounded-lg shadow">
                             <h2 class="text-xl font-semibold mb-4">Application Status Tracking</h2>
                             <p class="text-gray-600 mb-4">Track the progress of your job applications</p>
-                            <div class="bg-purple-100 p-4 rounded-lg mb-4">
+                            <div class="bg-indigo-100 p-4 rounded-lg mb-4">
                                 <div class="flex justify-between items-center mb-2">
                                 <div>
                                     <h3 class="text-lg font-semibold">Senior Full Stack Developer</h3>
                                     <p class="text-gray-600">Tech Innovations Inc.</p>
                                 </div>
-                                <a href="#" class="text-purple-600">Details</a>
+                                <a href="#" class="text-indigo-600">Details</a>
                                 </div>
                                 <div class="relative pt-1">
                                 <div class="flex mb-2 items-center justify-between">
                                     <div>
-                                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-purple-600 bg-purple-200">
+                                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-indigo-600 bg-indigo-200">
                                         Applied
                                     </span>
                                     </div>
                                     <div class="text-right">
-                                    <span class="text-xs font-semibold inline-block text-purple-600">
+                                    <span class="text-xs font-semibold inline-block text-indigo-600">
                                         Interview
                                     </span>
                                     </div>
                                 </div>
-                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-purple-200">
-                                    <div style="width: 50%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-600"></div>
+                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-indigo-200">
+                                    <div style="width: 50%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-600"></div>
                                 </div>
                                 </div>
                                 <div class="space-y-2">
@@ -232,7 +233,7 @@ const setActiveSection = (section) => {
                                     </div>
                                 </div>
                                 <div class="flex items-center space-x-2">
-                                    <i class="fas fa-check-circle text-purple-500"></i>
+                                    <i class="fas fa-check-circle text-indigo-500"></i>
                                     <div>
                                     <p class="text-sm font-semibold">Shortlisted for Interview</p>
                                     <p class="text-xs text-gray-600">May 20, 2023 at 9:45 AM</p>
@@ -259,18 +260,18 @@ const setActiveSection = (section) => {
                                 <div class="relative pt-1">
                                 <div class="flex mb-2 items-center justify-between">
                                     <div>
-                                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-purple-600 bg-purple-200">
+                                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-indigo-600 bg-indigo-200">
                                         Applied
                                     </span>
                                     </div>
                                     <div class="text-right">
-                                    <span class="text-xs font-semibold inline-block text-purple-600">
+                                    <span class="text-xs font-semibold inline-block text-indigo-600">
                                         Review
                                     </span>
                                     </div>
                                 </div>
-                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-purple-200">
-                                    <div style="width: 25%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-600"></div>
+                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-indigo-200">
+                                    <div style="width: 25%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-600"></div>
                                 </div>
                                 </div>
                                 <p class="text-xs text-gray-600">Applied 5 days ago</p>
@@ -286,18 +287,18 @@ const setActiveSection = (section) => {
                                 <div class="relative pt-1">
                                 <div class="flex mb-2 items-center justify-between">
                                     <div>
-                                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-purple-600 bg-purple-200">
+                                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-indigo-600 bg-indigo-200">
                                         Applied
                                     </span>
                                     </div>
                                     <div class="text-right">
-                                    <span class="text-xs font-semibold inline-block text-purple-600">
+                                    <span class="text-xs font-semibold inline-block text-indigo-600">
                                         Review
                                     </span>
                                     </div>
                                 </div>
-                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-purple-200">
-                                    <div style="width: 25%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-600"></div>
+                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-indigo-200">
+                                    <div style="width: 25%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-600"></div>
                                 </div>
                                 </div>
                                 <p class="text-xs text-gray-600">Applied 3 days ago</p>
@@ -364,8 +365,8 @@ const setActiveSection = (section) => {
                                 <h3 class="text-blue-600 font-semibold">Personalize Your Resume</h3>
                                 <p class="text-gray-600">Tailor your resume to each job application to highlight relevant skills and experience.</p>
                                 </div>
-                                <div class="bg-purple-100 p-4 rounded-lg">
-                                <h3 class="text-purple-600 font-semibold">Follow Up</h3>
+                                <div class="bg-indigo-100 p-4 rounded-lg">
+                                <h3 class="text-indigo-600 font-semibold">Follow Up</h3>
                                 <p class="text-gray-600">Send a follow-up email one week after applying if you haven't heard back.</p>
                                 </div>
                                 <div class="bg-yellow-100 p-4 rounded-lg">

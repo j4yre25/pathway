@@ -6,6 +6,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Requests\EducationUpdateRequest;
 use App\Http\Requests\SkillUpdateRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use App\Models\Education;
 use App\Models\Skill;
 use Illuminate\Http\Request;
@@ -14,7 +15,10 @@ use Inertia\Inertia;
 use App\Models\Experience;
 use App\Models\Certification;
 use App\Models\Achievement;
+use App\Models\EmploymentPreference;
 use App\Models\Testimonial;
+use App\Models\Project;
+
 
 class ProfileController extends Controller
 {
@@ -25,31 +29,43 @@ class ProfileController extends Controller
      
      
         return Inertia::render('Frontend/Profile', [
-            'user' => $user,
+            'user' => Auth::user(),
+            'educationEntries' => Education::where('user_id', $user->id)->get(),
+            'experienceEntries' => Experience::where('user_id', $user->id)->get(), 
+            'skillEntries' => Skill::where('user_id', $user->id)->get(),
+            'certificationEntries' => Certification::where('user_id', $user->id)->get(),
+            'achievementEntries' => Achievement::where('user_id', $user->id)->get(),
+            'testimonialEntries' => Testimonial::where('user_id', $user->id)->get(), 
+            'employmentPreferences' => EmploymentPreference::where('user_id', $user->id)->first(),
+            'careerGoals' => Auth::user()->careerGoals,
+            'resume' => Auth::user()->resume,
         ]);
     }
 
     // Update profile information
     public function updateProfile(Request $request)
     {
-        $request->validate([
-            'fullName' => 'required|string|max:255',
-            'graduate_professional_title' => 'nullable|string|max:255',
-            'graduate_email' => 'required|email|max:255',
-            'graduate_phone' => 'nullable|string|max:20',
-            'graduate_location' => 'nullable|string|max:255',
-            'graduate_birthdate' => 'nullable|date',
-            'graduate_gender' => 'nullable|string|max:10',
+        // Validate the incoming request
+        $validated = $request->validate([
+            'graduate_first_name' => 'required|string|max:255',
+            'graduate_middle_initial' => 'nullable|string|max:1',
+            'graduate_last_name' => 'required|string|max:255',
+            'graduate_professional_title' => 'required|string|max:255',
+            'graduate_location' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . Auth::id(),
+            'contact_number' => 'nullable|string|max:15',
+            'dob' => 'nullable|date',
+            'gender' => 'nullable|string|max:50',
             'graduate_ethnicity' => 'nullable|string|max:255',
             'graduate_address' => 'nullable|string|max:255',
-            'graduate_about_me' => 'nullable|string',
-            'graduate_picture_url' => 'nullable|string|max:255',
+            'graduate_about_me' => 'nullable|string|max:1000',
         ]);
 
-        $user = auth()->user();
-        $user->update($request->all());
+        $user = Auth::user();
+        $user->update($validated);
+        //dd('Updated User Data:', $user->toArray());
 
-        return response()->json(['message' => 'Profile updated successfully.']);
+        return redirect()->back()->with('success', 'Profile updated successfully.');
     }
 
     // Add education
@@ -60,15 +76,30 @@ class ProfileController extends Controller
             'graduate_education_program' => 'required|string|max:255',
             'graduate_education_field_of_study' => 'required|string|max:255',
             'graduate_education_start_date' => 'required|date',
-            'graduate_education_end_date' => 'nullable|date',
+            'graduate_education_end_date' => 'nullable|date', // Allow null
             'graduate_education_description' => 'nullable|string',
+            'is_current' => 'boolean',
+            'achievements' => 'nullable|string',
+            'no_achievements' => 'nullable|string',
         ]);
 
-        $education = new Education($request->all());
-        $education->user_id = auth()->id(); // Assuming you have a user_id field
-        $education->save();
+        $data = $request->all();
+        if ($request->is_current) {
+            $data['graduate_education_end_date'] = null; // Use null for "present"
+        }
 
-        return response()->json(['message' => 'Education added successfully.']);
+        Log::info('Data being saved:', $data); // Debugging: Log the data
+
+        $education = new Education($data);
+        $education->user_id = Auth::id();
+
+        try {
+            $education->save();
+            return Redirect()->back()->with('flash.banner', 'Education added successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error saving education:', ['error' => $e->getMessage()]); // Debugging: Log the error
+            return Redirect()->back()->with('flash.banner', 'An error occurred while adding education. Please try again.');
+        }
     }
 
     // Update education
@@ -81,12 +112,22 @@ class ProfileController extends Controller
             'graduate_education_start_date' => 'required|date',
             'graduate_education_end_date' => 'nullable|date',
             'graduate_education_description' => 'nullable|string',
+            'is_current' => 'boolean',
+            'achievements' => 'nullable|string',
+            'no_achievements' => 'nullable|boolean', // Add this validation rule
         ]);
 
-        $education = Education::findOrFail($id);
-        $education->update($request->all());
+        $data = $request->all();
 
-        return response()->json(['message' => 'Education updated successfully.']);
+        // Handle `is_current` logic
+        if ($request->is_current) {
+            $data['graduate_education_end_date'] = 'present';
+        }
+
+        $education = Education::findOrFail($id);
+        $education->update($data);
+
+        return Redirect()->back()->with('flash.banner', 'Education updated successfully.');
     }
 
     // Remove education
@@ -95,7 +136,7 @@ class ProfileController extends Controller
         $education = Education::findOrFail($id);
         $education->delete();
 
-        return response()->json(['message' => 'Education removed successfully.']);
+        return Redirect()->back()->with('flash.banner', 'Education removed successfully.');
     }
 
     // Add experience
@@ -107,15 +148,29 @@ class ProfileController extends Controller
             'graduate_experience_start_date' => 'required|date',
             'graduate_experience_end_date' => 'nullable|date',
             'graduate_experience_address' => 'nullable|string|max:255',
-            'graduate_experience_achievements' => 'nullable|string',
-            'graduate_experience_skills_tech' => 'nullable|string',
+            'graduate_experience_description' => 'nullable|string',
+            'graduate_experience_employment_type' => 'nullable|string|max:255', // Keep this line
+            'is_current' => 'boolean',
         ]);
 
-        $experience = new Experience($request->all());
-        $experience->user_id = auth()->id(); // Assuming you have a user_id field
-        $experience->save();
+        $data = $request->all();
+        
+        if ($request->is_current) {
+            $data['graduate_experience_end_date'] = null; 
+        }
 
-        return response()->json(['message' => 'Experience added successfully.']);
+        $data['graduate_experience_description'] = $data['graduate_experience_description'] ?? 'No description provided';
+
+        $experience = new Experience($data);
+        $experience->user_id = Auth::id();
+
+        try {
+            $experience->save();
+            return redirect()->back()->with('flash.banner', 'Experience added successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error saving experience:', ['error' => $e->getMessage()]); 
+            return redirect()->back()->with('flash.banner', 'An error occurred while adding experience. Please try again.');
+        }
     }
 
     // Update experience
@@ -124,17 +179,24 @@ class ProfileController extends Controller
         $request->validate([
             'graduate_experience_title' => 'required|string|max:255',
             'graduate_experience_company' => 'required|string|max:255',
- 'graduate_experience_start_date' => 'required|date',
+            'graduate_experience_start_date' => 'required|date',
             'graduate_experience_end_date' => 'nullable|date',
             'graduate_experience_address' => 'nullable|string|max:255',
-            'graduate_experience_achievements' => 'nullable|string',
-            'graduate_experience_skills_tech' => 'nullable|string',
+            'graduate_experience_description' => 'nullable|string',
+            'graduate_experience_employment_type' => 'nullable|string|max:255', 
+            'is_current' => 'boolean',
         ]);
 
-        $experience = Experience::findOrFail($id);
-        $experience->update($request->all());
+        $data = $request->all();
+        
+        if ($request->is_current) {
+            $data['graduate_experience_end_date'] = null; 
+        }
 
-        return response()->json(['message' => 'Experience updated successfully.']);
+        $experience = Experience::findOrFail($id);
+        $experience->update($data);
+
+        return redirect()->back()->with('flash.banner', 'Experience updated successfully.');
     }
 
     // Remove experience
@@ -143,50 +205,142 @@ class ProfileController extends Controller
         $experience = Experience::findOrFail($id);
         $experience->delete();
 
-        return response()->json(['message' => 'Experience removed successfully.']);
+        return Redirect()->back()->with('flash.banner', 'Experience removed successfully.');
     }
 
     // Add skill
     public function addSkill(Request $request)
     {
+        Log::info('Request data:', $request->all()); // Log the incoming request data
+    
         $request->validate([
-            'graduate_skills_name' => 'required|string|max:255',
-            'graduate_skills_proficiency' => 'required|integer|min:1|max:100',
+            'graduate_skills_name' => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    $exists = Skill::where('user_id', Auth::id())
+                        ->where('graduate_skills_name', $value)
+                        ->exists();
+                    if ($exists) {
+                        $fail('The skill "' . $value . '" already exists.');
+                    }
+                },
+            ],
+            'graduate_skills_proficiency_type' => 'required|string|in:Beginner,Intermediate,Advanced,Expert', // Restrict to specific values
             'graduate_skills_type' => 'required|string|max:255',
             'graduate_skills_years_experience' => 'required|integer|min:0',
         ]);
-
-        $skill = new Skill($request->all());
-        $skill->user_id = auth()->id(); // Assuming you have a user_id field
+    
+        // Create a new skill instance
+        $skill = new Skill();
+        $skill->graduate_skills_name = $request->graduate_skills_name;
+        $skill->graduate_skills_proficiency_type = $request->graduate_skills_proficiency_type; // Ensure this is set correctly
+        $skill->graduate_skills_type = $request->graduate_skills_type;
+        $skill->graduate_skills_years_experience = $request->graduate_skills_years_experience;
+        $skill->user_id = Auth::id(); // Associate with the authenticated user
         $skill->save();
-
-        return response()->json(['message' => 'Skill added successfully.']);
+    
+        return Redirect()->back()->with('flash.banner', 'Skill added successfully.');
     }
-
-    // Update skill
+    // Update skilL
     public function updateSkill(Request $request, $id)
-    {
-        $request->validate([
-            'graduate_skills_name' => 'required|string|max:255',
-            'graduate_skills_proficiency' => 'required|integer|min:1|max:100',
-            'graduate_skills_type' => 'required|string|max:255',
-            'graduate_skills_years_experience' => 'required|integer|min:0',
-        ]);
+{
+    Log::info('Update request data:', $request->all());
 
-        $skill = Skill::findOrFail($id);
-        $skill->update($request->all());
+    $request->validate([
+        'graduate_skills_name' => [
+            'required',
+            'string',
+            'max:255',
+            function ($attribute, $value, $fail) use ($id) {
+                $exists = Skill::where('user_id', Auth::id())
+                    ->where('graduate_skills_name', $value)
+                    ->where('id', '!=', $id)
+                    ->exists();
+                if ($exists) {
+                    $fail('The skill "' . $value . '" already exists.');
+                }
+            },
+        ],
+        'graduate_skills_proficiency_type' => 'required|string|in:Beginner,Intermediate,Advanced,Expert',
+        'graduate_skills_type' => 'required|string|max:255',
+        'graduate_skills_years_experience' => 'required|integer|min:0',
+    ]);
 
-        return response()->json(['message' => 'Skill updated successfully.']);
-    }
+    $skill = Skill::findOrFail($id); 
+
+    $skill->graduate_skills_name = $request->graduate_skills_name;
+    $skill->graduate_skills_proficiency_type = $request->graduate_skills_proficiency_type;
+    $skill->graduate_skills_type = $request->graduate_skills_type;
+    $skill->graduate_skills_years_experience = $request->graduate_skills_years_experience;
+    $skill->user_id = Auth::id();
+
+    $skill->save();
+
+    return redirect()->back()->with('flash.banner', 'Skill updated successfully.');
+}
 
     // Remove skill
     public function removeSkill($id)
     {
+        
         $skill = Skill::findOrFail($id);
         $skill->delete();
 
-        return response()->json(['message' => 'Skill removed successfully.']);
+        return Redirect()->back()->with('flash.banner', 'Skill added successfully.');
     }
+
+    // Add project
+    public function addProject(Request $request)
+    {
+        $request->validate([
+            'graduate_projects_title' => 'required|string|max:255',
+            'graduate_projects_description' => 'required|string',
+            'graduate_projects_role' => 'required|string|max:255',
+            'graduate_projects_start_date' => 'required|date',
+            'graduate_projects_end_date' => 'nullable|date',
+            'graduate_projects_url' => 'nullable|url|max:255',
+            'graduate_projects_tech' => 'nullable|array',
+            'graduate_projects_key_accomplishments' => 'nullable|string',
+        ]);
+
+        $project = new Project($request->all());
+        $project->user_id = Auth::id(); // Assuming you have a user_id field
+        $project->save();
+
+        return redirect()->back()->with('flash.banner', 'Project added successfully.');
+    }
+
+    // Update an existing project
+    public function updateProject(Request $request, $id)
+    {
+        $request->validate([
+            'graduate_projects_title' => 'required|string|max:255',
+            'graduate_projects_description' => 'required|string',
+            'graduate_projects_role' => 'required|string|max:255',
+            'graduate_projects_start_date' => 'required|date',
+            'graduate_projects_end_date' => 'nullable|date',
+            'graduate_projects_url' => 'nullable|url|max:255',
+            'graduate_projects_tech' => 'nullable|array',
+            'graduate_projects_key_accomplishments' => 'nullable|string',
+        ]);
+
+        $project = Project::findOrFail($id);
+        $project->update($request->all());
+
+        return redirect()->back()->with('flash.banner', 'Project updated successfully.');
+    }
+
+    // Remove a project
+    public function removeProject($id)
+    {
+        $project = Project::findOrFail($id);
+        $project->delete();
+
+        return redirect()->back()->with('flash.banner', 'Project removed successfully.');
+    }
+
 
     // Add certification
     public function addCertification(Request $request)
@@ -201,10 +355,10 @@ class ProfileController extends Controller
         ]);
 
         $certification = new Certification($request->all());
-        $certification->user_id = auth()->id(); // Assuming you have a user_id field
+        $certification->user_id = Auth::user()->id(); // Assuming you have a user_id field
         $certification->save();
 
-        return response()->json(['message' => 'Certification added successfully.']);
+        return Redirect()->back()->with('flash.banner', 'Certification added successfully.');
     }
 
     // Update certification
@@ -222,8 +376,7 @@ class ProfileController extends Controller
         $certification = Certification::findOrFail($id);
         $certification->update($request->all());
 
-        return response()->json(['message' => 'Certification updated successfully.']);
-    }
+        return Redirect()->back();    }
 
     // Remove certification
     public function removeCertification($id)
@@ -231,7 +384,7 @@ class ProfileController extends Controller
         $certification = Certification::findOrFail($id);
         $certification->delete();
 
-        return response()->json(['message' => 'Certification removed successfully.']);
+        return Redirect()->back()->with('flash.banner', 'Certification removed successfully.');
     }
 
     // Add achievement
@@ -247,9 +400,9 @@ class ProfileController extends Controller
         ]);
 
         $achievement = new Achievement($request->all());
-        $achievement->user_id = auth()->id(); // Assuming you have a user_id field $achievement->save();
+        $achievement->user_id = Auth::user()->id(); // Assuming you have a user_id field $achievement->save();
 
-        return response()->json(['message' => 'Achievement added successfully.']);
+        return Redirect()->back()->with('flash.banner', 'Achievement added successfully.');
     }
 
     // Update achievement
@@ -267,7 +420,7 @@ class ProfileController extends Controller
         $achievement = Achievement::findOrFail($id);
         $achievement->update($request->all());
 
-        return response()->json(['message' => 'Achievement updated successfully.']);
+        return Redirect()->back();    
     }
 
     // Remove achievement
@@ -276,7 +429,7 @@ class ProfileController extends Controller
         $achievement = Achievement::findOrFail($id);
         $achievement->delete();
 
-        return response()->json(['message' => 'Achievement removed successfully.']);
+        return Redirect()->back()->with('flash.banner', 'Achievement removed successfully.');
     }
 
     // Add testimonial
@@ -290,10 +443,10 @@ class ProfileController extends Controller
         ]);
 
         $testimonial = new Testimonial($request->all());
-        $testimonial->user_id = auth()->id(); // Assuming you have a user_id field
+        $testimonial->user_id = Auth::user()->id(); // Assuming you have a user_id field
         $testimonial->save();
 
-        return response()->json(['message' => 'Testimonial added successfully.']);
+        return Redirect()->back()->with('flash.banner', 'Testimonial added successfully.');
     }
 
     // Update testimonial
@@ -309,7 +462,7 @@ class ProfileController extends Controller
         $testimonial = Testimonial::findOrFail($id);
         $testimonial->update($request->all());
 
-        return response()->json(['message' => 'Testimonial updated successfully.']);
+        return Redirect()->back();    
     }
 
     // Remove testimonial
@@ -318,7 +471,7 @@ class ProfileController extends Controller
         $testimonial = Testimonial::findOrFail($id);
         $testimonial->delete();
 
-        return response()->json(['message' => 'Testimonial removed successfully.']);
+        return Redirect()->back()->with('flash.banner', 'Testimonial removed successfully.');
     }
 
     // Update employment preferences
@@ -333,10 +486,10 @@ class ProfileController extends Controller
             'additionalNotes' => 'nullable|string',
         ]);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $user->employmentPreferences()->update($request->all()); // Assuming you have a relationship set up
 
-        return response()->json(['message' => 'Employment preferences updated successfully.']);
+         return Redirect()->back()->with('flash.banner', 'Employment preferences updated successfully.');
     }
 
     // Save career goals
@@ -349,10 +502,10 @@ class ProfileController extends Controller
             'careerPath' => 'nullable|string',
         ]);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $user->careerGoals()->update($request->all()); // Assuming you have a relationship set up
 
-        return response()->json(['message' => 'Career goals saved successfully.']);
+        return Redirect()->back()->with('flash.banner', 'Career goals saved successfully.');
     }
 
     // Upload resume
@@ -362,19 +515,19 @@ class ProfileController extends Controller
             'file' => 'required|file|mimes:pdf,doc,docx|max:2048',
         ]);
 
-        $user = auth()->user();
+        $user = Auth::user();
         if ($request->hasFile('file')) {
             $path = $request->file('file')->store('resumes', 'public');
             $user->resume()->update(['file' => $path]); // Assuming you have a relationship set up
         }
 
-        return response()->json(['message' => 'Resume uploaded successfully.']);
+        return Redirect()->back()->with('flash.banner', 'Resume uploaded successfully.');
     }
 
     // Remove resume
     public function removeResume()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $user->resume()->delete(); // Assuming you have a relationship set up
 
         return response()->json(['message' => 'Resume removed successfully.']);

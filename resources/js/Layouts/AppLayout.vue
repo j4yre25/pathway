@@ -359,9 +359,9 @@ console.log(page.props.permissions.canManageInstitution)
                 <div :class="{ 'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown }"
                     class="sm:hidden">
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                        <!-- <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                             Dashboard
-                        </ResponsiveNavLink>
+                        </ResponsiveNavLink> -->
 
                         <ResponsiveNavLink :href="route('jobs', { user: page.props.auth.user.id })"
                             :active="route().current('jobs')">

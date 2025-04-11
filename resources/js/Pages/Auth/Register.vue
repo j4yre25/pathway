@@ -669,6 +669,21 @@ const redirectToLogin = () => {
                     </div>
 
                     <!-- Program Completed -->
+                    <div class="mt-4">
+                        <InputLabel for="graduate_program_completed" value="Program Completed" />
+                        <select
+                            id="graduate_program_completed"
+                            v-model="form.graduate_program_completed"
+                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            required
+                            >
+                            <option value="" disabled>Select a Program</option>
+                            <option v-for="program in availablePrograms":key="program.id" :value="program.name">
+                                {{ program.name }}
+                            </option>
+                        </select>
+                        <InputError class="mt-2" :message="form.errors.graduate_program_completed" />
+                    </div>
 
                     <!-- Year Graduated -->
                     <div class="mt-4">
