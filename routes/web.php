@@ -9,6 +9,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminRegisterController;
+use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SectorController;
@@ -26,8 +27,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomRegisteredUserController;
 use App\Http\Controllers\JobSearchController;
+
 use Laravel\Fortify\Features;
-use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use Laravel\Fortify\Http\Controllers\ConfirmablePasswordController;
 use Laravel\Fortify\Http\Controllers\ConfirmedPasswordStatusController;
 use Laravel\Fortify\Http\Controllers\ConfirmedTwoFactorAuthenticationController;
@@ -52,6 +53,7 @@ use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\CertificationController;
 use App\Http\Controllers\AchievementController;
+use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\EmploymentPreferencesController;
 use App\Http\Controllers\CareerGoalsController;
@@ -78,6 +80,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
     Route::get('/dashboard',  [DashboardController::class, 'index'])->name('dashboard');
 });
+
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
     Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage approval graduate'])->group(function () {
@@ -142,6 +145,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 // ]);
 
 // Companies Routes
+// Dashboar Contents 
+// Route::middleware(['auth' , config('jetstream.auth_session'), 'verified',])->group(function () {
+//     Route::get('/dashboard', [ApplicationController::class, 'summary'])->name('dashboard');
+// });
 // Jobs Routes
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}', [JobsController::class, 'index'])
     ->name('jobs');
@@ -206,25 +213,38 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
 
 
-
 // Manage Users (PESO)
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->get('/admin/manage-users', [ManageUsersController::class, 'index'])
-    ->name('admin.manage_users');
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->group(function () {
+    Route::get('/admin/manage-users', [ManageUsersController::class, 'index'])->name('admin.manage_users');
+    Route::get('/admin/manage-users/list', [ManageUsersController::class, 'list'])->name('admin.manage_users.list');
+    Route::get('/admin/manage-users/edit/{user}', [ManageUsersController::class, 'edit'])->name('admin.manage_users.edit');
+    Route::delete('/admin/manage-users/{user}', [ManageUsersController::class, 'delete'])->name('admin.manage_users.delete');
+    Route::post('/admin/manage-users/{user}/approve', [ManageUsersController::class, 'approve'])->name('admin.manage_users.approve');
+    Route::post('/admin/manage-users/{user}/disapprove', [ManageUsersController::class, 'disapprove'])->name('admin.manage_users.disapprove');
+});
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->get('/admin/manage-users/list', [ManageUsersController::class, 'list'])
-    ->name('admin.manage_users.list');
+// Sectors
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->group(function () {
+    Route::get('/sectors/{user}', [SectorController::class, 'index'])->name('sectors');
+    Route::get('/sectors/{user}/list', [SectorController::class, 'list'])->name('sectors.list');
+    Route::get('/sectors/{user}/create', [SectorController::class, 'create'])->name('sectors.create');
+    Route::post('/sectors/{user}', [SectorController::class, 'store'])->name('sectors.store');
+    Route::get('/sectors/edit/{sector}', [SectorController::class, 'edit'])->name('sectors.edit');
+    Route::put('/sectors/edit/{sector}', [SectorController::class, 'update'])->name('sectors.update');
+    Route::delete('/sectors/edit/{sector}', [SectorController::class, 'delete'])->name('sectors.delete');
+});
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->get('/admin/manage-users/edit/{user}', [ManageUsersController::class, 'edit'])
-    ->name('admin.manage_users.edit');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->delete('/admin/manage-users/{user}', [ManageUsersController::class, 'delete'])
-    ->name('admin.manage_users.delete');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->post('/admin/manage-users/{user}/approve', [ManageUsersController::class, 'approve'])
-    ->name('admin.manage_users.approve');
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->post('/admin/manage-users/{user}/disapprove', [ManageUsersController::class, 'disapprove'])
-    ->name('admin.manage_users.disapprove');
-
+// Categories
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage users'])->group(function () {
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('/categories/list', [CategoryController::class, 'list'])->name('categories.list');
+    Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+    Route::post('/categories/{sector}', [CategoryController::class, 'store'])->name('categories.store');
+    Route::get('/categories/edit/{category}', [CategoryController::class, 'edit'])->name('categories.edit');
+    Route::put('/categories/edit/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/categories/edit/{category}', [CategoryController::class, 'delete'])->name('categories.delete');
+    Route::get('/sectors/{sector}/categories', [CategoryController::class, 'index'])->name('sectors.categories.index');
+});
 
 // Manage Graduates
 // Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/manage-graduates', [ManageGraduatesController::class, 'index'])
@@ -245,61 +265,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 // Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/manage-graduates', [ManageGraduatesController::class, 'index'])
 // ->name('graduates.delete');
 
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/{user}', [SectorController::class, 'index'])
-    ->name('sectors');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/{user}/list', [SectorController::class, 'list'])
-    ->name('sectors.list');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/{user}/create', [SectorController::class, 'create'])
-    ->name('sectors.create');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('/sectors/{user}', [SectorController::class, 'store'])
-    ->name('sectors.store');
-
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/sectors/edit/{sector}', [SectorController::class, 'edit'])
-    ->name('sectors.edit');
-
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->put('/sectors/edit/{sector}', [SectorController::class, 'update'])
-    ->name('sectors.update');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('/sectors/edit/{sector}', [SectorController::class, 'delete'])
-    ->name('sectors.delete');
-
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-    ->get('/categories', [CategoryController::class, 'index'])
-    ->name('categories.index');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/categories/list', [CategoryController::class, 'list'])
-    ->name('categories.list');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-    ->get('/categories/create', [CategoryController::class, 'create'])
-    ->name('categories.create');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-    ->post('/categories/{sector}', [CategoryController::class, 'store'])
-    ->name('categories.store');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-    ->get('/categories/edit/{category}', [CategoryController::class, 'edit'])
-    ->name('categories.edit');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-    ->put('/categories/edit/{category}', [CategoryController::class, 'update'])
-    ->name('categories.update');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-    ->delete('/categories/edit/{category}', [CategoryController::class, 'delete'])
-    ->name('categories.delete');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-    ->get('/sectors/{sector}/categories', [CategoryController::class, 'index'])
-    ->name('sectors.categories.index');
 
 
     

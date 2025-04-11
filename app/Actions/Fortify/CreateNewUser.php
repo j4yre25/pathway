@@ -66,6 +66,10 @@ class CreateNewUser implements CreatesNewUsers
                 $rules['institution_president_last_name'] = ['required', 'string', 'max:255'];
                 $rules['institution_president_first_name'] = ['required', 'string', 'max:255'];
                 $rules['institution_career_officer_first_name'] = ['required', 'string', 'max:255'];
+                $rules['gender'] = ['nullable', 'string', 'in:Male,Female,Other']; 
+                $rules['dob'] = ['nullable', 'date']; 
+        
+
                 break;
             default:
                 // Handle the guest role
@@ -109,7 +113,6 @@ class CreateNewUser implements CreatesNewUsers
                 $userData['institution_type'] = $input['institution_type'];
                 $userData['institution_name'] = $input['institution_name'];
                 $userData['institution_address'] = $input['institution_address'];
-                $userData['institution_contact_number'] = $input['institution_contact_number'];
                 $userData['institution_president_last_name'] = $input['institution_president_last_name'];
                 $userData['institution_president_first_name'] = $input['institution_president_first_name'];
                 $userData['institution_career_officer_first_name'] = $input['institution_career_officer_first_name'];

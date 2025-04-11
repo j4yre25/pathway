@@ -23,12 +23,26 @@ class SectorController extends Controller
 
         
     }
-    public function list() {
+    public function list(Request $request) {
 
 
-        $sectors = Sector::with('user')->get(); 
+        $status = $request->input('status', 'all');
+
+        // Query sectors with filtering based on the status
+        $sectors = Sector::with('user')->withTrashed()
+            ->when($status === 'active', function ($query) {
+                $query->whereNull('deleted_at'); // Active sectors (not archived)
+            })
+            ->when($status === 'inactive', function ($query) {
+                $query->whereNotNull('deleted_at'); // Inactive sectors (archived)
+            })
+            ->get();
+
+            
+    
         return Inertia::render('Sectors/List', [
-            'sectors' => $sectors
+            'sectors' => $sectors,
+            'status' => $status, // Pass the current filter status to the view
         ]);
 
         

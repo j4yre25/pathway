@@ -25,17 +25,24 @@ class CategoryController extends Controller
         ]);
     }    
 
-    public function list() {
+    public function list(Request $request) {
+        $status = $request->input('status', 'all'); // Get the filter value from the request (default to 'all')
 
+    // Query categories with filtering based on the status
+    $categories = Category::with('user')
+        ->withTrashed() // Include archived (soft-deleted) records
+        ->when($status === 'active', function ($query) {
+            $query->whereNull('deleted_at'); // Active categories (not archived)
+        })
+        ->when($status === 'inactive', function ($query) {
+            $query->whereNotNull('deleted_at'); // Inactive categories (archived)
+        })
+        ->get();
 
-        $categories = Category::with('user')->get(); 
-
-    
-    
-        return Inertia::render('Categories/List', [
-            'categories' => $categories,
-        ]);
-        
+    return Inertia::render('Categories/List', [
+        'categories' => $categories,
+        'status' => $status, // Pass the current filter status to the view
+    ]);
     }
 
     

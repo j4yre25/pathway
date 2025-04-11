@@ -120,12 +120,12 @@ const disapproveUser = (user) => {
                                 <span v-else class="text-red-600 font-semibold">Pending</span>
                             </td>
                             <td class="border border-gray-200 px-6 py-4">
-                                <PrimaryButton @click="approveUser(user)" v-if="!user.is_approved">Approve
+                                <PrimaryButton class= "mr-2" @click="approveUser(user)" v-if="!user.is_approved">Approve
                                 </PrimaryButton>
-                                <DangerButton v-if="user.is_approved" @click="disapproveUser(user)">
+                                <DangerButton  @click="disapproveUser(user)">
                                     Disapprove
                                 </DangerButton>
-                                <DangerButton @click="open = true">
+                                <DangerButton class="ml-2" @click="open = true">
                                     Archive User
 
                                 </DangerButton>
