@@ -107,7 +107,7 @@ const formattedContactNumber = computed({
             rawValue = rawValue.slice(0, 10);
         }
 
-        form.company_contact_number= rawValue;
+        form.company_contact_number = rawValue;
     },
 });
 
@@ -167,17 +167,18 @@ const redirectToLogin = () => {
     <Head title="Register" />
 
     <AuthenticationCard>
-        
+
 
         <!-- UPDATE 04/04 Putting form inside the template for registrtion form layout -->
         <template #registerForm>
 
-            
+
 
             <form @submit.prevent="submit" autocomplete="off">
                 <!-- Company Fields -->
-             <div v-if="form.role === 'company'" class="flex space-x-12  ">
-                    <div class="flex-1 flex flex-col items-start justify-center p-6 bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg shadow-lg text-white ">
+                <div v-if="form.role === 'company'" class="flex space-x-12  ">
+                    <div
+                        class="flex-1 flex flex-col items-start justify-center p-6 bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg shadow-lg text-white ">
                         <AuthenticationCardLogo class="mx-20 fill-white-100" />
                         <h2 class="text-6xl font-bold">Welcome to</h2>
                         <h1 class="text-7xl font-extrabold">Pathway</h1>
@@ -215,7 +216,8 @@ const redirectToLogin = () => {
                                     </div>
                                     <div>
                                         <TextInput id="company_street_address" v-model="form.company_street_address"
-                                            type="text" class="mt-1 mb-4 block w-full l border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg" 
+                                            type="text"
+                                            class="mt-1 mb-4 block w-full l border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                             required />
                                         <InputError class="mt-1" :message="form.errors.company_street_address" />
                                     </div>
@@ -228,7 +230,7 @@ const redirectToLogin = () => {
                                     </div>
                                     <div>
                                         <TextInput id="company_brgy" v-model="form.company_brgy" type="text"
-                                            class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg" 
+                                            class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                             required />
                                         <InputError class="mt-1" :message="form.errors.company_brgy" />
                                     </div>
@@ -243,7 +245,7 @@ const redirectToLogin = () => {
                                     </div>
                                     <div>
                                         <TextInput id="company_city" v-model="form.company_city" type="text"
-                                            class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"  
+                                            class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                             required />
                                         <InputError class="mt-1" :message="form.errors.company_city" />
                                     </div>
@@ -256,7 +258,7 @@ const redirectToLogin = () => {
                                     </div>
                                     <div>
                                         <TextInput id="company_province" v-model="form.company_province" type="text"
-                                            class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg" 
+                                            class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                             required />
                                         <InputError class="mt-1" :message="form.errors.company_province" />
                                     </div>
@@ -269,14 +271,14 @@ const redirectToLogin = () => {
                                     </div>
                                     <div>
                                         <TextInput id="company_zip_code" v-model="form.company_zip_code" type="text"
-                                            class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg" 
+                                            class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                             required />
                                         <InputError class="mt-1" :message="form.errors.company_zip_code" />
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="border-t border-gray-200"></div> 
+                            <div class="border-t border-gray-200"></div>
                             <h2 class="text-xl font-semibold text-gray-900">Company Contact Information</h2>
                             <p class="text-sm text-gray-600 ">
                                 Provide the official contact details of your company.
@@ -303,7 +305,8 @@ const redirectToLogin = () => {
                                             <InputLabel for="company_contact_number" value="Mobile Number" />
                                             <span class="text-red-500">*</span>
                                         </div>
-                                        <TextInput id="company_contact_number" v-model="formattedContactNumber" type="text"
+                                        <TextInput id="company_contact_number" v-model="formattedContactNumber"
+                                            type="text"
                                             class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                             required />
                                         <InputError class="mt-2" :message="form.errors.company_contact_number" />
@@ -312,29 +315,29 @@ const redirectToLogin = () => {
                                 <div>
                                     <InputLabel for="telephone_number" value="Telephone Number" />
                                     <TextInput id="telephone_number" v-model="form.telephone_number" type="text"
-                                        class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
-                                        />
+                                        class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg" />
                                     <InputError class="mt-2" :message="form.errors.telephone_number" />
                                 </div>
                             </div>
-                             
-                            <div class="border-t border-gray-200"></div> 
-                            <h2 class="text-xl font-semibold text-gray-900">Human Resource Officer Personal Information</h2>
+
+                            <div class="border-t border-gray-200"></div>
+                            <h2 class="text-xl font-semibold text-gray-900">Human Resource Officer Personal Information
+                            </h2>
                             <p class="text-sm text-gray-600 ">
                                 Provide the personal details of your HR.
                             </p>
-                            
+
                             <!-- HR's First and Last Name -->
                             <div class="grid grid-cols-2 gap-x-4">
-                               <!-- First Name -->
-                                <div> 
+                                <!-- First Name -->
+                                <div>
                                     <div class="flex items-center gap-1">
                                         <InputLabel for="company_hr_first_name" value="First Name" />
                                         <span class="text-red-500">*</span>
                                     </div>
                                     <div>
                                         <TextInput id="company_hr_first_name" v-model="form.company_hr_first_name"
-                                            type="text" 
+                                            type="text"
                                             class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                             required />
                                         <InputError class="mt-2" :message="form.errors.company_hr_first_name" />
@@ -347,134 +350,133 @@ const redirectToLogin = () => {
                                     </div>
                                     <div>
                                         <TextInput id="company_hr_last_name" v-model="form.company_hr_last_name"
-                                            type="text" 
+                                            type="text"
                                             class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                             required />
                                         <InputError class="mt-2" :message="form.errors.company_hr_last_name" />
                                     </div>
                                 </div>
-                                </div>  
-                                <div class="grid grid-cols-2 gap-4">
-                                    <!-- Gender -->
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <!-- Gender -->
+                                <div>
+                                    <div class="flex items-center gap-x-4">
+                                        <InputLabel for="gender" value="Gender" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
                                     <div>
-                                        <div class="flex items-center gap-x-4">
-                                            <InputLabel for="gender" value="Gender" />
-                                            <span class="text-red-500">*</span>
-                                        </div>
-                                        <div>
-                                            <select id="gender" v-model="form.gender" 
-                                            class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg" 
+                                        <select id="gender" v-model="form.gender"
+                                            class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                             required>
-                                                <option value="">Select Gender</option>
-                                                <option value="Male">Male</option>
-                                                <option value="Female">Female</option>
-                                                <option value="Other">Other</option>
-                                            </select>
-                                            <InputError class="" :message="form.errors.gender" />
-                                        </div>
-                                    </div>
-                                    <!-- Date of Birth -->
-                                    <div>
-                                        <div class="flex items-center gap-1">
-                                            <InputLabel for="dob" value="Date of Birth" />
-                                            <span class="text-red-500">*</span>
-                                        </div>
-                                        <div>
-                                            <TextInput id="dob" v-model="form.dob" type="date" 
-                                                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
-                                                required />
-                                            <InputError class="mt-2" :message="form.errors.dob" />
-                                        </div>
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                        <InputError class="" :message="form.errors.gender" />
                                     </div>
                                 </div>
-                                
-                                <div class="grid grid-cols-2 gap-x-4">
-                                    <!-- HR Email -->
-                                    <div>
-                                        <div class="flex items-center gap-1">
-                                            <InputLabel for="email" value="Email Address" />
-                                            <span class="text-red-500">*</span>
-                                        </div>
-                                        <div>
-                                            <TextInput id="email" v-model="form.email" type="email" 
-                                                class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
-                                                required />
-                                            <InputError class="mt-2" :message="form.errors.email" />
-                                        </div>
+                                <!-- Date of Birth -->
+                                <div>
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="dob" value="Date of Birth" />
+                                        <span class="text-red-500">*</span>
                                     </div>
-
-                                    <!-- HR Contact Number -->
                                     <div>
-                                        <div class="flex items-center gap-1">
-                                            <InputLabel for="contact_number" value="Contact Number" />
-                                            <span class="text-red-500">*</span>
-                                        </div>
-                                        <div>
-                                            <TextInput id="contact_number" v-model="form.contact_number" v-mask="'# (###) ###-####'"
-                                                type="text"
-                                                class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
-                                                required />
-                                            <InputError class="mt-2" :message="form.errors.contact_number" />
-                                        </div>
+                                        <TextInput id="dob" v-model="form.dob" type="date"
+                                            class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
+                                            required />
+                                        <InputError class="mt-2" :message="form.errors.dob" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-x-4">
+                                <!-- HR Email -->
+                                <div>
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="email" value="Email Address" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
+                                    <div>
+                                        <TextInput id="email" v-model="form.email" type="email"
+                                            class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
+                                            required />
+                                        <InputError class="mt-2" :message="form.errors.email" />
                                     </div>
                                 </div>
 
-                                <!-- Set Password -->
-                                <h2 class="text-lg font-semibold text-gray-900">Set Password</h2>
-
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <div class="flex items-center gap-1">
-                                            <InputLabel for="password" value="Password" />
-                                            <span class="text-red-500">*</span>
-                                        </div>
-                                        <div class="mb-2">
-                                            <TextInput id="password" v-model="form.password" type="password"
-                                                class="mt-1 block w-full" required @focus="isPasswordFocused = true"
-                                                @blur="isPasswordFocused = false" />
-                                            <InputError class="mt-1" :message="form.errors.password" />
-                                        </div>
-                                        
-                                        <div v-if="isPasswordFocused && form.password"
-                                            class="mt-2 p-3 bg-gray-800 text-white rounded-md w-64 text-sm shadow-lg">
-                                            <p class="font-semibold text-gray-200">Password must meet the following:</p>
-                                            <ul class="mt-1">
-                                                <li :class="passwordCriteria.length ? 'text-green-400' : 'text-red-400'">
-                                                    ✔ Minimum 8 characters
-                                                </li>
-                                                <li
-                                                    :class="passwordCriteria.uppercaseLowercase ? 'text-green-400' : 'text-red-400'">
-                                                    ✔ Upper & lower case letters
-                                                </li>
-                                                <li :class="passwordCriteria.number ? 'text-green-400' : 'text-red-400'">
-                                                    ✔ At least one number
-                                                </li>
-                                                <li :class="passwordCriteria.symbol ? 'text-green-400' : 'text-red-400'">
-                                                    ✔ At least one special character (@$!%*?&)
-                                                </li>
-                                            </ul> 
-                                        </div>
+                                <!-- HR Contact Number -->
+                                <div>
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="contact_number" value="Contact Number" />
+                                        <span class="text-red-500">*</span>
                                     </div>
-                                    
-                                   <div>
-                                        <div class="flex items-center gap-1">
-                                            <InputLabel for="password_confirmation" value="Confirm Password" />
-                                            <span class="text-red-500">*</span>
-                                        </div>
-                                        <div class="mb-2">
-                                            <TextInput id="password_confirmation" v-model="form.password_confirmation"
-                                                type="password" class="mt-1 mb-4 block w-full" required />
-                                            <InputError class="mt-1" :message="form.errors.password_confirmation" />
-                                        </div>
-                                    </div>  
+                                    <div>
+                                        <TextInput id="contact_number" v-model="form.contact_number"
+                                            v-mask="'# (###) ###-####'" type="text"
+                                            class="mt-1 mb-4 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
+                                            required />
+                                        <InputError class="mt-2" :message="form.errors.contact_number" />
+                                    </div>
                                 </div>
-                             </div>
+                            </div>
+
+                            <!-- Set Password -->
+                            <h2 class="text-lg font-semibold text-gray-900">Set Password</h2>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="password" value="Password" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <TextInput id="password" v-model="form.password" type="password"
+                                            class="mt-1 block w-full" required @focus="isPasswordFocused = true"
+                                            @blur="isPasswordFocused = false" />
+                                        <InputError class="mt-1" :message="form.errors.password" />
+                                    </div>
+
+                                    <div v-if="isPasswordFocused && form.password"
+                                        class="mt-2 p-3 bg-gray-800 text-white rounded-md w-64 text-sm shadow-lg">
+                                        <p class="font-semibold text-gray-200">Password must meet the following:</p>
+                                        <ul class="mt-1">
+                                            <li :class="passwordCriteria.length ? 'text-green-400' : 'text-red-400'">
+                                                ✔ Minimum 8 characters
+                                            </li>
+                                            <li
+                                                :class="passwordCriteria.uppercaseLowercase ? 'text-green-400' : 'text-red-400'">
+                                                ✔ Upper & lower case letters
+                                            </li>
+                                            <li :class="passwordCriteria.number ? 'text-green-400' : 'text-red-400'">
+                                                ✔ At least one number
+                                            </li>
+                                            <li :class="passwordCriteria.symbol ? 'text-green-400' : 'text-red-400'">
+                                                ✔ At least one special character (@$!%*?&)
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="password_confirmation" value="Confirm Password" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <TextInput id="password_confirmation" v-model="form.password_confirmation"
+                                            type="password" class="mt-1 mb-4 block w-full" required />
+                                        <InputError class="mt-1" :message="form.errors.password_confirmation" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
+                </div>
                 <!-- Institution Fields UPDATED 04/04/2025
-                     Separated the Password and Personal Information (Geneder, and etc.)
-                     so it wont affect Institutuon. Naka Global abi -->
+                    Separated the Password and Personal Information (Gender, and etc.)
+                    so it won't affect Institution. Naka Global abi -->
                 <div v-if="form.role === 'institution'" class="flex space-x-12">
                     <!-- Left Side: Welcome Section -->
                     <div
@@ -495,7 +497,10 @@ const redirectToLogin = () => {
                         <div class="grid grid-cols-1 gap-4">
                             <!-- Institution Type -->
                             <div>
-                                <InputLabel for="institution_type" value="Institution Type" />
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="institution_type" value="Institution Type" />
+                                    <span class="text-red-500">*</span>
+                                </div>
                                 <select id="institution_type" v-model="form.institution_type"
                                     class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm transition duration-300 ease-in-out transform hover:shadow-lg"
                                     required>
@@ -508,7 +513,10 @@ const redirectToLogin = () => {
 
                             <!-- College/University/Institution Name -->
                             <div>
-                                <InputLabel for="institution_name" value="College/University/Institution Name" />
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="institution_name" value="College/University/Institution Name" />
+                                    <span class="text-red-500">*</span>
+                                </div>
                                 <TextInput id="institution_name" v-model="form.institution_name" type="text"
                                     class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                     required />
@@ -517,7 +525,10 @@ const redirectToLogin = () => {
 
                             <!-- Institution Address -->
                             <div>
-                                <InputLabel for="institution_address" value="Institution Address" />
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="institution_address" value="Institution Address" />
+                                    <span class="text-red-500">*</span>
+                                </div>
                                 <TextInput id="institution_address" v-model="form.institution_address" type="text"
                                     class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                     required />
@@ -526,7 +537,10 @@ const redirectToLogin = () => {
 
                             <!-- Institution Email -->
                             <div>
-                                <InputLabel for="email" value="Institution Email" />
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="email" value="Institution Email" />
+                                    <span class="text-red-500">*</span>
+                                </div>
                                 <TextInput id="email" v-model="form.email" type="email"
                                     class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                     required />
@@ -536,14 +550,20 @@ const redirectToLogin = () => {
                             <!-- Mobile and Telephone Number -->
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <InputLabel for="contact_number" value="Mobile Number" />
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="contact_number" value="Mobile Number" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
                                     <TextInput id="contact_number" v-model="form.contact_number" type="text"
                                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                         required />
                                     <InputError class="mt-2" :message="form.errors.contact_number" />
                                 </div>
                                 <div>
-                                    <InputLabel for="telephone_number" value="Telephone Number" />
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="telephone_number" value="Telephone Number" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
                                     <TextInput id="telephone_number" v-model="form.telephone_number" type="text"
                                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
                                         required />
@@ -554,7 +574,11 @@ const redirectToLogin = () => {
                             <!-- President's First and Last Name -->
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <InputLabel for="institution_president_first_name" value="President First Name" />
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="institution_president_first_name"
+                                            value="President First Name" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
                                     <TextInput id="institution_president_first_name"
                                         v-model="form.institution_president_first_name" type="text"
                                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
@@ -562,7 +586,10 @@ const redirectToLogin = () => {
                                     <InputError class="mt-2" :message="form.errors.institution_president_first_name" />
                                 </div>
                                 <div>
-                                    <InputLabel for="institution_president_last_name" value="President Last Name" />
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="institution_president_last_name" value="President Last Name" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
                                     <TextInput id="institution_president_last_name"
                                         v-model="form.institution_president_last_name" type="text"
                                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
@@ -574,8 +601,11 @@ const redirectToLogin = () => {
                             <!-- Career Officer's First and Last Name -->
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <InputLabel for="institution_career_officer_first_name"
-                                        value="Career Officer First Name" />
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="institution_career_officer_first_name"
+                                            value="Career Officer First Name" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
                                     <TextInput id="institution_career_officer_first_name"
                                         v-model="form.institution_career_officer_first_name" type="text"
                                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
@@ -584,8 +614,11 @@ const redirectToLogin = () => {
                                         :message="form.errors.institution_career_officer_first_name" />
                                 </div>
                                 <div>
-                                    <InputLabel for="institution_career_officer_last_name"
-                                        value="Career Officer Last Name" />
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="institution_career_officer_last_name"
+                                            value="Career Officer Last Name" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
                                     <TextInput id="institution_career_officer_last_name"
                                         v-model="form.institution_career_officer_last_name" type="text"
                                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
@@ -597,34 +630,51 @@ const redirectToLogin = () => {
 
                             <!-- Set Password -->
                             <h2 class="text-lg font-semibold text-gray-900">Set Password</h2>
+
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <div class="flex items-center gap-1">
                                         <InputLabel for="password" value="Password" />
+                                        <span class="text-red-500">*</span>
                                     </div>
-                                    <TextInput id="password" v-model="form.password" type="password"
-                                        class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
-                                        required />
-                                    <InputError class="mt-1" :message="form.errors.password" />
-                                    <p class="mt-1 text-xs text-gray-500">
-                                        Password must meet the following:
-                                    <ul class="list-disc list-inside">
-                                        <li>✔ Minimum 8 characters</li>
-                                        <li>✔ Upper & lower case letters</li>
-                                        <li>✔ At least one number</li>
-                                        <li>✔ At least one special character (#@$!%*?&)</li>
-                                    </ul>
-                                    </p>
+                                    <div class="mb-2">
+                                        <TextInput id="password" v-model="form.password" type="password"
+                                            class="mt-1 block w-full" required @focus="isPasswordFocused = true"
+                                            @blur="isPasswordFocused = false" />
+                                        <InputError class="mt-1" :message="form.errors.password" />
+                                    </div>
+
+                                    <div v-if="isPasswordFocused && form.password"
+                                        class="mt-2 p-3 bg-gray-800 text-white rounded-md w-64 text-sm shadow-lg">
+                                        <p class="font-semibold text-gray-200">Password must meet the following:</p>
+                                        <ul class="mt-1">
+                                            <li :class="passwordCriteria.length ? 'text-green-400' : 'text-red-400'">
+                                                ✔ Minimum 8 characters
+                                            </li>
+                                            <li
+                                                :class="passwordCriteria.uppercaseLowercase ? 'text-green-400' : 'text-red-400'">
+                                                ✔ Upper & lower case letters
+                                            </li>
+                                            <li :class="passwordCriteria.number ? 'text-green-400' : 'text-red-400'">
+                                                ✔ At least one number
+                                            </li>
+                                            <li :class="passwordCriteria.symbol ? 'text-green-400' : 'text-red-400'">
+                                                ✔ At least one special character (@$!%*?&)
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
+
                                 <div>
                                     <div class="flex items-center gap-1">
                                         <InputLabel for="password_confirmation" value="Confirm Password" />
+                                        <span class="text-red-500">*</span>
                                     </div>
-                                    <TextInput id="password_confirmation" v-model="form.password_confirmation"
-                                        type="password"
-                                        class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
-                                        required />
-                                    <InputError class="mt-1" :message="form.errors.password_confirmation" />
+                                    <div class="mb-2">
+                                        <TextInput id="password_confirmation" v-model="form.password_confirmation"
+                                            type="password" class="mt-1 mb-4 block w-full" required />
+                                        <InputError class="mt-1" :message="form.errors.password_confirmation" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -689,127 +739,129 @@ const redirectToLogin = () => {
                     </div>
 
                     <div class="grid grid-cols-3 ">
-                    <div class=" col-span-1">
-                        <h2 class="text-lg font-semibold text-gray-900"></h2>
-                        <p class="text-sm text-gray-600"></p>
-                    </div>
+                        <div class=" col-span-1">
+                            <h2 class="text-lg font-semibold text-gray-900"></h2>
+                            <p class="text-sm text-gray-600"></p>
+                        </div>
 
-                    <div class=" col-span-2">
-                        <div class="grid grid-cols-2 gap-4">
-                            <!-- Gender -->
-                            <div>
-                                <div class="flex items-center gap-1">
-                                    <InputLabel for="gender" value="Gender" />
-                                    <span class="text-red-500">*</span>
-                                </div>
+                        <div class=" col-span-2">
+                            <div class="grid grid-cols-2 gap-4">
+                                <!-- Gender -->
                                 <div>
-                                    <select id="gender" v-model="form.gender" class="mt-1 mb-4 block w-full" required>
-                                        <option value="">Select Gender</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                    <InputError class="" :message="form.errors.gender" />
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="gender" value="Gender" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
+                                    <div>
+                                        <select id="gender" v-model="form.gender" class="mt-1 mb-4 block w-full"
+                                            required>
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                        <InputError class="" :message="form.errors.gender" />
+                                    </div>
+                                </div>
+                                <!-- Date of Birth -->
+                                <div>
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="dob" value="Date of Birth" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
+                                    <div>
+                                        <TextInput id="dob" v-model="form.dob" type="date"
+                                            class="mt-1 mb-4 block w-full" required />
+                                        <InputError class="mt-2" :message="form.errors.dob" />
+                                    </div>
                                 </div>
                             </div>
-                            <!-- Date of Birth -->
+
+                            <!-- HR Email -->
                             <div>
                                 <div class="flex items-center gap-1">
-                                    <InputLabel for="dob" value="Date of Birth" />
+                                    <InputLabel for="email" value="Email Address" />
                                     <span class="text-red-500">*</span>
                                 </div>
                                 <div>
-                                    <TextInput id="dob" v-model="form.dob" type="date" class="mt-1 mb-4 block w-full"
+                                    <TextInput id="email" v-model="form.email" type="email"
+                                        class="mt-1 mb-4 block w-full" required />
+                                    <InputError class="mt-2" :message="form.errors.email" />
+                                </div>
+                            </div>
+
+                            <!-- HR Contact Number -->
+                            <div>
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="contact_number" value="Contact Number" />
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <div>
+                                    <TextInput id="contact_number" v-model="form.contact_number"
+                                        v-mask="'# (###) ###-####'" type="text" class="mt-1 mb-4 block w-full"
                                         required />
-                                    <InputError class="mt-2" :message="form.errors.dob" />
+                                    <InputError class="mt-2" :message="form.errors.contact_number" />
+                                </div>
+                            </div>
+
+                            <!-- Set Password -->
+                            <h3 class="mt-6 mb-2 font-semibold">Set Password</h3>
+
+                            <div>
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="password" value="Password" />
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <div class="mb-2">
+                                    <TextInput id="password" v-model="form.password" type="password"
+                                        class="mt-1 block w-full" required @focus="isPasswordFocused = true"
+                                        @blur="isPasswordFocused = false" />
+                                    <InputError class="mt-1" :message="form.errors.password" />
+                                </div>
+
+                                <!-- Password validation tooltip UPDATE 04/04-->
+                                <div v-if="isPasswordFocused && form.password"
+                                    class="mt-2 p-3 bg-gray-800 text-white rounded-md w-64 text-sm shadow-lg">
+                                    <p class="font-semibold text-gray-200">Password must meet the following:</p>
+                                    <ul class="mt-1">
+                                        <li :class="passwordCriteria.length ? 'text-green-400' : 'text-red-400'">
+                                            ✔ Minimum 8 characters
+                                        </li>
+                                        <li
+                                            :class="passwordCriteria.uppercaseLowercase ? 'text-green-400' : 'text-red-400'">
+                                            ✔ Upper & lower case letters
+                                        </li>
+                                        <li :class="passwordCriteria.number ? 'text-green-400' : 'text-red-400'">
+                                            ✔ At least one number
+                                        </li>
+                                        <li :class="passwordCriteria.symbol ? 'text-green-400' : 'text-red-400'">
+                                            ✔ At least one special character (@$!%*?&)
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="password_confirmation" value="Confirm Password" />
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <div class="mb-2">
+                                    <TextInput id="password_confirmation" v-model="form.password_confirmation"
+                                        type="password" class="mt-1 mb-4 block w-full" required />
+                                    <InputError class="mt-1" :message="form.errors.password_confirmation" />
                                 </div>
                             </div>
                         </div>
-
-                        <!-- HR Email -->
-                        <div>
-                            <div class="flex items-center gap-1">
-                                <InputLabel for="email" value="Email Address" />
-                                <span class="text-red-500">*</span>
-                            </div>
-                            <div>
-                                <TextInput id="email" v-model="form.email" type="email" class="mt-1 mb-4 block w-full"
-                                    required />
-                                <InputError class="mt-2" :message="form.errors.email" />
-                            </div>
-                        </div>
-
-                        <!-- HR Contact Number -->
-                        <div>
-                            <div class="flex items-center gap-1">
-                                <InputLabel for="contact_number" value="Contact Number" />
-                                <span class="text-red-500">*</span>
-                            </div>
-                            <div>
-                                <TextInput id="contact_number" v-model="form.contact_number" v-mask="'# (###) ###-####'"
-                                    type="text" class="mt-1 mb-4 block w-full" required />
-                                <InputError class="mt-2" :message="form.errors.contact_number" />
-                            </div>
-                        </div>
-
-                        <!-- Set Password -->
-                        <h3 class="mt-6 mb-2 font-semibold">Set Password</h3>
-
-                        <div>
-                            <div class="flex items-center gap-1">
-                                <InputLabel for="password" value="Password" />
-                                <span class="text-red-500">*</span>
-                            </div>
-                            <div class="mb-2">
-                                <TextInput id="password" v-model="form.password" type="password"
-                                    class="mt-1 block w-full" required @focus="isPasswordFocused = true"
-                                    @blur="isPasswordFocused = false" />
-                                <InputError class="mt-1" :message="form.errors.password" />
-                            </div>
-
-                            <!-- Password validation tooltip UPDATE 04/04-->
-                            <div v-if="isPasswordFocused && form.password"
-                                class="mt-2 p-3 bg-gray-800 text-white rounded-md w-64 text-sm shadow-lg">
-                                <p class="font-semibold text-gray-200">Password must meet the following:</p>
-                                <ul class="mt-1">
-                                    <li :class="passwordCriteria.length ? 'text-green-400' : 'text-red-400'">
-                                        ✔ Minimum 8 characters
-                                    </li>
-                                    <li
-                                        :class="passwordCriteria.uppercaseLowercase ? 'text-green-400' : 'text-red-400'">
-                                        ✔ Upper & lower case letters
-                                    </li>
-                                    <li :class="passwordCriteria.number ? 'text-green-400' : 'text-red-400'">
-                                        ✔ At least one number
-                                    </li>
-                                    <li :class="passwordCriteria.symbol ? 'text-green-400' : 'text-red-400'">
-                                        ✔ At least one special character (@$!%*?&)
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class="flex items-center gap-1">
-                                <InputLabel for="password_confirmation" value="Confirm Password" />
-                                <span class="text-red-500">*</span>
-                            </div>
-                            <div class="mb-2">
-                                <TextInput id="password_confirmation" v-model="form.password_confirmation"
-                                    type="password" class="mt-1 mb-4 block w-full" required />
-                                <InputError class="mt-1" :message="form.errors.password_confirmation" />
-                            </div>
-                        </div>
                     </div>
-                </div>
                 </div>
 
                 <div class="flex items-center justify-end mt-8 border-t border-gray-200 pt-12">
-                        <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                            Register
-                        </PrimaryButton>
-                    </div>
+                    <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                        Register
+                    </PrimaryButton>
+                </div>
 
 
-                
+
 
             </form>
 
@@ -832,4 +884,3 @@ const redirectToLogin = () => {
     </Modal>
 
 </template>
-
