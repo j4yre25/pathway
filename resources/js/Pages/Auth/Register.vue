@@ -610,14 +610,13 @@ const redirectToLogin = () => {
                                         required />
                                     <InputError class="mt-1" :message="form.errors.password" />
                                     <p class="mt-1 text-xs text-gray-500">
-                                        Password must meet the following:
+                                        Password must meet the following:</p>
                                     <ul class="list-disc list-inside">
                                         <li>✔ Minimum 8 characters</li>
                                         <li>✔ Upper & lower case letters</li>
                                         <li>✔ At least one number</li>
                                         <li>✔ At least one special character (#@$!%*?&)</li>
                                     </ul>
-                                    </p>
                                 </div>
                                 <div>
                                     <div class="flex items-center gap-1">
