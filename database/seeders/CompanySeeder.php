@@ -39,16 +39,18 @@ class CompanySeeder extends Seeder
             $email = strtolower($firstName . '.' . $lastName . $index . '@example.com');
             $contact = '09' . $faker->randomNumber(9, true);
             $companyEmail = 'info' . $index . '@' . preg_replace('/[^a-z]/', '', strtolower(explode(' ', $comp['name'])[0])) . '.com';
-            $companyContact = '09' . $faker->randomNumber(9, true);
+            $companyContact = '9' . $faker->randomNumber(9, true);
+            $companyTel = '083' . $faker->randomNumber(7, true);
 
-            User::create([
+            $user = User::create([
                 'company_hr_first_name' => $firstName,
                 'company_hr_last_name' => $lastName,
                 'email' => $email,
+                'contact_number'=> $contact,
                 'password' => Hash::make('zxc.BNM1'),
                 'gender' => $gender,
                 'dob' => $dob,
-                'role' => 'company_hr',
+                'role' => 'company',
                 'company_name' => $comp['name'],
                 'company_street_address' => $comp['address'],
                 'company_brgy' => $comp['brgy'],
@@ -57,7 +59,10 @@ class CompanySeeder extends Seeder
                 'company_zip_code' => '9500',
                 'company_email' => $companyEmail,
                 'company_contact_number' => $companyContact,
+                'telephone_number' => $companyTel,
             ]);
+
+            $user->assignRole('company');
         }
     }
 }

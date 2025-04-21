@@ -1,6 +1,12 @@
 <script setup>
-defineProps({
+import { defineProps, onMounted } from "vue";
+
+const props = defineProps({
     summary: Object,
+});
+
+onMounted(() => {
+    console.log('Summary:', props.summary);
 });
 </script>
 

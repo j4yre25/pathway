@@ -23,6 +23,7 @@ use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\CareerOpportunityController;
 use App\Http\Controllers\ManageGraduatesApprovalController;
 use App\Http\Controllers\BatchUploadController;
+use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomRegisteredUserController;
@@ -209,6 +210,12 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
     // Delete an HR account
     Route::delete('/hr-accounts/{hrAccount}', [ManageHRController::class, 'delete'])->name('hr-accounts.delete');
+});
+
+// Company Profile 
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    // View Company Profile
+    Route::get('/company/profile', [CompanyProfileController::class, 'profile'])->name('company.profile');
 });
 
 
