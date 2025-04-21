@@ -122,15 +122,31 @@ class JobsController extends Controller
         return Redirect()->back()->with('flash.banner', 'Job updated successfully.');
     }
 
+    public function approve(Job $job)
+    {
+        $job->is_approved = 1; 
+        $job->save();
+    
+        return redirect()->route('jobs', ['user' => $job->user_id])->with('flash.banner', 'Job approved successfully.');    }
+
+    public function disapprove(Job $job)
+    {
+        $job->is_approved = 0; 
+        $job->save();
+
+        return redirect()->route('jobs', ['user' => $job->user_id])->with('flash.banner', 'Job disapproved successfully.');
+    }
+
+
     public function delete(Request $request, Job $job) {
 
-        Gate::authorize('delete', $job);
+        // Gate::authorize('delete', $job);
 
         $job->delete();
     
-        $user_id = $request->user()->id;
+        // $user_id = $request->user()->id;
 
-        return Redirect(route('jobs', ['user' => $user_id]))->with('flash.banner', 'Job deleted successfully.');
+        return redirect()->route('jobs', ['user' => $job->user_id])->with('flash.banner', 'Job Archived successfully.');
     }
     
 }

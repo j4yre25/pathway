@@ -10,7 +10,6 @@ import { computed } from 'vue';
 import { MaskDirective } from 'vue-the-mask';
 import { onMounted, ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { defineProps } from 'vue';
 
 
 const props = defineProps ({

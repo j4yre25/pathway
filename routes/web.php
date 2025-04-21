@@ -60,7 +60,7 @@ use App\Http\Controllers\EmploymentPreferencesController;
 use App\Http\Controllers\CareerGoalsController;
 use App\Http\Controllers\ResumeController;
 
-    
+
 Route::get('/', function () {
     return Inertia::render('Auth/Login');
 });
@@ -178,6 +178,11 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('/jobs/edit/{job}', [JobsController::class, 'delete'])
     ->name('jobs.delete');
 
+Route::post('/jobs/{job}/approve', [JobsController::class, 'approve'])->name('jobs.approve');
+Route::post('/jobs/{job}/disapprove', [JobsController::class, 'disapprove'])->name('jobs.disapprove');
+
+
+
 //Manage Applicants Routes
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
     // View all applicants for a specific job
@@ -191,7 +196,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
     // Delete an applicant
     Route::delete('/applicants/{applicant}', [ApplicantController::class, 'delete'])->name('applicants.delete');
-});  
+});
 
 // Manage HR Accounts 
 
@@ -274,7 +279,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 
 
 
-    
+
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
     Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage approval graduate'])->group(function () {
         Route::get('/graduates', [GraduateController::class, 'index'])->name('graduates.index');
@@ -544,19 +549,19 @@ Route::group(['middleware' => config('fortify.middleware', ['web'])], function (
     Route::middleware('auth:sanctum')->group(function () {
         // Fetch job opportunities
         Route::get('/job-opportunities', [JobInboxController::class, 'getJobOpportunities']);
-    
+
         // Fetch job applications
         Route::get('/job-applications', [JobInboxController::class, 'getJobApplications']);
-    
+
         // Fetch notifications
         Route::get('/notifications', [JobInboxController::class, 'getNotifications']);
-    
+
         // Apply for a job
         Route::post('/apply-for-job', [JobInboxController::class, 'applyForJob']);
-    
+
         // Archive a job opportunity
         Route::post('/archive-job-opportunity', [JobInboxController::class, 'archiveJobOpportunity']);
-    
+
         // Mark notification as read
         Route::post('/mark-notification-as-read', [JobInboxController::class, 'markNotificationAsRead']);
     });
@@ -585,7 +590,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/archive-job-opportunity', [JobInboxController::class, 'archiveJobOpportunity']);
         Route::post('/mark-notification-as-read', [JobInboxController::class, 'markNotificationAsRead']);
     });
-  
 });
 
 // Profile Settings Routes

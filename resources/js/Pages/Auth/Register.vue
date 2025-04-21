@@ -1,3 +1,4 @@
+
     <script setup>
     import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
     import AuthenticationCard from '@/Components/AuthenticationCard.vue';
@@ -57,6 +58,7 @@
         graduate_middle_initial: '',
         graduate_last_name: '',
     });
+
 
 
     onMounted(() => {

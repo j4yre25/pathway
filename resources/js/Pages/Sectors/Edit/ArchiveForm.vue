@@ -11,6 +11,7 @@ const props = defineProps({
 
 })
 
+console.log('props', props.sector)
 
 
 const open = ref(false)
@@ -48,7 +49,7 @@ const archiveSector= (r) => {
                 </template>
 
                 <template #content>
-                        Are you sure you want to archive this sector #{{ sector.id }} {{ sector.name }}
+                        Are you sure you want to archive this sector #{{ props.sector.id }} {{ props.sector.name }}
                 </template>
 
                 <template #footer>

@@ -13,13 +13,11 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // Add new columns
-            $table->string('telephone_number')->after('contact_number')->nullable();
         });
 
 
         // Drop the old column
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('company_telephone_number');
 
         });
     }
