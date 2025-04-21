@@ -53,7 +53,7 @@ console.log(page.props.permissions.canManageInstitution)
         <div class="min-h-screen bg-gray-100">
             <nav class="bg-white border-b border-gray-100">
                 <!-- Primary Navigation Menu -->
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
                         <div class="flex ">
                             <!-- Logo -->
@@ -95,6 +95,7 @@ console.log(page.props.permissions.canManageInstitution)
 
 
                                 <NavLink
+                                    
                                     v-if="page.props.roles.isPeso || page.props.roles.isCompany || page.props.roles.isInstitution && page.props.auth.user.is_approved"
                                     :href="route('jobs', { user: page.props.auth.user.id })"
                                     :active="route().current('jobs')" :disabled="!page.props.auth.user.is_approved">
@@ -295,8 +296,6 @@ console.log(page.props.permissions.canManageInstitution)
 
                                         <DropdownLink v-if="!page.props.roles.isGraduate" :href="route('profile.show')">
                                             Profile
-
-
                                         </DropdownLink>
 
 
@@ -309,6 +308,13 @@ console.log(page.props.permissions.canManageInstitution)
                                             Admin Registration
                                         </DropdownLink>
 
+
+                                        <DropdownLink
+                                            v-if="page.props.roles.isCompany && page.props.auth.user.is_approved"
+                                            :disabled="!page.props.auth.user.is_approved" :href="route('company.profile')">
+                                            Profile
+                                        </DropdownLink>
+                                        
                                         <DropdownLink
                                             v-if="page.props.roles.isCompany && page.props.auth.user.is_approved"
                                             :disabled="!page.props.auth.user.is_approved" :href="route('hr.register')">
@@ -468,7 +474,7 @@ console.log(page.props.permissions.canManageInstitution)
 
             <!-- Page Heading -->
             <header v-if="$slots.header" class="bg-white shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <div class="max-w-full mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>
             </header>
