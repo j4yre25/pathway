@@ -48,7 +48,7 @@ class CompanySeeder extends Seeder
                 'password' => Hash::make('zxc.BNM1'),
                 'gender' => $gender,
                 'dob' => $dob,
-                'role' => 'company_hr',
+                'role' => 'company',
                 'company_name' => $comp['name'],
                 'company_street_address' => $comp['address'],
                 'company_brgy' => $comp['brgy'],

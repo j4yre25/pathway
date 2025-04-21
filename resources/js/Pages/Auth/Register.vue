@@ -10,7 +10,6 @@ import { computed } from 'vue';
 import { MaskDirective } from 'vue-the-mask';
 import { onMounted, ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { defineProps } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import { Inertia } from '@inertiajs/inertia';
 
@@ -46,6 +45,8 @@ const form = useForm({
     company_email: '',
     company_contact_number: '',
     company_hr_full_name: '',
+    company_hr_first_name: '',
+    company_hr_last_name: '',
     institution_type: '',
     institution_name: '',
     institution_address: '',
