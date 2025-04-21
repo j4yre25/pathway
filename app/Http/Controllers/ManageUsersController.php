@@ -83,7 +83,7 @@ class ManageUsersController extends Controller
     
         // $user_id = $request->user()->id;
 
-        return redirect()->route('admin.manage_users')->with('flash.banner', 'User deleted successfully.');
+        return redirect()->route('jobs')->with('flash.banner', 'User archived successfully.');
     }
     
 }

@@ -36,7 +36,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
             'password' => Hash::make($input['password']),
         ])->save();
 
-        Auth::logout();
+        // Auth::logout()
 
     }
 }

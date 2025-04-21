@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Job extends Model
 {
+    use SoftDeletes;
+
 
 
     public function sector()
@@ -26,6 +29,7 @@ class Job extends Model
      */
     protected $fillable = [
         'title',
+        'is_approved',
         'company',
         'location',
         'description',
@@ -64,6 +68,10 @@ class Job extends Model
         'skills' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+    ];
+
+    protected $attributes = [
+        'is_approved' => null, 
     ];
 
     /**
