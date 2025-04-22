@@ -1,10 +1,67 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { defineProps } from "vue";
+import { defineProps, reactive, ref, watch } from "vue";
+import { router } from "@inertiajs/vue3";
+import { useFormattedMobileNumber } from "@/Composables/useFormattedMobileNumber.js";
+import { useFormattedTelephoneNumber } from "@/Composables/useFormattedTelephoneNumber.js";
+
 
 const props = defineProps({
   company: Object,
 });
+
+const isEditing = ref(false);
+const localDescription = ref(props.company.description || '');
+
+watch(() => props.company.description, (newVal) => {
+    localDescription.value = newVal || '';
+});
+
+
+const saveDescription = () => {
+    // Constructing the payload with all required fields
+    const payload = {
+        company_name: props.company.company_name,
+        company_street_address: props.company.company_street_address,
+        company_brgy: props.company.company_brgy,
+        company_city: props.company.company_city,
+        company_province: props.company.company_province,
+        company_zip_code: props.company.company_zip_code,
+        company_contact_number: props.company.company_contact_number,
+        company_email: props.company.company_email,
+        company_telephone_number: props.company.company_telephone_number,
+        company_description: localDescription.value,  // Edited description
+    };
+
+    // Check if the payload contains all required fields
+    console.log(payload);  // For debugging purposes
+
+    // Send PUT request
+    router.put(route('company-profile.update'), payload, {
+        onSuccess: () => {
+            isEditing.value = false;
+            // Optionally show a success message or alert
+        },
+        onError: (errors) => {
+            console.error(errors);  // Log errors for debugging
+            // Optionally show an error message or alert
+        }
+    });
+};
+
+const cancelEditing = () => {
+      isEditing.value = false; // Cancel editing, revert changes
+      localDescription.value = props.company.description || '';
+    };
+
+const contactForm = reactive({
+  contact: props.company?.company_contact_number || '',
+  telephone: props.company?.telephone_number || '',
+});
+
+const { formattedMobileNumber } = useFormattedMobileNumber(contactForm, 'contact');
+const { formattedTelephoneNumber } = useFormattedTelephoneNumber(contactForm, 'telephone');
+
 </script>
 
 <template>
@@ -12,7 +69,7 @@ const props = defineProps({
     <!-- Cover Photo Section -->
     <div class="relative bg-gray-800 h-48">
       <img
-        :src="company.cover_photo || '/images/default-cover.jpg'"
+        :src="company.cover_photo_path || '/images/default-cover.jpg'"
         alt="Cover Photo"
         class="absolute inset-0 w-full h-full object-cover"
       />
@@ -26,7 +83,7 @@ const props = defineProps({
                 <!-- Logo and Featured Badge -->
                 <div class="relative">
                     <img
-                        :src="company.logo || '/images/default-logo.png'"
+                        :src="company.profile_photo_path || '/images/default-logo.png'"
                         alt="Company Logo"
                         class="w-24 h-24 rounded-full object-cover border-4 border-white"
                     />
@@ -87,11 +144,11 @@ const props = defineProps({
             <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white shadow-lg rounded-lg p-6">
                     <h4 class="text-lg font-semibold text-gray-800">Date Joined</h4>
-                    <p class="text-gray-600">{{ company.founded_date || 'N/A' }}</p>
+                    <p class="text-gray-600">{{ company.created_at || 'N/A' }}</p>
                 </div>
                 <div class="bg-white shadow-lg rounded-lg p-6">
-                    <h4 class="text-lg font-semibold text-gray-800">Sectors</h4>
-                    <p class="text-gray-600">{{ company.sector || 'N/A' }}</p>
+                    <h4 class="text-lg font-semibold text-gray-800">Branch</h4>
+                    <p class="text-gray-600">{{ company.branch || 'N/A' }}</p>
                 </div>
                 <div class="bg-white shadow-lg rounded-lg p-6">
                     <h4 class="text-lg font-semibold text-gray-800">Posted Jobs</h4>
@@ -104,34 +161,60 @@ const props = defineProps({
             
                 <!-- Company Description (spans 2 cols on md+) -->
                 <div class="md:col-span-2 bg-white shadow-lg rounded-lg p-6">
-                    <h4 class="text-xl font-semibold text-gray-800">Company Description</h4>
-                    <p class="text-gray-600 mt-4">{{ company.description || 'No description available.' }}</p>
-                </div>
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xl font-semibold text-gray-800">Company Description</h4>
+                        <Pencil
+                            @click="isEditing = true"
+                            class="w-5 h-5 text-gray-500 hover:text-blue-500 cursor-pointer"
+                        />
+                    </div>
 
+                    <!-- Edit Mode -->
+                    <div v-if="isEditing" class="mt-4">
+                        <textarea
+                            v-model="localDescription"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
+                            rows="4"
+                        ></textarea>
+                        <button @click="saveDescription" class="mt-2 bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">
+                            Save
+                        </button>
+                        <button @click="cancelEditing" class="ml-2 mt-2 bg-red-600 text-white px-4 py-1 rounded hover:bg-blue-700">Cancel</button>
+                    </div>
+
+                    <!-- View Mode -->
+                    <p v-else class="text-gray-600 mt-4">{{ localDescription || 'No description available.' }}</p>
+                </div>
                 <!-- Contact Information -->
                 <div class="bg-white shadow-lg rounded-lg p-6">
-                <h4 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">Contact Information</h4>
-                <div class="mt-4 space-y-4">
-                    <div class="flex items-center space-x-4">
-                    <i class="fas fa-map-marker-alt text-indigo-500 text-lg"></i>
-                    <p class="text-gray-600">
-                        <strong>Address:</strong> {{ company.address || 'N/A' }}
-                    </p>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                    <i class="fas fa-envelope text-indigo-500 text-lg"></i>
-                    <p class="text-gray-600">
-                        <strong>Email:</strong> {{ company.company_email || 'N/A' }}
-                    </p>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                    <i class="fas fa-phone text-indigo-500 text-lg"></i>
-                    <p class="text-gray-600">
-                        <strong>Mobile Number:</strong> {{ company.company_contact_number || 'N/A' }}
-                    </p>
+                    <h4 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">Contact Information</h4>
+                    <div class="mt-4 space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <i class="fas fa-map-marker-alt text-indigo-500 text-lg"></i>
+                            <p class="text-gray-600">
+                                <strong>Address:</strong> {{ company.address || 'N/A' }}
+                            </p>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <i class="fas fa-envelope text-indigo-500 text-lg"></i>
+                            <p class="text-gray-600">
+                                <strong>Email Address:</strong> {{ company.company_email || 'N/A' }}
+                            </p>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <i class="fas fa-phone text-indigo-500 text-lg"></i>
+                            <p class="text-gray-600">
+                                <strong>Mobile Number:</strong> {{ formattedMobileNumber || 'N/A' }}
+                            </p>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <i class="fas fa-phone text-indigo-500 text-lg"></i>
+                            <p class="text-gray-600">
+                                <strong>Telephone Number:</strong> {{ formattedTelephoneNumber || 'N/A' }}
+                            </p>
+                        </div>
                     </div>
                 </div>
-</div>
             </div>
 
             <!-- Team Members Section

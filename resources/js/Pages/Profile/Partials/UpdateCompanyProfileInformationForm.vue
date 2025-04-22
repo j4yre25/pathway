@@ -46,8 +46,8 @@ const updateProfileInformation = () => {
         form.photo = photoInput.value.files[0];
     }
 
-    form.put(route('user-profile-information.update'), {
-        errorBag: 'updateProfileInformation',
+    form.put(route('company-profile.update'), {
+        errorBag: 'updateCompanyProfileInformation',
         preserveScroll: true,
         onSuccess: () => {
             clearPhotoFileInput();
@@ -111,74 +111,78 @@ const reloadPage = () => {
     <FormSection @submitted="updateProfileInformation">
 
         <template #description>
-            Update your account's profile information and email address.
+            Update your company account's profile and contact information.
         </template>
 
         <template #form>
-            <!-- Profile Photo -->
-            <div v-if="$page.props.jetstream.managesProfilePhotos" class="col-span-6 sm:col-span-4">
-                <!-- Profile Photo File Input -->
+            <!-- Profile Photo Section -->
+            <div v-if="user.role === 'company' && $page.props.jetstream.managesProfilePhotos" class="col-span-6 sm:col-span-4">
+                <InputLabel for="photo" value="Profile Photo" />
+
+                <!-- File input (hidden) -->
                 <input
                     id="photo"
                     ref="photoInput"
                     type="file"
                     class="hidden"
                     @change="updatePhotoPreview"
-                >
+                />
 
-                <InputLabel for="photo" value="Photo" />
+                <!-- Preview Section -->
+                <div class="mt-2">
+                    <!-- Old Photo -->
+                    <div v-if="!photoPreview">
+                        <img :src="company.profile_photo_url" :alt="user.name" class="rounded-full size-24 object-cover border shadow" />
+                    </div>
 
-                <!-- Current Profile Photo -->
-                <div v-show="! photoPreview" class="mt-2">
-                    <img :src="user.profile_photo_url" :alt="user.name" class="rounded-full size-20 object-cover">
+                    <!-- New Photo Preview -->
+                    <div v-else>
+                        <img :src="photoPreview" class="rounded-full size-24 object-cover border shadow" />
+                    </div>
                 </div>
 
-                <!-- New Profile Photo Preview -->
-                <div v-show="photoPreview" class="mt-2">
-                    <span
-                        class="block rounded-full size-20 bg-cover bg-no-repeat bg-center"
-                        :style="'background-image: url(\'' + photoPreview + '\');'"
-                    />
+                <!-- Action Buttons -->
+                <div class="flex gap-3 mt-3">
+                    <SecondaryButton type="button" @click.prevent="selectNewPhoto">
+                        Select A New Photo
+                    </SecondaryButton>
+
+                    <SecondaryButton
+                        v-if="user.profile_photo_path"
+                        type="button"
+                        @click.prevent="deletePhoto"
+                    >
+                        Remove Photo
+                    </SecondaryButton>
                 </div>
-
-                <SecondaryButton class="mt-2 me-2" type="button" @click.prevent="selectNewPhoto">
-                    Select A New Photo
-                </SecondaryButton>
-
-                <SecondaryButton
-                    v-if="user.profile_photo_path"
-                    type="button"
-                    class="mt-2"
-                    @click.prevent="deletePhoto"
-                >
-                    Remove Photo
-                </SecondaryButton>
 
                 <InputError :message="form.errors.photo" class="mt-2" />
             </div>
 
-                <!-- Company Name -->
-                <div v-if="user.role === 'company'" class="col-span-6 sm:col-span-4">
-                <InputLabel for="company_name" value="Company Name" />
-                <TextInput
-                    id="company_name"
-                    v-model="form.company_name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="company_name"
-                />
-                <InputError :message="form.errors.company_name" class="mt-2" />
-            </div>
+                
 
             <!-- Company Address Section -->
             <div v-if="user.role === 'company'" class="col-span-6 sm:col-span-6">
-                <h3 class="text-lg font-semibold text-gray-700 mt-2 mb-2 border-b pb-1">Company Address & Contact Information</h3>
+                <h3 class="text-lg font-semibold text-gray-700 mt-2 mb-2 border-b pb-1">Company Basic Information</h3>
                 
                 <div class="border p-4 rounded-xl bg-gray-50 mt-2">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                         <!-- Company Name -->
+                        <div  class="col-span-6 sm:col-span-4">
+                            <InputLabel for="company_name" value="Company Name" />
+                            <TextInput
+                                id="company_name"
+                                v-model="form.company_name"
+                                type="text"
+                                class="mt-1 block w-full"
+                                required
+                                autocomplete="company_name"
+                            />
+                            <InputError :message="form.errors.company_name" class="mt-2" />
+                        </div>
+
                         <!-- Street Address -->
-                        <div>
+                        <div  class="col-span-3 sm:col-span-4"> 
                             <InputLabel for="company_street_address" value="Street Address" />
                             <TextInput
                                 id="company_street_address"
@@ -191,7 +195,7 @@ const reloadPage = () => {
                         </div>
 
                         <!-- Barangay -->
-                        <div>
+                        <div  class="col-span-3 sm:col-span-1">
                             <InputLabel for="company_brgy" value="Barangay" />
                             <TextInput
                                 id="company_brgy"
@@ -243,6 +247,30 @@ const reloadPage = () => {
                             <InputError :message="form.errors.company_zip_code" class="mt-2" />
                         </div>
 
+                    </div>
+                </div>
+            </div>
+
+           
+            <h3 class="text-lg font-semibold text-gray-700 mt-2 mb-2 border-b pb-1">Contact Information</h3>
+                
+                <div class="border p-4 rounded-xl bg-gray-50 mt-2">
+                    <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                        <!-- Email -->
+                        <div class="mt-2 ol-span-6 sm:col-span-2">
+                            <InputLabel for="company_email" value="Email Address" />
+                            <TextInput
+                                id="company_email"
+                                v-model="form.company_email"
+                                type="email"
+                                class="mt-1 block w-full"
+                                required
+                                autocomplete="company_email"
+                            />
+                            <InputError :message="form.errors.company_email" class="mt-2" />
+                        </div>
+                      
                         <!-- Contact Number -->
                         <div>
                             <InputLabel for="company_contact_number" value="Mobile Contact Number" />
@@ -269,21 +297,6 @@ const reloadPage = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-
-             <!-- Email -->
-             <div class="mt-2 ol-span-6 sm:col-span-4">
-                <InputLabel for="company_email" value="Email Address" />
-                <TextInput
-                    id="company_email"
-                    v-model="form.company_email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="company_email"
-                />
-                <InputError :message="form.errors.company_email" class="mt-2" />
-            </div>
         </template>
 
         <template #actions>
