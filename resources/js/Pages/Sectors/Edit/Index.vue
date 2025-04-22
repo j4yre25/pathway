@@ -22,9 +22,6 @@
             <Container class="py-16">
           <UpdateForm :sector="sector" />
 
-                <SectionBorder />
-
-                      <ArchiveForm :sector="sector" />
 
                       
           

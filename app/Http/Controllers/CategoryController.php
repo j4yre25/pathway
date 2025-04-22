@@ -15,34 +15,42 @@ class CategoryController extends Controller
 {
    
     public function index() {
-        // Fetch all sectors with their related categories
-        $sectors = Sector::with('categories')->get();
-    
-        // Debugging
+        $sectors = Sector::all(); // Fetch all sectors
+        $categories = Category::all(); // Fetch all categories
     
         return Inertia::render('Categories/Index', [
             'sectors' => $sectors,
+            'categories' => $categories,
         ]);
+    
     }    
 
     public function list(Request $request) {
-        $status = $request->input('status', 'all'); // Get the filter value from the request (default to 'all')
-
-    // Query categories with filtering based on the status
-    $categories = Category::with('user')
-        ->withTrashed() // Include archived (soft-deleted) records
-        ->when($status === 'active', function ($query) {
-            $query->whereNull('deleted_at'); // Active categories (not archived)
-        })
-        ->when($status === 'inactive', function ($query) {
-            $query->whereNotNull('deleted_at'); // Inactive categories (archived)
-        })
-        ->get();
-
-    return Inertia::render('Categories/List', [
-        'categories' => $categories,
-        'status' => $status, // Pass the current filter status to the view
-    ]);
+        $status = $request->input('status', 'all'); // Get the filter value for status (default to 'all')
+        $sectorId = $request->input('sector'); // Get the filter value for sector
+    
+        // Query categories with filtering based on the status and sector
+        $categories = Category::with('user')
+            ->withTrashed() // Include archived (soft-deleted) records
+            ->when($status === 'active', function ($query) {
+                $query->whereNull('deleted_at'); // Active categories (not archived)
+            })
+            ->when($status === 'inactive', function ($query) {
+                $query->whereNotNull('deleted_at'); // Inactive categories (archived)
+            })
+            ->when($sectorId, function ($query, $sectorId) {
+                $query->where('sector_id', $sectorId); // Filter by sector
+            })
+            ->get();
+    
+        $sectors = Sector::all(); // Fetch all sectors for the filter dropdown
+    
+        return Inertia::render('Categories/List', [
+            'categories' => $categories,
+            'status' => $status, // Pass the current filter status to the view
+            'sectors' => $sectors, // Pass the sectors to the view
+            'selectedSector' => $sectorId, // Pass the selected sector to the view
+        ]);
     }
 
     

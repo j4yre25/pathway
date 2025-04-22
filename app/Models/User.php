@@ -116,6 +116,10 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
+    protected $attributes = [
+        'is_approved' => null, 
+    ];
+
     /**
      * Get the attributes that should be cast.
      *

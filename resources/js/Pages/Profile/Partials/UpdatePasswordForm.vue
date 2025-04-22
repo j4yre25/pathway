@@ -1,12 +1,13 @@
 <script setup>
 import { ref } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, router} from '@inertiajs/vue3';
 import ActionMessage from '@/Components/ActionMessage.vue';
 import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Modal from '@/Components/Modal.vue';
 
 const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
@@ -17,11 +18,21 @@ const form = useForm({
     password_confirmation: '',
 });
 
+
+const showModal = ref(false);
+const modalTitle = ref('Password Updated');
+const modalMessage = ref('Your password has been successfully updated.');
+
 const updatePassword = () => {
     form.put(route('user-password.update'), {
         errorBag: 'updatePassword',
         preserveScroll: true,
-        onSuccess: () => form.reset(),
+        onSuccess: () => {
+            showModal.value = true;
+            
+        },
+
+        
         onError: () => {
             if (form.errors.password) {
                 form.reset('password', 'password_confirmation');
@@ -35,6 +46,13 @@ const updatePassword = () => {
         },
     });
 };
+
+const logout = () => {
+    router.post(route('logout'));
+};
+
+
+
 </script>
 
 <template>
@@ -94,4 +112,17 @@ const updatePassword = () => {
             </PrimaryButton>
         </template>
     </FormSection>
+
+    <Modal :show="showModal" @close="reloadPage()">
+        <template #title>
+            {{ modalTitle }}
+        </template>
+        <template #content>
+            <p>{{ modalMessage }}</p>
+        </template>
+        <template #footer>
+            <PrimaryButton @click="logout">Close</PrimaryButton>
+        </template>
+    </Modal>
+
 </template>

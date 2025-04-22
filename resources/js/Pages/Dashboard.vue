@@ -1,6 +1,5 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
-
 import { usePage } from "@inertiajs/vue3";
 import { computed, watch, ref } from "vue";
 import Welcome from "@/Components/Welcome.vue";
@@ -32,6 +31,16 @@ const handleLogout = () => {
 
 
             <div v-if="page.props.roles.isCompany" class="py-12">
+                <Welcome v-if="!page.props.roles.isCompany" />
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            Welcome to the Dashboard
+                        </h3>
+                        <p class="mt-2 text-gray-600">
+                            Here you can manage your account and view your
+                            statistics.
+                        </p>
+                    </div>
                     <CompanyDashboard :summary="page.props.summary" />
             </div>
 
@@ -58,9 +67,6 @@ const handleLogout = () => {
                         </template>
                     </Modal>
                     
-                    <CompanyDashboard
-                        v-if="page.props.auth.user.role === 'company'"
-                    />
                 </div>
             </div>
         </div>

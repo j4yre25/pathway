@@ -1,15 +1,34 @@
 <script setup>
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import Container from '@/Components/Container.vue';
-
-
+import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import { ref } from 'vue'
+import DangerButton from '@/Components/DangerButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 const props = defineProps({
-    sectors: Array
+    sectors: Array,
+    sector: Object
 });
 
-// console.log(props.sectors);
+const selectedSector = ref(null);
+
+console.log('props', props)
+const archiveSector= () => {
+  if (selectedSector.value) {
+        router.delete(route('sectors.delete', { sector: selectedSector.value.id }));
+        open.value = false; 
+        selectedSector.value = null; 
+    }
+};
+
+const confirmArchive = (sector) => {
+    selectedSector.value = sector;
+    open.value = true; 
+};
+
+const open = ref(false)
 
 
 </script>
@@ -33,13 +52,32 @@ const props = defineProps({
             <Link :href="route('sectors.edit', { sector: sector.id })">
               <PrimaryButton class="mr-2">Edit</PrimaryButton>
             </Link>
+            <DangerButton @click ="confirmArchive(sector)">
+                Archive Sector
+
+            </DangerButton>
         
           </td>
           </tr>
         </tbody>
       </table>
     </div>
+    <ConfirmationModal @close="open = false" :show="open">
+        <template #title>
+            Are you sure?
+        </template>
 
+        <template #content>
+            Are you sure you want to archive this sector #{{ selectedSector?.id }} {{ selectedSector?.name }}?
+        </template>
+
+        <template #footer>
+            <DangerButton @click="archiveSector" class="mr-2">
+                Archive Sector
+            </DangerButton>
+            <SecondaryButton @click="open = false">Cancel</SecondaryButton>
+        </template>
+    </ConfirmationModal>
  
 
 </template>
