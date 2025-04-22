@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class ResumeController extends Controller
 {
@@ -14,7 +15,7 @@ class ResumeController extends Controller
             'file' => 'required|file|mimes:pdf,doc,docx|max:2048',
         ]);
 
-        $user = auth()->user();
+        $user = Auth::user();
         if ($request->hasFile('file')) {
             $path = $request->file('file')->store('resumes', 'public');
             $user->resume()->update(['file' => $path]); // Assuming you have a relationship set up
@@ -26,7 +27,7 @@ class ResumeController extends Controller
     // Remove resume
     public function removeResume()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $user->resume()->delete(); // Assuming you have a relationship set up
 
         return response()->json(['message' => 'Resume removed successfully.']);

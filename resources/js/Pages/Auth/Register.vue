@@ -487,17 +487,16 @@
                                     <InputError class="mt-2" :message="form.errors.institution_type" />
                                 </div>
 
-                                <!-- College/University/Institution Name -->
-                                <div>
-                                    <div class="flex items-center gap-1">
-                                        <InputLabel for="institution_name" value="College/University/Institution Name" />
-                                        <span class="text-red-500">*</span>
+                                        <div>
+                                        <div class="flex items-center gap-1">
+                                            <InputLabel for="graduate_middle_initial" value="Middle Initial" />
+                                            <span class="text-red-500">*</span>
+                                        </div>
+                                        <TextInput id="graduate_middle_initial" v-model="form.graduate_middle_initial" type="text"
+                                            class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
+                                            required />
+                                        <InputError class="mt-2" :message="form.errors.graduate_middle_initial" />
                                     </div>
-                                    <TextInput id="institution_name" v-model="form.institution_name" type="text"
-                                        class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
-                                        required />
-                                    <InputError class="mt-2" :message="form.errors.institution_name" />
-                                </div>
 
                                 <!-- Institution Address -->
                                 <div>
@@ -522,6 +521,17 @@
                                         required />
                                     <InputError class="mt-2" :message="form.errors.email" />
                                 </div>
+                                <div>
+                                    <div class="flex items-center gap-1">
+                                        <InputLabel for="graduate_last_name" value="Last Name" />
+                                        <span class="text-red-500">*</span>
+                                    </div>
+                                    <TextInput id="graduate_last_name" v-model="form.graduate_last_name" type="text"
+                                        class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
+                                        required />
+                                    <InputError class="mt-2" :message="form.errors.graduate_last_name" />
+                                </div>
+                            </div>
 
                                 <!-- Mobile and Telephone Number -->
                                 <div class="grid grid-cols-2 gap-4">
@@ -834,7 +844,6 @@
                             Register
                         </PrimaryButton>
                     </div>
-
 
 
 
