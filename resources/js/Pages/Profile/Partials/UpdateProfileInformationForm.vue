@@ -8,6 +8,8 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Modal from '@/Components/Modal.vue'; 
+
 
 const props = defineProps({
     user: Object,
@@ -35,6 +37,10 @@ const verificationLinkSent = ref(null);
 const photoPreview = ref(null);
 const photoInput = ref(null);
 
+const showModal = ref(false);
+const modalTitle = ref('Profile Updated');
+const modalMessage = ref('Your profile information has been successfully updated.');
+
 const updateProfileInformation = () => {
     if (photoInput.value) {
         form.photo = photoInput.value.files[0];
@@ -43,9 +49,11 @@ const updateProfileInformation = () => {
     form.put(route('user-profile-information.update'), {
         errorBag: 'updateProfileInformation',
         preserveScroll: true,
-        onSuccess: () => {clearPhotoFileInput();
-            location.reload();
-            Inertia.reload({ only: ['user'] });    
+        onSuccess: () => {
+            clearPhotoFileInput();
+            showModal.value = true;
+            // location.reload();
+            // Inertia.reload({ only: ['user'] });    
         } 
         ,
     });
@@ -91,6 +99,11 @@ const clearPhotoFileInput = () => {
     if (photoInput.value?.value) {
         photoInput.value.value = null;
     }
+};
+
+const reloadPage = () => {
+    location.reload();
+    Inertia.reload({ only: ['user'] });    
 };
 </script>
 
@@ -294,4 +307,16 @@ const clearPhotoFileInput = () => {
             </PrimaryButton>
         </template>
     </FormSection>
+
+    <Modal :show="showModal" @close="reloadPage()">
+        <template #title>
+            {{ modalTitle }}
+        </template>
+        <template #content>
+            <p>{{ modalMessage }}</p>
+        </template>
+        <template #footer>
+            <PrimaryButton @click="reloadPage">Close</PrimaryButton>
+        </template>
+    </Modal>
 </template>

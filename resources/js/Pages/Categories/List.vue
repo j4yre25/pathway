@@ -13,11 +13,14 @@ const props = defineProps({
 });
 
 const selectedStatus = ref('all'); // Default filter value
+const selectedSector = ref(null);
 
 function applyFilter() {
-    router.get(route('categories.list'), { status: selectedStatus.value }, { preserveState: true });
+    router.get(route('categories.list'), {
+        status: selectedStatus.value,
+        sector: selectedSector.value,
+    }, { preserveState: true });
 }
-
 
 
 console.log('Categories:', props.categories);
@@ -38,6 +41,14 @@ console.log('Categories:', props.categories);
                     <option value="all">All</option>
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
+                </select>
+
+                <label for="sectorFilter" class="mr-2 font-medium">Filter by Sector:</label>
+                <select id="sectorFilter" v-model="selectedSector" class="border border-gray-300 rounded px-3 py-2 mr-2">
+                    <option :value="null">All Sectors</option>
+                    <option v-for="sector in sectors" :key="sector.id" :value="sector.id">
+                        {{ sector.name }}
+                    </option>
                 </select>
                 <PrimaryButton @click="applyFilter">Apply Filter</PrimaryButton>
             </div>
