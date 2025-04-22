@@ -24,31 +24,28 @@ const props = defineProps({
 
 
 const showModal = ref(false);
-const userToDelete = ref(null);
+const userToArchive = ref(null);
 
-const archiveUser = (user) => {
-    router.delete(route('admin.manage_users.delete', { user: user.id }));
+const archiveUser = () => {
+    if (userToArchive.value) {
+        router.delete(route('admin.manage_users.delete', { user: userToArchive.value.id }));
+        showModal.value = false;
+        userToArchive.value = null;
+    }
 };
 
-const confirmDelete = (user) => {
-    userToDelete.value = user;
+const confirmArchive = (user) => {
+    userToArchive.value = user;
     showModal.value = true;
 };
 
-const handleDelete = () => {
-    if (userToDelete.value) {
-        deleteUser(userToDelete.value);
-        showModal.value = false;
-        userToDelete.value = null;
-    }
-};
 const approveUser = (user) => {
 
     router.post(route('admin.manage_users.approve', { user: user.id }), {
 
     });
 };
-const open = ref(false)
+
 
 const disapproveUser = (user) => {
 
@@ -58,7 +55,7 @@ const disapproveUser = (user) => {
         is_approved: false
     });
 };
-
+const open = ref(false)
 
 
 
@@ -116,16 +113,19 @@ const disapproveUser = (user) => {
 
 
                             <td class="border border-gray-200 px-6 py-4">
-                                <span v-if="user.is_approved" class="text-green-600 font-semibold">Approved</span>
-                                <span v-else class="text-red-600 font-semibold">Pending</span>
+                                <span v-if="user.is_approved === true"
+                                    class="text-green-600 font-semibold">Approved</span>
+                                <span v-else-if="user.is_approved === false"
+                                    class="text-red-600 font-semibold">Disapproved</span>
+                                <span v-else class="text-yellow-600 font-semibold">Pending</span>
                             </td>
                             <td class="border border-gray-200 px-6 py-4">
-                                <PrimaryButton class= "mr-2" @click="approveUser(user)" v-if="!user.is_approved">Approve
+                                <PrimaryButton class="mr-2" @click="approveUser(user)" v-if="!user.is_approved">Approve
                                 </PrimaryButton>
-                                <DangerButton  @click="disapproveUser(user)">
+                                <DangerButton @click="disapproveUser(user)" v-if="!user.is_approved">
                                     Disapprove
                                 </DangerButton>
-                                <DangerButton class="ml-2" @click="open = true">
+                                <DangerButton class="ml-2" @click="confirmArchive(user)">
                                     Archive User
 
                                 </DangerButton>
@@ -139,20 +139,20 @@ const disapproveUser = (user) => {
                     </tbody>
                 </table>
             </div>
-            <ConfirmationModal @close="open = false" :show="open">
+            <ConfirmationModal @close="showModal = false" :show="showModal">
                 <template #title>
                     Are you sure?
                 </template>
 
                 <template #content>
-                    Are you sure you want to archive this user  {{ all_users.name }}
+                    Are you sure you want to archive this user {{ all_users.name }}
                 </template>
 
                 <template #footer>
-                    <DangerButton @click="archiveUser()" class="mr-2">
+                    <DangerButton @click="archiveUser" class="mr-2">
                         Archive User
                     </DangerButton>
-                    <SecondaryButton @click="open = false">Cancel</SecondaryButton>
+                    <SecondaryButton @click="showModal = false">Cancel</SecondaryButton>
                 </template>
 
             </ConfirmationModal>

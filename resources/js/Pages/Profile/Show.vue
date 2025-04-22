@@ -34,8 +34,8 @@ const isDeleteAccountOpen = ref(false);
                     <!-- Update Profile Information Section -->
                     <div v-if="$page.props.jetstream.canUpdateProfileInformation">
                         <h2 id="accordion-collapse-heading-1">
-                            <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border border-b-0 border-gray-200 rounded-t-xl  dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 hover:text-white" data-accordion-target="#accordion-collapse-body-1" aria-expanded="true" aria-controls="accordion-collapse-body-1" @click="isProfileInfoOpen = !isProfileInfoOpen">
-                                <h3 class="text-lg font-medium text-gray-900 hover:text-white"> Update Profile Information </h3>
+                            <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border border-b-0 border-gray-200 rounded-t-xl  dark:border-gray-700 dark:text-gray-400 hover:bg-white dark:hover:bg-white gap-3" data-accordion-target="#accordion-collapse-body-1" aria-expanded="true" aria-controls="accordion-collapse-body-1" @click="isProfileInfoOpen = !isProfileInfoOpen">
+                                <h3 class="text-lg font-medium text-gray-900"> Update Profile Information </h3>
                                 <svg data-accordion-icon class="w-3 h-3 shrink-0" :class="{ 'rotate-180': isProfileInfoOpen }" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                 </svg>
                             </button>
@@ -51,7 +51,7 @@ const isDeleteAccountOpen = ref(false);
                     <!-- Update Password Section -->
                     <div v-if="$page.props.jetstream.canUpdatePassword">
                         <h2 id="accordion-collapse-heading-2">
-                            <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border border-b-0 border-gray-200  dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 hover:text-white" data-accordion-target="#accordion-collapse-body-2" aria-expanded="false" aria-controls="accordion-collapse-body-2" @click="isPasswordUpdateOpen = !isPasswordUpdateOpen">
+                            <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border border-b-0 border-gray-200  dark:border-gray-700 dark:text-gray-400 hover:bg-white dark:hover:bg-white gap-3 hover:text-gray" data-accordion-target="#accordion-collapse-body-2" aria-expanded="false" aria-controls="accordion-collapse-body-2" @click="isPasswordUpdateOpen = !isPasswordUpdateOpen">
                                 <h3 class="text-lg font-medium text-gray-900 hover:text-white"> Update Password </h3>
                                 <svg data-accordion-icon class="w-3 h-3 shrink-0" :class="{ 'rotate-180': isPasswordUpdateOpen }" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                 </svg>
@@ -65,27 +65,7 @@ const isDeleteAccountOpen = ref(false);
                         </div>
                     </div>
 
-    
 
-                    <!-- Logout Other Browser Sessions Section -->
-                    <div>
-                        <h2 id="accordion-collapse-heading-4">
-                            <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border border-b-0 border-gray-200  dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3 hover:text-white" data-accordion-target="#accordion-collapse-body-4" aria-expanded="false" aria-controls="accordion-collapse-body-4" @click="isLogoutSessionsOpen = !isLogoutSessionsOpen">
-                                <h3 class="text-lg font-medium text-gray-900 hover:text-white"> Logout Other Browser Sessions </h3>
-                                <svg data-accordion-icon class="w-3 h-3 shrink-0" :class="{ 'rotate-180': isLogoutSessionsOpen }" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                </svg>
-                            </button>
-                        </h2>
-                        <div id="accordion-collapse-body-4" :class="{ 'hidden': !isLogoutSessionsOpen }" aria-labelledby="accordion-collapse-heading-4">
-                            <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700">
-                                <LogoutOtherBrowserSessionsForm :sessions="sessions" />
-                                <SectionBorder />
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Delete Account Section -->
-                    
                 </div>
             </div>
         </div>

@@ -22,10 +22,7 @@ const props = defineProps({
             <Container class="py-16">
                 <UpdateForm :category="category" />
 
-                <SectionBorder />
-
-                <ArchiveForm :category="category" />
-
+                
             </Container>
 
 
