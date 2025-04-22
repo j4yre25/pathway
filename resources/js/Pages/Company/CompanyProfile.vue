@@ -69,7 +69,7 @@ const props = defineProps({
                 <!-- Action Buttons -->
                 <div class="flex space-x-4">
                         <a
-                            :href="route('profile.show', company.id)"
+                            :href="route('profile.show', { id: company.id, edit: 'company' })"
                             class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 inline-block">
                             Edit Profile
                         </a>
@@ -81,10 +81,12 @@ const props = defineProps({
     <!-- Main Content -->
     <div class="py-12 bg-gray-100">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+        
             <!-- Overview Section -->
             <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white shadow-lg rounded-lg p-6">
-                    <h4 class="text-lg font-semibold text-gray-800">Founded Date</h4>
+                    <h4 class="text-lg font-semibold text-gray-800">Date Joined</h4>
                     <p class="text-gray-600">{{ company.founded_date || 'N/A' }}</p>
                 </div>
                 <div class="bg-white shadow-lg rounded-lg p-6">
@@ -97,20 +99,39 @@ const props = defineProps({
                 </div>
             </div>
 
-            <!-- Company Description -->
-            <div class="mt-8 bg-white shadow-lg rounded-lg p-6">
-                <h4 class="text-xl font-semibold text-gray-800">Company Description</h4>
-                <p class="text-gray-600 mt-4">{{ company.description || 'No description available.' }}</p>
-            </div>
-
-            <!-- Contact Information -->
-            <div class="mt-8 bg-white shadow-lg rounded-lg p-6">
-                <h4 class="text-xl font-semibold text-gray-800">Contact Information</h4>
-                <div class="mt-4">
-                    <p class="text-gray-600"><strong>Address:</strong> {{ company.address || 'N/A' }}</p>
-                    <p class="text-gray-600"><strong>Email:</strong> {{ company.company_email || 'N/A' }}</p>
-                    <p class="text-gray-600"><strong>Mobile Number:</strong> {{ company.company_contact_number || 'N/A' }}</p>
+            <!-- Description and Contact Info in Grid -->
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+                <!-- Company Description (spans 2 cols on md+) -->
+                <div class="md:col-span-2 bg-white shadow-lg rounded-lg p-6">
+                    <h4 class="text-xl font-semibold text-gray-800">Company Description</h4>
+                    <p class="text-gray-600 mt-4">{{ company.description || 'No description available.' }}</p>
                 </div>
+
+                <!-- Contact Information -->
+                <div class="bg-white shadow-lg rounded-lg p-6">
+                <h4 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">Contact Information</h4>
+                <div class="mt-4 space-y-4">
+                    <div class="flex items-center space-x-4">
+                    <i class="fas fa-map-marker-alt text-indigo-500 text-lg"></i>
+                    <p class="text-gray-600">
+                        <strong>Address:</strong> {{ company.address || 'N/A' }}
+                    </p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                    <i class="fas fa-envelope text-indigo-500 text-lg"></i>
+                    <p class="text-gray-600">
+                        <strong>Email:</strong> {{ company.company_email || 'N/A' }}
+                    </p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                    <i class="fas fa-phone text-indigo-500 text-lg"></i>
+                    <p class="text-gray-600">
+                        <strong>Mobile Number:</strong> {{ company.company_contact_number || 'N/A' }}
+                    </p>
+                    </div>
+                </div>
+</div>
             </div>
 
             <!-- Team Members Section
@@ -133,7 +154,8 @@ const props = defineProps({
                     </div>
                 </div>
             </div> -->
-      </div>
+            
+        </div>
     </div>
   </AppLayout>
 </template>
