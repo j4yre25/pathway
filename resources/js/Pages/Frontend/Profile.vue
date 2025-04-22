@@ -1,6 +1,6 @@
 <script setup>
 import Graduate from '@/Layouts/AppLayout.vue';
-import { ref, computed, onMounted, watch  } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -106,7 +106,7 @@ const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
 
 const updatePassword = () => {
-  
+
   settingsForm.put(route('user-password.update'), {
     errorBag: 'updatePassword',
     preserveScroll: true,
@@ -170,7 +170,7 @@ let currentSkillIndex = ref(null);
 const noExpiryDate = ref(false);
 
 // Experience Data
-const experienceEntries = ref([]);
+const experienceEntries = ref(props.experienceEntries || []);
 const experience = ref({
   graduate_experience_title: '',
   graduate_experience_company: '',
@@ -182,23 +182,22 @@ const experience = ref({
   is_current: false,
 });
 
-// Project Dat
-const noProjectUrl = ref(false);
-const isOngoingProject = ref(false);
-const newTech = ref('');
+// Project Data
+const projectsEntries = ref(props.projectsEntries || []);
 const projects = ref({
   graduate_projects_title: '',
   graduate_projects_description: '',
   graduate_projects_role: '',
-  graduate_projects_start_date: '',
-  graduate_projects_end_date: '',
+  graduate_projects_start_date: null,
+  graduate_projects_end_date: null,
   graduate_projects_url: '',
-  graduate_projects_tech: [],
   graduate_projects_key_accomplishments: '',
   is_current: false,
+  id: null
 });
-const projectsEntries = ref([]);
-let currentProjectIndex = ref(null);
+const noProjectUrl = ref(false);
+
+console.log('yawa', props.projectsEntries);
 
 // Certification Data
 const certificationsEntries = ref(props.certificationsEntries || []);
@@ -210,7 +209,6 @@ const form = useForm({
   graduate_certification_credential_url: '',
   avatar: null,
   noExpiryDate: false,
-  noCredentialUrl: false,
   noCredentialUrl: false,
 });
 
@@ -225,26 +223,41 @@ const certification = ref({
 });
 
 
+
 // Achievement Data
-const achievementsEntries = ref(props.achievementsEntries || []);
-const achievements = ref({
+const achievementEntries = ref(props.achievementEntries || []);
+const previewImage = ref(null);
+const isSubmittingAchievement = ref(false);
+const achievementErrors = ref({});
+const achievementForm = ref({
   graduate_achievement_title: '',
+  graduate_achievement_type: '',
   graduate_achievement_issuer: '',
   graduate_achievement_date: null,
   graduate_achievement_description: '',
   graduate_achievement_url: '',
-  graduate_achievement_type: ''
+  noCredentialUrl: false,
+  credential_picture: null,
+  credential_picture_url: null
 });
 
-const achievementEntries = ref([]);
-const achievement = ref({
-  graduate_achievement_title: '',
-  graduate_achievement_issuer: '',
-  graduate_achievement_date: null,
-  graduate_achievement_description: '',
-  graduate_achievement_url: '',
-  graduate_achievement_type: ''
-});
+const handleCredentialPictureUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        achievementForm.credential_picture = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImage.value = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+const toggleUrlField = () => {
+  if (noCredentialUrl.value) {
+    achievement.value.graduate_achievement_url = '';
+  }
+};
 
 // Tedtimonials Data
 const testimonialsEntries = ref(props.testimonialsEntries || []);
@@ -255,13 +268,11 @@ const testimonials = ref({
   graduate_testimonials_testimonial: ''
 });
 
-// Testimonials Data
-const employmentPreferences = ref({
+// Employment Data
+const employmentPreferences = ref(props.employmentPreferencesEntries || {
   jobTypes: [],
   salaryExpectations: {
-    min: '',
-    max: '',
-    currency: 'PESO',
+    range: 'Select expected salary range',
     frequency: 'per year'
   },
   preferredLocations: [],
@@ -270,25 +281,35 @@ const employmentPreferences = ref({
   additionalNotes: ''
 });
 
-// Employment Data
-const employmentEntries = ref(props.employmentEntries || []);
-const employment = ref({
-  graduate_employment_type: '',
-  graduate_employment_salary_expectations: {
-    min: '',
-    max: '',
-    currency: 'PESO',
-    frequency: 'per year'
-  },
-  graduate_employment_preferred_locations: [],
-  graduate_employment_work_environment: [],
-  graduate_employment_availability: [],
-  graduate_employment_additional_notes: ''
+const fetchEmploymentPreferences = async () => {
+  try {
+    const response = await axios.get(route('employment.references.get'));
+    if (response.data) {
+      employmentPreferences.value = {
+        jobTypes: response.data.jobTypes ? response.data.jobTypes.split(', ') : [],
+        salaryExpectations: response.data.salaryExpectations ? JSON.parse(response.data.salaryExpectations) : { // Parse the JSON string
+          range: 'Select expected salary range',
+          frequency: 'per year'
+        },
+        preferredLocations: response.data.preferredLocations ? response.data.preferredLocations.split(', ') : [],
+        workEnvironment: response.data.workEnvironment ? response.data.workEnvironment.split(', ') : [],
+        availability: response.data.availability ? response.data.availability.split(', ') : [],
+        additionalNotes: response.data.additionalNotes || ''
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching employment preferences:', error);
+  }
+};
+
+onMounted(() => {
+  fetchEmploymentPreferences();
 });
 
 // Career Goals Data
 const newIndustry = ref('');
 const careerGoalsEntries = ref(props.careerGoalsEntries || []);
+
 const careerGoals = ref({
   shortTermGoals: '',
   longTermGoals: '',
@@ -296,7 +317,25 @@ const careerGoals = ref({
   careerPath: ''
 });
 
+const fetchCareerGoals = async () => {
+  try {
+    const response = await axios.get(route('career.goals.get'));
+    if (response.data) {
+      careerGoals.value = {
+        shortTermGoals: response.data.shortTermGoals || '',
+        longTermGoals: response.data.longTermGoals || '',
+        industriesOfInterest: response.data.industriesOfInterest ? response.data.industriesOfInterest.split(',') : [],
+        careerPath: response.data.careerPath || ''
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching career goals:', error);
+  }
+};
 
+onMounted(() => {
+  fetchCareerGoals();
+});
 
 
 // Resume Data
@@ -342,10 +381,10 @@ watch(() => profile.value.fullName, (newFullName) => {
   profile.value.graduate_middle_initial = nameParts.length > 2 ? nameParts[1].charAt(0) : '';
 });
 
-watch(noExpiryDate, (newValue) => {
-  if (newValue) {
-    certification.value.graduate_certification_expiry_date = null;
-  }
+watch(() => form.noExpiryDate, (newValue) => {
+    if (newValue) {
+        form.graduate_certification_expiry_date = null;
+    }
 });
 
 watch(() => education.value.graduate_education_start_date, (newValue) => {
@@ -379,27 +418,29 @@ watch(() => profile.value.fullName, () => {
 
 watch(noProjectUrl, (newValue) => {
   if (newValue) {
+    projects.value.graduate_projects_url = 'No project URL provided';
+  } else {
     projects.value.graduate_projects_url = '';
-  }
-});
-
-watch(isOngoingProject, (newValue) => {
-  if (newValue) {
-    projects.value.graduate_projects_end_date = '';
   }
 });
 
 watch(() => projects.value.is_current, (newValue) => {
   if (newValue) {
-    projects.value.graduate_projects_end_date = 'present';
-  } else {
     projects.value.graduate_projects_end_date = null;
+  } else {
+    projects.value.graduate_projects_end_date = '';
   }
 });
 
-watch(noCredentialUrl, (newValue) => {
+watch(() => form.noCredentialUrl, (newValue) => {
+    if (newValue) {
+        form.graduate_certification_credential_url = '';
+    }
+});
+
+watch(() => achievementForm.noCredentialUrl, (newValue) => {
   if (newValue) {
-    certification.value.graduate_certification_credential_url = ''; 
+    achievementForm.graduate_achievement_url = '';
   }
 });
 
@@ -455,6 +496,15 @@ const handleSubmit = () => {
   isPasswordModalOpen.value = true;
 };
 
+const handleSaveCareerGoals = () => {
+  // Your save logic here
+  router.post('/graduate/career-goals', careerGoals.value, {
+    onSuccess: () => {
+      savedCareerGoals.value = { ...careerGoals.value };
+    },
+  });
+};
+
 // Education Handlers
 const addEducation = () => {
   if (
@@ -502,7 +552,7 @@ const updateEducation = () => {
     graduate_education_description: education.value.graduate_education_description,
     is_current: education.value.is_current,
     achievements: education.value.achievements,
-    no_achievements: education.value.noAchievements, 
+    no_achievements: education.value.noAchievements,
   });
 
   console.log('Updating education with data:', educationForm.data());
@@ -585,10 +635,10 @@ const saveSkill = () => {
 
 
 const skillForm = useForm({
-    graduate_skills_name: skillName.value,
-    graduate_skills_proficiency_type: skillProficiencyType.value,
-    graduate_skills_type: skillType.value,
-    graduate_skills_years_experience: yearsExperience.value,
+  graduate_skills_name: skillName.value,
+  graduate_skills_proficiency_type: skillProficiencyType.value,
+  graduate_skills_type: skillType.value,
+  graduate_skills_years_experience: yearsExperience.value,
 });
 
 console.log('Current Skill Index:', currentSkillIndex.value);
@@ -689,12 +739,14 @@ const addExperience = () => {
     experience.value.graduate_experience_employment_type &&
     experience.value.graduate_experience_start_date
   ) {
+
+
     const experienceForm = useForm({
       graduate_experience_title: experience.value.graduate_experience_title,
       graduate_experience_company: experience.value.graduate_experience_company,
       graduate_experience_employment_type: experience.value.graduate_experience_employment_type,
       graduate_experience_start_date: experience.value.graduate_experience_start_date,
-      graduate_experience_end_date: experience.value.is_current ? null : experience.value.graduate_experience_end_date,
+      graduate_experience_end_date: experience.value.is_current ? present : experience.value.graduate_experience_end_date,
       graduate_experience_address: experience.value.graduate_experience_address,
       graduate_experience_description: experience.value.graduate_experience_description,
       is_current: experience.value.is_current,
@@ -703,7 +755,7 @@ const addExperience = () => {
     // Log data being sent to the backend
     console.log('Data being sent to backend for adding experience:', experienceForm.data());
 
-    experienceForm.post(route('experience.add'), {
+    experienceForm.post(route('experience.addExperience'), {
       onSuccess: (response) => {
         console.log('Experience added successfully:', response);
         experienceEntries.value.push({ ...experienceForm.data(), id: response.id });
@@ -760,25 +812,20 @@ const addProject = () => {
     graduate_projects_description: projects.value.graduate_projects_description || 'No description provided',
     graduate_projects_role: projects.value.graduate_projects_role,
     graduate_projects_start_date: projects.value.graduate_projects_start_date,
-    graduate_projects_end_date: projects.value.is_current ? 'present' : projects.value.graduate_projects_end_date,
-    graduate_projects_url: projects.value.graduate_projects_url,
-    graduate_projects_tech: projects.value.graduate_projects_tech,
-    graduate_projects_key_accomplishments: projects.value.graduate_projects_key_accomplishments,
-    is_current: projects.value.is_current, // Added is_current
+    graduate_projects_end_date: projects.value.is_current ? null : projects.value.graduate_projects_end_date,
+    graduate_projects_url: noProjectUrl.value ? null : projects.value.graduate_projects_url,
+    graduate_projects_key_accomplishments: projects.value.graduate_projects_key_accomplishments || 'No key accomplishment provided',
+    is_current: projects.value.is_current,
   });
-
-  console.log('Data sent to backend for project:', projectForm.data());
 
   projectForm.post(route('projects.add'), {
     onSuccess: (response) => {
       projectsEntries.value.push({ ...projectForm.data(), id: response.id });
       resetProject();
       isAddProjectModalOpen.value = false;
-
-      console.log('Project added successfully:', response);
     },
     onError: (errors) => {
-      console.error('Error adding project:', errors);
+      console.error('Backend error when adding project:', errors);
       alert('An error occurred while adding the project. Please try again.');
     },
   });
@@ -790,26 +837,27 @@ const updateProject = () => {
     graduate_projects_description: projects.value.graduate_projects_description || 'No description provided',
     graduate_projects_role: projects.value.graduate_projects_role,
     graduate_projects_start_date: projects.value.graduate_projects_start_date,
-    graduate_projects_end_date: projects.value.is_current ? 'present' : projects.value.graduate_projects_end_date,
-    graduate_projects_url: projects.value.graduate_projects_url,
-    graduate_projects_tech: projects.value.graduate_projects_tech,
-    graduate_projects_key_accomplishments: projects.value.graduate_projects_key_accomplishments,
-    is_current: projects.value.is_current, // Added is_current
+    graduate_projects_end_date: projects.value.is_current ? null : projects.value.graduate_projects_end_date,
+    graduate_projects_url: noProjectUrl.value ? null : projects.value.graduate_projects_url,
+    graduate_projects_key_accomplishments: projects.value.graduate_projects_key_accomplishments || 'No key accomplishment provided',
+    is_current: projects.value.is_current,
   });
-
-  console.log('Updating project with data:', projectForm.data());
 
   projectForm.put(route('projects.update', projects.value.id), {
     onSuccess: () => {
       const index = projectsEntries.value.findIndex(entry => entry.id === projects.value.id);
       if (index !== -1) {
-        projectsEntries.value[index] = { ...projectForm.data(), id: projects.value.id };
+        projectsEntries.value[index] = { 
+          ...projectForm.data(), 
+          id: projects.value.id,
+          graduate_projects_end_date: projects.value.is_current ? null : projects.value.graduate_projects_end_date
+        };
       }
       resetProject();
       isUpdateProjectModalOpen.value = false;
     },
     onError: (errors) => {
-      console.error('Error updating project:', errors);
+      console.error('Backend error when updating project:', errors);
       alert('An error occurred while updating the project. Please try again.');
     },
   });
@@ -818,7 +866,18 @@ const updateProject = () => {
 
 
 const openUpdateProjectModal = (entry) => {
-  projects.value = { ...entry };
+  projects.value = {
+    id: entry.id,
+    graduate_projects_title: entry.graduate_projects_title,
+    graduate_projects_description: entry.graduate_projects_description,
+    graduate_projects_role: entry.graduate_projects_role,
+    graduate_projects_start_date: entry.graduate_projects_start_date,
+    graduate_projects_end_date: entry.graduate_projects_end_date,
+    graduate_projects_url: entry.graduate_projects_url,
+    graduate_projects_key_accomplishments: entry.graduate_projects_key_accomplishments,
+    is_current: entry.is_current
+  };
+  noProjectUrl.value = !entry.graduate_projects_url;
   isUpdateProjectModalOpen.value = true;
 };
 
@@ -832,44 +891,32 @@ const closeUpdateProjectModal = () => {
   isUpdateProjectModalOpen.value = false;
 };
 
-const addTechToProject = () => {
-  if (newTech.value.trim()) {
-    projects.value.graduate_projects_tech.push(newTech.value.trim());
-    console.log('Tech added to project:', newTech.value);
-    newTech.value = '';
-  }
-};
-
-const removeTechFromProject = (index) => {
-  projects.value.graduate_projects_tech.splice(index, 1);
-  console.log('Tech removed from project at index:', index);
-};
-
 // Certification Handlers
 const addCertification = () => {
-  if (!certification.value.graduate_certification_name || 
-      !certification.value.graduate_certification_issuer || 
-      !certification.value.graduate_certification_issue_date) {
+  if (
+    !form.graduate_certification_name ||
+    !form.graduate_certification_issuer ||
+    !form.graduate_certification_issue_date
+  ) {
     alert("Please fill in all required fields.");
     return;
   }
 
-  const certificationForm = useForm({
-    graduate_certification_name: certification.value.graduate_certification_name,
-    graduate_certification_issuer: certification.value.graduate_certification_issuer,
-    graduate_certification_issue_date: certification.value.graduate_certification_issue_date,
-    graduate_certification_expiry_date: noExpiryDate.value ? null : certification.value.graduate_certification_expiry_date,
-    graduate_certification_credential_id: certification.value.graduate_certification_credential_id,
-    graduate_certification_credential_url: noCredentialUrl.value ? null : certification.value.graduate_certification_credential_url,
-    file: form.avatar
-  });
+  const certificationData = {
+    graduate_certification_name: form.graduate_certification_name,
+    graduate_certification_issuer: form.graduate_certification_issuer,
+    graduate_certification_issue_date: form.graduate_certification_issue_date,
+    graduate_certification_expiry_date: form.noExpiryDate ? null : form.graduate_certification_expiry_date,
+    graduate_certification_credential_url: form.noCredentialUrl ? 'No Credential URL' : form.graduate_certification_credential_url,
+    file: form.avatar,
+  };
+
+  const certificationForm = useForm(certificationData);
 
   certificationForm.post(route('certifications.add'), {
     onSuccess: (response) => {
       certificationsEntries.value.push({ ...certificationForm.data(), id: response.id });
       resetForm();
-      noExpiryDate.value = false;
-      noCredentialUrl.value = false;
       isAddCertificationModalOpen.value = false;
     },
     onError: (errors) => {
@@ -880,22 +927,41 @@ const addCertification = () => {
 };
 
 const updateCertification = () => {
-  const index = certificationsEntries.value.findIndex(
-    (entry) => entry.id === form.id // Match by ID
-  );
-
-  if (index !== -1) {
-    certificationsEntries.value[index] = { ...form };
-
-    console.log('Certification updated:', form);
-    resetForm();
-
-    isUpdateCertificationModalOpen.value = false;
-  } else {
-    alert("Certification not found.");
+  if (
+    !form.graduate_certification_name ||
+    !form.graduate_certification_issuer ||
+    !form.graduate_certification_issue_date
+  ) {
+    alert("Please fill in all required fields.");
+    return;
   }
-};
 
+  const certificationData = {
+    graduate_certification_name: form.graduate_certification_name,
+    graduate_certification_issuer: form.graduate_certification_issuer,
+    graduate_certification_issue_date: form.graduate_certification_issue_date,
+    graduate_certification_expiry_date: form.noExpiryDate ? null : form.graduate_certification_expiry_date,
+    graduate_certification_credential_url: form.noCredentialUrl ? 'No Credential URL' : form.graduate_certification_credential_url,
+    file: form.avatar,
+  };
+
+  const certificationForm = useForm(certificationData);
+
+  certificationForm.put(route('certifications.update', { id: form.id }), {
+    onSuccess: (response) => {
+      const index = certificationsEntries.value.findIndex(entry => entry.id === form.id);
+      if (index !== -1) {
+        certificationsEntries.value[index] = { ...certificationForm.data(), id: form.id };
+      }
+      resetForm();
+      isUpdateCertificationModalOpen.value = false;
+    },
+    onError: (errors) => {
+      console.error('Error updating certification:', errors);
+      alert('An error occurred while updating the certification. Please try again.');
+    },
+  });
+};
 
 const closeUpdateCertificationModal = () => {
   isUpdateCertificationModalOpen.value = false;
@@ -903,70 +969,204 @@ const closeUpdateCertificationModal = () => {
 };
 
 const resetForm = () => {
-  form.reset();
-};
+    form.reset();
+    form.noExpiryDate = false;
+    const addAchievement = async () => {
+  try {
+    isSubmittingAchievement.value = true;
+    achievementErrors.value = {};
+
+    if (!achievementForm.value.graduate_achievement_title || 
+        !achievementForm.value.graduate_achievement_issuer || 
+        !achievementForm.value.graduate_achievement_date) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('graduate_achievement_title', achievementForm.value.graduate_achievement_title);
+    formData.append('graduate_achievement_issuer', achievementForm.value.graduate_achievement_issuer);
+    formData.append('graduate_achievement_date', achievementForm.value.graduate_achievement_date);
+    formData.append('graduate_achievement_description', 
+      achievementForm.value.graduate_achievement_description?.trim() || 'No description provided'
+    );
+    formData.append('graduate_achievement_url', achievementForm.value.graduate_achievement_url);
+    formData.append('graduate_achievement_type', achievementForm.value.graduate_achievement_type);
+    
+    if (achievementForm.value.credential_picture) {
+      formData.append('credential_picture', achievementForm.value.credential_picture);
+    }
+
+    const form = useForm(Object.fromEntries(formData));
+    const response = await form.post(route('achievements.add'));
+
+    if (response.data) {
+      achievementEntries.value.push({
+        ...achievementForm.value,
+        id: response.data.id,
+        credential_picture_url: response.data.credential_picture_url,
+        graduate_achievement_date: response.data.graduate_achievement_date
+      });
+      
+      resetAchievementForm();
+      previewImage.value = null;
+      isAddAchievementModalOpen.value = false;
+    }
+  } catch (error) {
+    console.error('Error adding achievement:', error);
+    achievementErrors.value = error.response?.data?.errors || {};
+  } finally {
+    isSubmittingAchievement.value = false;
+  }
+};};
 
 // Achievement Handlers
-const addAchievement = () => {
-  if (
-    achievement.value.graduate_achievement_title &&
-    achievement.value.graduate_achievement_issuer &&
-    achievement.value.graduate_achievement_date
-  ) {
-    const achievementForm = useForm({
-      graduate_achievement_title: achievement.value.graduate_achievement_title,
-      graduate_achievement_issuer: achievement.value.graduate_achievement_issuer,
-      graduate_achievement_date: achievement.value.graduate_achievement_date,
-      graduate_achievement_description: achievement.value.graduate_achievement_description,
-      graduate_achievement_url: achievement.value.graduate_achievement_url,
-      graduate_achievement_type: achievement.value.graduate_achievement_type
-    });
+const addAchievement = async () => {
+  try {
+    isSubmittingAchievement.value = true;
+    achievementErrors.value = {};
 
-    console.log('Data sent to backend for achievement:', achievementForm.data());
+    if (!achievementForm.value.graduate_achievement_title || 
+        !achievementForm.value.graduate_achievement_issuer || 
+        !achievementForm.value.graduate_achievement_date) {
+      alert("Please fill in all required fields.");
+      return;
+    }
 
-    achievementForm.post(route('achievements.add'), {
+    const formData = new FormData();
+    formData.append('graduate_achievement_title', achievementForm.value.graduate_achievement_title);
+    formData.append('graduate_achievement_issuer', achievementForm.value.graduate_achievement_issuer);
+    
+    // Format the date to match Carbon's expected format
+    const date = new Date(achievementForm.value.graduate_achievement_date);
+    const formattedDate = date.toISOString().split('T')[0];
+    formData.append('graduate_achievement_date', formattedDate);
+    
+    formData.append('graduate_achievement_description', 
+      achievementForm.value.graduate_achievement_description?.trim() || 'No description provided'
+    );
+    formData.append('graduate_achievement_url', achievementForm.value.graduate_achievement_url);
+    formData.append('graduate_achievement_type', achievementForm.value.graduate_achievement_type);
+    
+    if (achievementForm.value.credential_picture) {
+      formData.append('credential_picture', achievementForm.value.credential_picture);
+    }
+
+    const form = useForm(Object.fromEntries(formData));
+    
+    form.post(route('achievements.add'), {
       onSuccess: (response) => {
-        achievementEntries.value.push({ ...achievementForm.data(), id: response.id });
-        resetAchievement();
+        achievementEntries.value.push({
+          ...achievementForm.value,
+          id: response.id,
+          credential_picture_url: response.credential_picture_url,
+          graduate_achievement_date: formattedDate
+        });
+        
+        resetAchievementForm();
+        previewImage.value = null;
         isAddAchievementModalOpen.value = false;
-
-        console.log('Achievement added successfully:', response);
       },
       onError: (errors) => {
         console.error('Error adding achievement:', errors);
-        alert('An error occurred while adding the achievement. Please try again.');
-      },
+        achievementErrors.value = errors;
+      }
     });
-  } else {
-    alert("Please fill in all required fields.");
+  } catch (error) {
+    console.error('Error adding achievement:', error);
+    achievementErrors.value = error.response?.data?.errors || {};
+  } finally {
+    isSubmittingAchievement.value = false;
   }
+};
+
+
+const resetAchievementForm = () => {
+  achievementForm.value = {
+    graduate_achievement_title: '',
+      graduate_achievement_type: '',
+      graduate_achievement_issuer: '',
+      graduate_achievement_date: null,
+      graduate_achievement_description: '',
+      graduate_achievement_url: '',
+      noCredentialUrl: false,
+      credential_picture: null,
+      credential_picture_url: null
+  };
+};
+
+const editAchievement = (achievement) => {
+  achievementForm.value = {
+    id: achievement.id,
+    graduate_achievement_title: achievement.graduate_achievement_title,
+    graduate_achievement_type: achievement.graduate_achievement_type,
+    graduate_achievement_issuer: achievement.graduate_achievement_issuer,
+    graduate_achievement_date: achievement.graduate_achievement_date,
+    graduate_achievement_description: achievement.graduate_achievement_description,
+    graduate_achievement_url: achievement.graduate_achievement_url,
+    noCredentialUrl: !achievement.graduate_achievement_url,
+    credential_picture: null,
+    credential_picture_url: achievement.credential_picture_url
+  };
+  isUpdateAchievementModalOpen.value = true;
 };
 
 // Update achievement handler
 const updateAchievement = () => {
-  const index = currentAchievementIndex.value;
   if (
-    achievement.value.graduate_achievement_title &&
-    achievement.value.graduate_achievement_issuer &&
-    achievement.value.graduate_achievement_date
+    !achievementForm.value.graduate_achievement_title ||
+    !achievementForm.value.graduate_achievement_issuer ||
+    !achievementForm.value.graduate_achievement_date
   ) {
-    const updatedAchievement = {
-      id: achievementEntries.value[index].id, // Keep the same ID
-      graduate_achievement_title: achievement.value.graduate_achievement_title,
-      graduate_achievement_issuer: achievement.value.graduate_achievement_issuer,
-      graduate_achievement_date: achievement.value.graduate_achievement_date,
-      graduate_achievement_description: achievement.value.graduate_achievement_description,
-      graduate_achievement_url: achievement.value.graduate_achievement_url,
-      graduate_achievement_type: achievement.value.graduate_achievement_type
-    };
-    achievementEntries.value[index] = updatedAchievement;
-
-    console.log('Achievement updated:', updatedAchievement);
-
-    resetAchievement();
-    isUpdateAchievementModalOpen.value = false; // Close the Update Achievement modal
-  } else {
     alert("Please fill in all required fields.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('graduate_achievement_title', achievementForm.value.graduate_achievement_title);
+  formData.append('graduate_achievement_issuer', achievementForm.value.graduate_achievement_issuer);
+  formData.append('graduate_achievement_date', achievementForm.value.graduate_achievement_date);
+  formData.append('graduate_achievement_description', 
+    achievementForm.value.graduate_achievement_description?.trim() || 'No description provided'
+  );
+  formData.append('graduate_achievement_url', achievementForm.value.graduate_achievement_url);
+  formData.append('graduate_achievement_type', achievementForm.value.graduate_achievement_type);
+  
+  if (achievementForm.value.credential_picture) {
+    formData.append('credential_picture', achievementForm.value.credential_picture);
+  }
+
+  const form = useForm(Object.fromEntries(formData));
+
+  form.put(route('achievements.update', achievementForm.value.id), {
+    onSuccess: (response) => {
+      const index = achievementEntries.value.findIndex(entry => entry.id === achievementForm.value.id);
+      if (index !== -1) {
+        achievementEntries.value[index] = {
+          ...achievementForm.value,
+          credential_picture_url: response.credential_picture_url
+        };
+      }
+      resetAchievementForm();
+      previewImage.value = null;
+      isUpdateAchievementModalOpen.value = false;
+    },
+    onError: (errors) => {
+      console.error('Error updating achievement:', errors);
+      alert('An error occurred while updating the achievement. Please try again.');
+    },
+  });
+};
+
+const deleteAchievement = async (id) => {
+  if (confirm('Are you sure you want to delete this achievement?')) {
+    try {
+      await axios.delete(route('achievements.delete', id));
+      achievementEntries.value = achievementEntries.value.filter(entry => entry.id !== id);
+    } catch (error) {
+      console.error('Error deleting achievement:', error);
+      alert('An error occurred while deleting the achievement');
+    }
   }
 };
 
@@ -976,13 +1176,11 @@ const addTestimonials = () => {
   if (
     testimonials.value.graduate_testimonials_name.trim() &&
     testimonials.value.graduate_testimonials_role_title.trim() &&
-    testimonials.value.graduate_testimonials_relationship.trim() &&
     testimonials.value.graduate_testimonials_testimonial.trim()
   ) {
     const testimonialsForm = useForm({
       graduate_testimonials_name: testimonials.value.graduate_testimonials_name,
       graduate_testimonials_role_title: testimonials.value.graduate_testimonials_role_title,
-      graduate_testimonials_relationship: testimonials.value.graduate_testimonials_relationship,
       graduate_testimonials_testimonial: testimonials.value.graduate_testimonials_testimonial
     });
 
@@ -1036,29 +1234,28 @@ const updateTestimonials = () => {
 
 // Employment Preferences Handlers
 const saveEmploymentPreferences = () => {
+  console.log('Employment Preferences Data:', employmentPreferences.value); // Debugging
+
   if (
     !employmentPreferences.value.jobTypes.length &&
-    !employmentPreferences.value.salaryExpectations.min &&
-    !employmentPreferences.value.salaryExpectations.max &&
+    !employmentPreferences.value.salaryExpectations.range &&
     !employmentPreferences.value.preferredLocations.length &&
     !employmentPreferences.value.workEnvironment.length &&
     !employmentPreferences.value.availability.length &&
-    !employmentPreferences.value.additionalNotes
+    !employmentPreferences.value.additionalNotes.trim()
   ) {
     alert("Please fill in at least one employment preference.");
     return;
   }
 
   const employmentForm = useForm({
-    jobTypes: employmentPreferences.value.jobTypes,
-    salaryExpectations: employmentPreferences.value.salaryExpectations,
-    preferredLocations: employmentPreferences.value.preferredLocations,
-    workEnvironment: employmentPreferences.value.workEnvironment,
-    availability: employmentPreferences.value.availability,
+    jobTypes: employmentPreferences.value.jobTypes.join(', '),
+    salaryExpectations: JSON.stringify(employmentPreferences.value.salaryExpectations),
+    preferredLocations: employmentPreferences.value.preferredLocations.join(', '),
+    workEnvironment: employmentPreferences.value.workEnvironment.join(', '),
+    availability: employmentPreferences.value.availability.join(', '),
     additionalNotes: employmentPreferences.value.additionalNotes
-  });
-
-  console.log('Saved Preferences:', savedPreferences);
+});
 
   console.log('Data sent to backend for employment preferences:', employmentForm.data());
 
@@ -1072,6 +1269,7 @@ const saveEmploymentPreferences = () => {
     },
   });
 };
+
 const newLocation = ref('');
 
 const addPreferredLocation = () => {
@@ -1097,7 +1295,8 @@ const addPreferredLocation = () => {
 
 
 // Career Goals Handlers
-const saveCareerGoals = () => {
+const savedCareerGoals = () => {
+  console.log("Saving career goals:", careerGoals.value); // Debugging
   if (!careerGoals.value.shortTermGoals || !careerGoals.value.longTermGoals) {
     alert("Please fill in both short-term and long-term goals.");
     return;
@@ -1109,12 +1308,13 @@ const saveCareerGoals = () => {
     industriesOfInterest: careerGoals.value.industriesOfInterest,
     careerPath: careerGoals.value.careerPath,
   });
-  console.log('Saved Career Goals:', savedCareerGoals);
+
   console.log("Data being sent to backend for career goals:", careerGoalsForm.data());
 
   careerGoalsForm.post(route('career.goals.save'), {
     onSuccess: (response) => {
       console.log("Backend response for career goals:", response);
+      careerGoalsEntries.value.push({ ...careerGoalsForm.data(), id: response.id });
     },
     onError: (errors) => {
       console.error("Error saving career goals:", errors);
@@ -1138,7 +1338,6 @@ const addPreferredIndustry = () => {
     careerGoals.value.industriesOfInterest.push(newIndustry.value.trim());
 
     console.log("New Industry Added:", newIndustry.value);
-
     console.log("Updated Industries of Interest:", careerGoals.value.industriesOfInterest);
 
     const careerGoalsForm = useForm({
@@ -1147,10 +1346,9 @@ const addPreferredIndustry = () => {
 
     console.log("Data being sent to backend:", careerGoalsForm.data());
 
-    careerGoalsForm.post(route('career.goals.save'), {
+    careerGoalsForm.post(route('career.goals.add.industry'), { 
       onSuccess: (response) => {
         console.log("Backend response:", response);
-        alert("Industry added successfully!");
       },
       onError: (errors) => {
         console.error("Error saving industry:", errors);
@@ -1165,19 +1363,62 @@ const addPreferredIndustry = () => {
 };
 
 // Resume Handlers
+const resumeForm = useForm({
+  file: null,
+  fileName: ''
+});
+
 const uploadResume = (event) => {
   const file = event.target.files[0];
-  if (file) {
-    resume.value.file = file;
-    resume.value.fileName = file.name;
-    console.log('Resume uploaded:', file.name);
+  if (!file) return;
+
+  if (!['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+      .includes(file.type)) {
+    alert('Please upload a PDF or Word document');
+    return;
   }
+
+  resumeForm.file = file;
+  resumeForm.fileName = file.name;
+  resume.value.file = file;
+  resume.value.fileName = file.name;
+};
+
+const saveResume = () => {
+  if (!resumeForm.file) {
+    alert('Please upload a resume before saving.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('resume', resumeForm.file);
+  formData.append('fileName', resumeForm.fileName);
+
+  resumeForm.post(route('resume.upload'), {
+    forceFormData: true,
+    preserveScroll: true,
+    onSuccess: () => {
+      alert('Resume saved successfully!');
+    },
+    onError: (errors) => {
+      console.error('Error saving resume:', errors);
+      alert('An error occurred while saving the resume. Please try again.');
+    },
+  });
 };
 
 const removeResume = () => {
-  resume.value.file = null;
-  resume.value.fileName = '';
-  console.log('Resume removed.');
+  resumeForm.delete(route('resume.delete'), {
+    onSuccess: () => {
+      resume.value.file = null;
+      resume.value.fileName = '';
+      resumeForm.reset();
+      alert('Resume removed successfully');
+    },
+    onError: () => {
+      alert('Failed to remove resume');
+    },
+  });
 };
 
 //  Reset Functions
@@ -1226,13 +1467,11 @@ const resetProject = () => {
     graduate_projects_start_date: null,
     graduate_projects_end_date: null,
     graduate_projects_url: '',
-    graduate_projects_tech: [],
     graduate_projects_key_accomplishments: '',
-    is_current: false, // Reset is_current
+    is_current: false,
+    id: null
   };
   noProjectUrl.value = false;
-  isOngoingProject.value = false;
-  console.log('Project reset.');
 };
 
 const resetCertification = () => {
@@ -1254,9 +1493,10 @@ const resetAchievement = () => {
     graduate_achievement_date: null,
     graduate_achievement_description: '',
     graduate_achievement_url: '',
-    graduate_achievement_type: ''
+    graduate_achievement_type: '',
+    credential_picture: null
   };
-  console.log('Achievement reset.');
+  noCredentialUrl.value = false;
 };
 
 const resetTestimonials = () => {
@@ -1273,9 +1513,7 @@ const resetEmploymentPreferences = () => {
   employmentPreferences.value = {
     jobTypes: [],
     salaryExpectations: {
-      min: '',
-      max: '',
-      currency: 'PESO',
+      range: 'Select expected salary range',
       frequency: 'per year'
     },
     preferredLocations: [],
@@ -1303,6 +1541,7 @@ const resetResume = () => {
   };
   console.log('Resume reset.');
 };
+
 
 // Modal Control Functions
 const closeProfileModal = () => {
@@ -1385,7 +1624,7 @@ const closeAddCertificationModal = () => {
 
 const closeAddAchievementModal = () => {
   isAddAchievementModalOpen.value = false;
-  resetAchievement();
+  achievementForm.reset();
   console.log('Add achievement modal closed.');
 };
 
@@ -1473,7 +1712,7 @@ const openAddIndustryModal = () => {
 const openUpdateEducationModal = (educationData) => {
   education.value = {
     ...educationData,
-    noAchievements: !educationData.achievements, 
+    noAchievements: !educationData.achievements,
   };
   isUpdateEducationModalOpen.value = true;
   console.log('Update education modal opened with data:', educationData);
@@ -1495,15 +1734,16 @@ const openUpdateAchievementModal = (entry, index) => {
 
 const openUpdateCertificationModal = (entry) => {
   // Populate the form with the selected entry data
+  form.id = entry.id;
   form.graduate_certification_name = entry.graduate_certification_name;
   form.graduate_certification_issuer = entry.graduate_certification_issuer;
   form.graduate_certification_issue_date = entry.graduate_certification_issue_date;
   form.graduate_certification_expiry_date = entry.graduate_certification_expiry_date;
   form.graduate_certification_credential_url = entry.graduate_certification_credential_url;
   form.avatar = null; // Reset file input
-  certification.value = { ...entry };
+  form.noExpiryDate = !entry.graduate_certification_expiry_date;
+  form.noCredentialUrl = !entry.graduate_certification_credential_url;
   isUpdateCertificationModalOpen.value = true;
-  console.log('Update certification modal opened with entry:', entry);
 };
 
 const openUpdateTestimonialsModal = (entry, index) => {
@@ -1518,7 +1758,7 @@ const removeEducation = (id) => {
   if (confirm('Are you sure you want to remove this education entry?')) {
     educationEntries.value = educationEntries.value.filter(entry => entry.id !== id);
     console.log('Education entry removed from frontend.');
-    
+
     alert('Education entry has been removed from your profile view.');
   }
 };
@@ -1527,7 +1767,7 @@ const removeExperience = (id) => {
   if (confirm('Are you sure you want to remove this experience entry?')) {
     experienceEntries.value = experienceEntries.value.filter(entry => entry.id !== id);
     console.log('Experience entry removed from frontend.');
-    
+
     alert('Experience entry has been removed from your profile view.');
   }
 };
@@ -1545,7 +1785,7 @@ const removeTestimonials = (id) => {
   if (confirm('Are you sure you want to remove this testimonial entry?')) {
     testimonialsEntries.value = testimonialsEntries.value.filter(entry => entry.id !== id);
     console.log('Testimonial entry removed from frontend.');
-    
+
     alert('Testimonial entry has been removed from your profile view.');
   }
 };
@@ -1554,7 +1794,7 @@ const removeCertification = (id) => {
   if (confirm('Are you sure you want to remove this certification entry?')) {
     certificationsEntries.value = certificationsEntries.value.filter(entry => entry.id !== id);
     console.log('Certification entry removed from frontend.');
-    
+
     alert('Certification entry has been removed from your profile view.');
   }
 };
@@ -1563,23 +1803,29 @@ const removeAchievement = (id) => {
   if (confirm('Are you sure you want to remove this achievement entry?')) {
     achievementEntries.value = achievementEntries.value.filter(entry => entry.id !== id);
     console.log('Achievement entry removed from frontend.');
-    
+
     alert('Achievement entry has been removed from your profile view.');
   }
 };
 
 const deleteProject = (index) => {
   if (confirm('Are you sure you want to remove this project entry?')) {
-    projectsEntries.value.splice(index, 1);
-    console.log('Project entry removed from frontend.');
+    const projectId = projectsEntries.value[index].id;
     
-    alert('Project entry has been removed from your profile view.');
+    axios.delete(route('projects.remove', projectId))
+      .then(() => {
+        projectsEntries.value.splice(index, 1); // Remove from frontend
+      })
+      .catch((error) => {
+        console.error('Error deleting project:', error);
+        alert('An error occurred while deleting the project. Please try again.');
+      });
   }
 };
 
 const closeAllModals = () => {
   closeProfileModal();
- closeNoChangesModal();
+  closeNoChangesModal();
   closePasswordModal();
   closeAddEducationModal();
   closeUpdateEducationModal();
@@ -1609,14 +1855,27 @@ const resetAllStates = () => {
 };
 
 // Event listeners for file uploads
-const handleFileUpload = (event) => {
-  form.avatar = event.target.files[0];
+const handleFileUpload = (event, type) => {
   const file = event.target.files[0];
   if (file) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      profile.value.graduate_picture_url = e.target.result;
-      console.log('Profile picture uploaded:', file.name);
+      switch (type) {
+        case 'profile':
+          profile.value.graduate_picture_url = e.target.result;
+          console.log('Profile picture uploaded:', file.name);
+          break;
+        case 'achievement':
+          achievement.value.credential_picture = file;
+          console.log('Achievement picture uploaded:', file.name);
+          break;
+        case 'certification':
+          form.avatar = file;
+          console.log('Certification file uploaded:', file.name);
+          break;
+        default:
+          console.error('Unknown file upload type:', type);
+      }
     };
     reader.readAsDataURL(file);
   }
@@ -1644,73 +1903,73 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-md p-6">
           <div class="flex border-b border-gray-200 mb-6">
             <button class="py-2 px-4"
-              :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'general'}"
+              :class="{ 'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'general' }"
               @click="setActiveSection('general')">
               General
             </button>
 
             <button class="py-2 px-4"
-              :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'security'}"
+              :class="{ 'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'security' }"
               @click="setActiveSection('security')">
               Credentials
             </button>
 
             <button class="py-2 px-4"
-              :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'education'}"
+              :class="{ 'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'education' }"
               @click="setActiveSection('education')">
               Education
             </button>
 
             <button class="py-2 px-4"
-              :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'skills'}"
+              :class="{ 'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'skills' }"
               @click="setActiveSection('skills')">
               Skills
             </button>
 
             <button class="py-2 px-4"
-              :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'experience'}"
+              :class="{ 'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'experience' }"
               @click="setActiveSection('experience')">
               Experience
             </button>
 
             <button class="py-2 px-4"
-              :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'projects'}"
+              :class="{ 'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'projects' }"
               @click="setActiveSection('projects')">
               Projects
             </button>
 
             <button class="py-2 px-4"
-              :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'certifications'}"
+              :class="{ 'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'certifications' }"
               @click="setActiveSection('certifications')">
               Certifications
             </button>
 
             <button class="py-2 px-4"
-              :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'achievements'}"
+              :class="{ 'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'achievements' }"
               @click="setActiveSection('achievements')">
               Achievements
             </button>
 
             <button class="py-2 px-4"
-              :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'testimonials'}"
+              :class="{ 'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'testimonials' }"
               @click="setActiveSection('testimonials')">
               Testimonials
             </button>
 
             <button class="py-2 px-4"
-              :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'employment'}"
+              :class="{ 'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'employment' }"
               @click="setActiveSection('employment')">
               Employment
             </button>
 
             <button class="py-2 px-4"
-              :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'career-goals'}"
+              :class="{ 'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'career-goals' }"
               @click="setActiveSection('career-goals')">
               Career Goals
             </button>
 
             <button class="py-2 px-4"
-              :class="{'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'resume'}"
+              :class="{ 'text-indigo-600 border-b-2 border-indigo-600': activeSection === 'resume' }"
               @click="setActiveSection('resume')">
               Resume
             </button>
@@ -1723,7 +1982,7 @@ onMounted(() => {
               <p class="text-gray-600 mb-4">Update your profile picture</p>
               <div class="flex flex-col items-center">
                 <img id="profile-picture" :src="profile.graduate_picture_url" alt="Profile picture"
-                  class="rounded-full mb-4 w-32 h-32 object-cover" />
+                  class="rounded-full mb-4 w-32 h-32 object-cover"/>
                 <input type="file" id="file-input" class="hidden" accept="image/*" @change="onFileChange" />
                 <label for="file-input" class="text-indigo-600 cursor-pointer">Choose an image</label>
               </div>
@@ -1883,7 +2142,7 @@ onMounted(() => {
                       <i class="far fa-calendar-alt mr-2"></i>
                       <span>
                         {{ formatDate(entry.graduate_education_start_date) }} - {{ entry.graduate_education_end_date ?
-                        formatDate(entry.graduate_education_end_date) : 'present' }}
+                          formatDate(entry.graduate_education_end_date) : 'present' }}
                       </span>
                     </div>
                     <p class="mt-2">
@@ -1940,25 +2199,25 @@ onMounted(() => {
                 <div class="max-h-96 overflow-y-auto">
                   <form @submit.prevent="addEducation">
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Institution</label>
+                      <label class="block text-gray-700 font-medium mb-2">Institution <span class="text-red-500">*</span></label>
                       <input type="text" v-model="education.graduate_education_institution_id"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         placeholder="e.g. Harvard University" required>
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Degree</label>
+                      <label class="block text-gray-700 font-medium mb-2">Degree <span class="text-red-500">*</span></label>
                       <input type="text" v-model="education.graduate_education_program"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         placeholder="e.g. Bachelor of Science" required>
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Field of Study</label>
+                      <label class="block text-gray-700 font-medium mb-2">Field of Study <span class="text-red-500">*</span></label>
                       <input type="text" v-model="education.graduate_education_field_of_study"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         placeholder="e.g. Computer Science" required>
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Start Date</label>
+                      <label class="block text-gray-700 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
                       <Datepicker v-model="education.graduate_education_start_date"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         placeholder="Select start date" required />
@@ -2017,28 +2276,28 @@ onMounted(() => {
                 <div class="max-h-96 overflow-y-auto">
                   <form @submit.prevent="updateEducation">
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Institution</label>
+                      <label class="block text-gray-700 font-medium mb-2">Institution <span class="text-red-500">*</span></label>
                       <input type="text" v-model="education.graduate_education_institution_id"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        placeholder="e.g. Harvard University">
+                        placeholder="e.g. Harvard University" required>
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Degree</label>
+                      <label class="block text-gray-700 font-medium mb-2">Degree <span class="text-red-500">*</span></label>
                       <input type="text" v-model="education.graduate_education_program"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        placeholder="e.g. Bachelor of Science">
+                        placeholder="e.g. Bachelor of Science"required>
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Field of Study</label>
+                      <label class="block text-gray-700 font-medium mb-2">Field of Study <span class="text-red-500">*</span></label>
                       <input type="text" v-model="education.graduate_education_field_of_study"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        placeholder="e.g. Computer Science">
+                        placeholder="e.g. Computer Science" required>
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Start Date</label>
+                      <label class="block text-gray-700 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
                       <Datepicker v-model="education.graduate_education_start_date" :config="datepickerConfig"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        placeholder="Select start date" />
+                        placeholder="Select start date" required/>
                     </div>
                     <div class="mb-4">
                       <label class="block text-gray-700 font-medium mb-2">End Date</label>
@@ -2116,11 +2375,11 @@ onMounted(() => {
                         <h3 class="text-lg font-bold text-gray-800">{{ skill.graduate_skills_name }}</h3>
                         <p class="text-gray-600 mt-2 flex items-center">
                           <i class="fas fa-chart-line text-gray-600 mr-2"></i>Proficiency: {{
-                          skill.graduate_skills_proficiency_type }}
+                            skill.graduate_skills_proficiency_type }}
                         </p>
                         <p class="text-gray-600 mt-2 flex items-center">
                           <i class="fas fa-clock text-gray-600 mr-2"></i>Years of Experience: {{
-                          skill.graduate_skills_years_experience }} year/s
+                            skill.graduate_skills_years_experience }} year/s
                         </p>
                       </div>
                     </div>
@@ -2147,12 +2406,12 @@ onMounted(() => {
                 <p class="text-gray-600 mb-4">Add a new skill to your profile</p>
                 <form @submit.prevent="saveSkill">
                   <div class="mb-4">
-                    <label for="skillName" class="block text-gray-700">Skill Name</label>
+                    <label for="skillName" class="block text-gray-700">Skill Name <span class="text-red-500">*</span></label>
                     <input type="text" id="skillName" v-model="skillName"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
                   </div>
                   <div class="mb-4">
-                    <label for="skillProficiencyType" class="block text-gray-700">Proficiency Type</label>
+                    <label for="skillProficiencyType" class="block text-gray-700">Proficiency Type <span class="text-red-500">*</span></label>
                     <select id="skillProficiencyType" v-model="skillProficiencyType"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
                       <option value="" disabled>Select proficiency type</option>
@@ -2163,7 +2422,7 @@ onMounted(() => {
                     </select>
                   </div>
                   <div class="mb-4">
-                    <label for="skillType" class="block text-gray-700">Skill Type</label>
+                    <label for="skillType" class="block text-gray-700">Skill Type <span class="text-red-500">*</span></label>
                     <select id="skillType" v-model="skillType"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
                       <option value="" disabled>Select skill type</option>
@@ -2175,7 +2434,7 @@ onMounted(() => {
                     </select>
                   </div>
                   <div class="mb-4">
-                    <label for="yearsExperience" class="block text-gray-700">Years of Experience</label>
+                    <label for="yearsExperience" class="block text-gray-700">Years of Experience <span class="text-red-500">*</span></label>
                     <input type="number" id="yearsExperience" v-model="yearsExperience"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
                   </div>
@@ -2201,12 +2460,12 @@ onMounted(() => {
                 <p class="text-gray-600 mb-4">Update the skill details</p>
                 <form @submit.prevent="updateSkill">
                   <div class="mb-4">
-                    <label for="skillName" class="block text-gray-700">Skill Name</label>
+                    <label for="skillName" class="block text-gray-700">Skill Name <span class="text-red-500">*</span></label>
                     <input type="text" id="skillName" v-model="skillName"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
                   </div>
                   <div class="mb-4">
-                    <label for="skillProficiencyType" class="block text-gray-700">Proficiency Type</label>
+                    <label for="skillProficiencyType" class="block text-gray-700">Proficiency Type <span class="text-red-500">*</span></label>
                     <select id="skillProficiencyType" v-model="skillProficiencyType"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
                       <option value="" disabled>Select proficiency type</option>
@@ -2217,7 +2476,7 @@ onMounted(() => {
                     </select>
                   </div>
                   <div class="mb-4">
-                    <label for="skillType" class="block text-gray-700">Skill Type</label>
+                    <label for="skillType" class="block text-gray-700">Skill Type <span class="text-red-500">*</span></label>
                     <select id="skillType" v-model="skillType"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
                       <option value="" disabled>Select skill type</option>
@@ -2229,7 +2488,7 @@ onMounted(() => {
                     </select>
                   </div>
                   <div class="mb-4">
-                    <label for="yearsExperience" class="block text-gray-700">Years of Experience</label>
+                    <label for="yearsExperience" class="block text-gray-700">Years of Experience <span class="text-red-500">*</span></label>
                     <input type="number" id="yearsExperience" v-model="yearsExperience"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
                   </div>
@@ -2269,7 +2528,7 @@ onMounted(() => {
                       <span>
                         {{ formatDate(entry.graduate_experience_start_date) }} -
                         {{ entry.graduate_experience_end_date ? formatDate(entry.graduate_experience_end_date) :
-                        'Present' }}
+                          'Present' }}
                       </span>
                     </div>
                     <p class="text-gray-600 mt-2 flex items-center">
@@ -2314,25 +2573,25 @@ onMounted(() => {
                 <div class="max-h-96 overflow-y-auto">
                   <form @submit.prevent="addExperience">
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Job Title</label>
+                      <label class="block text-gray-700 font-medium mb-2">Job Title <span class="text-red-500">*</span></label>
                       <input type="text" v-model="experience.graduate_experience_title"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         placeholder="e.g. Software Engineer" required />
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Company</label>
+                      <label class="block text-gray-700 font-medium mb-2">Company <span class="text-red-500">*</span></label>
                       <input type="text" v-model="experience.graduate_experience_company"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         placeholder="e.g. Tech Corp" required />
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Location</label>
+                      <label class="block text-gray-700 font-medium mb-2">Location <span class="text-red-500">*</span></label>
                       <input type="text" v-model="experience.graduate_experience_address"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         placeholder="e.g. New York, NY" required />
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Employment Type</label>
+                      <label class="block text-gray-700 font-medium mb-2">Employment Type <span class="text-red-500">*</span></label>
                       <select v-model="experience.graduate_experience_employment_type"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         required>
@@ -2345,7 +2604,7 @@ onMounted(() => {
                       </select>
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Start Date</label>
+                      <label class="block text-gray-700 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
                       <Datepicker v-model="experience.graduate_experience_start_date"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         placeholder="Select start date" required />
@@ -2360,6 +2619,12 @@ onMounted(() => {
                           @change="experience.graduate_experience_end_date = stillInRole ? null : experience.graduate_experience_end_date" />
                         <label for="still-in-role" class="text-sm text-gray-700 ml-2">I currently work here</label>
                       </div>
+                    </div>
+                    <div class="mb-4">
+                      <label class="block text-gray-700 font-medium mb-2">Description</label>
+                      <textarea v-model="experience.graduate_experience_description"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                        rows="3" placeholder="Describe your role and responsibilities..."></textarea>
                     </div>
                     <div class="flex justify-end">
                       <button type="submit"
@@ -2386,25 +2651,25 @@ onMounted(() => {
                 <div class="max-h-96 overflow-y-auto">
                   <form @submit.prevent="updateExperience">
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Job Title</label>
+                      <label class="block text-gray-700 font-medium mb-2">Job Title <span class="text-red-500">*</span></label>
                       <input type="text" v-model="experience.graduate_experience_title"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         placeholder="e.g. Software Engineer" required />
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Company</label>
+                      <label class="block text-gray-700 font-medium mb-2">Company <span class="text-red-500">*</span></label>
                       <input type="text" v-model="experience.graduate_experience_company"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         placeholder="e.g. Tech Corp" required />
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Location</label>
+                      <label class="block text-gray-700 font-medium mb-2">Location <span class="text-red-500">*</span></label>
                       <input type="text" v-model="experience.graduate_experience_address"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         placeholder="e.g. New York, NY" required />
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Employment Type</label>
+                      <label class="block text-gray-700 font-medium mb-2">Employment Type <span class="text-red-500">*</span></label>
                       <select v-model="experience.graduate_experience_employment_type"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         required>
@@ -2417,7 +2682,7 @@ onMounted(() => {
                       </select>
                     </div>
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Start Date</label>
+                      <label class="block text-gray-700 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
                       <Datepicker v-model="experience.graduate_experience_start_date"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         placeholder="Select start date" required />
@@ -2465,44 +2730,60 @@ onMounted(() => {
               </div>
               <p class="text-gray-600 mb-6">Showcase your personal and professional projects</p>
 
-              <div v-if="projectsEntries.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div v-for="(entry, index) in projectsEntries" :key="entry.id"
-                  class="bg-white p-8 rounded-lg shadow relative">
-                  <div class="bg-white p-6 rounded-lg shadow-md">
-                    <div class="flex justify-between items-center mb-4">
-                      <h2 class="text-xl font-bold">{{ entry.graduate_projects_title }}</h2>
+              <div v-if="projectsEntries.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div v-for="(entry, index) in projectsEntries" :key="entry.id" 
+                    class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                  <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                      <div>
+                        <h2 class="text-xl font-bold text-gray-800">{{ entry.graduate_projects_title }}</h2>
+                        <p class="text-indigo-600 font-medium">{{ entry.graduate_projects_role }}</p>
+                      </div>
                       <div class="flex space-x-2">
                         <button class="text-gray-600 hover:text-gray-800" @click="openUpdateProjectModal(entry)">
                           <i class="fas fa-pen"></i>
                         </button>
-                        <button class="text-red-600 hover:text-red-800" @click="deleteProject(index)">
+                        <button class="text-red-600 hover:text-red-800 transition-colors" 
+                                @click="deleteProject(index)">
                           <i class="fas fa-trash"></i>
                         </button>
                       </div>
                     </div>
-                    <p class="text-gray-600 mb-4">{{ entry.graduate_projects_description || 'No description provided' }}
+
+                    <p class="text-gray-600 mb-4">
+                      {{ entry.graduate_projects_description || 'No description provided' }}
                     </p>
-                    <div class="flex justify-between items-center mb-4">
-                      <p class="text-xl font-bold">{{ entry.graduate_projects_role }}</p>
-                    </div>
-                    <div class="flex items-center text-gray-600 mt-2">
-                      <i class="far fa-calendar-alt mr-2"></i>
-                      <span>{{ formatDate(entry.graduate_projects_start_date) }} - {{ entry.graduate_projects_end_date ?
-                        formatDate(entry.graduate_projects_end_date) : 'Present' }}</span>
-                    </div>
-                    <p class="text-gray-600 mt-2">
-                      <strong>Project URL:</strong>
-                      <span v-if="entry.graduate_projects_url">
-                        <a :href="entry.graduate_projects_url" target="_blank"
-                          class="text-indigo-600 hover:underline">{{ entry.graduate_projects_url }}</a>
+
+                    <div class="space-y-3">
+                      <div class="flex items-center text-gray-600">
+                        <i class="far fa-calendar-alt mr-2 text-gray-500"></i>
+                        <span>
+                        {{ formatDate(entry.graduate_projects_start_date) }} - 
+                        {{ entry.graduate_projects_end_date === null ? 'Present' : formatDate(entry.graduate_projects_end_date) }}
                       </span>
-                      <span v-else>No URL provided</span>
-                    </p>
-                    <div class="flex flex-wrap gap-2 mb-4">
-                      <span v-for="(tech, techIndex) in entry.graduate_projects_tech" :key="techIndex"
-                        class="bg-indigo-600 text-white px-2 py-1 rounded-full text-sm mr-2">
-                        {{ tech }}
-                      </span>
+                      </div>
+
+                      <div class="mt-3">
+                        <h4 class="text-sm font-semibold text-gray-700 mb-1">Project URL:</h4>
+                        <p class="text-gray-600">
+                          <span v-if="entry.graduate_projects_url">
+                            <a :href="entry.graduate_projects_url" target="_blank" class="text-indigo-600 hover:underline break-all">
+                              {{ entry.graduate_projects_url }}
+                            </a>
+                          </span>
+                          <span v-else class="text-gray-500">No project URL provided</span>
+                        </p>
+                      </div>
+
+                      <div class="mt-3">
+                        <h4 class="text-sm font-semibold text-gray-700 mb-1">Key Accomplishments:</h4>
+                        <p class="text-gray-600">
+                          <span v-if="entry.graduate_projects_key_accomplishments">
+                            {{ entry.graduate_projects_key_accomplishments }}
+                          </span>
+                          <span v-else>No key accomplishment provided</span> <!-- Display message if no accomplishments -->
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2513,8 +2794,7 @@ onMounted(() => {
               </div>
 
               <!-- Add Project Modal -->
-              <div v-if="isAddProjectModalOpen"
-                class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+              <div v-if="isAddProjectModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                 <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                   <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-semibold">Add Project</h2>
@@ -2525,7 +2805,7 @@ onMounted(() => {
                   <div class="max-h-96 overflow-y-auto">
                     <form @submit.prevent="addProject">
                       <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-2">Project Title</label>
+                        <label class="block text-gray-700 font-medium mb-2">Project Title <span class="text-red-500">*</span></label>
                         <input type="text" v-model="projects.graduate_projects_title"
                           class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                           placeholder="e.g. E-commerce Platform" required />
@@ -2534,7 +2814,7 @@ onMounted(() => {
                         <label class="block text-gray-700 font-medium mb-2">Description</label>
                         <textarea v-model="projects.graduate_projects_description"
                           class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                          rows="3" placeholder="Describe your personal or professional project..."></textarea>
+                          rows="3" placeholder="Describe your project..."></textarea>
                       </div>
                       <div class="mb-4">
                         <label class="block text-gray-700 font-medium mb-2">Role</label>
@@ -2543,7 +2823,7 @@ onMounted(() => {
                           placeholder="Your role in the project" />
                       </div>
                       <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-2">Start Date</label>
+                        <label class="block text-gray-700 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
                         <Datepicker v-model="projects.graduate_projects_start_date"
                           class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                           placeholder="Select start date" required />
@@ -2555,8 +2835,7 @@ onMounted(() => {
                           placeholder="Select end date" :disabled="projects.is_current" />
                         <div class="mt-2">
                           <input type="checkbox" v-model="projects.is_current" id="isCurrentProject" />
-                          <label for="isCurrentProject" class="text-sm text-gray-700 ml-2">This is an ongoing
-                            project</label>
+                          <label for="isCurrentProject" class="text-sm text-gray-700 ml-2">This is an ongoing project</label>
                         </div>
                       </div>
                       <div class="mb-4">
@@ -2568,29 +2847,6 @@ onMounted(() => {
                       <div class="mb-4">
                         <input type="checkbox" v-model="noProjectUrl" id="noProjectUrl" />
                         <label for="noProjectUrl" class="text-gray-700 font-medium ml-2">No Project URL</label>
-                      </div>
-                      <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-2">Technologies Used</label>
-                        <div class="flex items-center gap-2">
-                          <input type="text" v-model="newTech"
-                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                            placeholder="Enter a skill and press Add" />
-                          <button type="button"
-                            class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
-                            @click="addTechToProject">
-                            Add
-                          </button>
-                        </div>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                          <span v-for="(tech, index) in projects.graduate_projects_tech" :key="index"
-                            class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full flex items-center">
-                            {{ tech }}
-                            <button type="button" class="ml-2 text-red-600 hover:text-red-800"
-                              @click="removeTechFromProject(index)">
-                              <i class="fas fa-times"></i>
-                            </button>
-                          </span>
-                        </div>
                       </div>
                       <div class="mb-4">
                         <label class="block text-gray-700 font-medium mb-2">Key Accomplishments</label>
@@ -2604,7 +2860,6 @@ onMounted(() => {
                   </div>
                 </div>
               </div>
-
               <!-- Update Project Modal -->
               <div v-if="isUpdateProjectModalOpen"
                 class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -2618,7 +2873,7 @@ onMounted(() => {
                   <div class="max-h-96 overflow-y-auto">
                     <form @submit.prevent="updateProject">
                       <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-2">Project Title</label>
+                        <label class="block text-gray-700 font-medium mb-2">Project Title <span class="text-red-500">*</span></label>
                         <input type="text" v-model="projects.graduate_projects_title"
                           class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                           placeholder="e.g. E-commerce Platform" required />
@@ -2636,7 +2891,7 @@ onMounted(() => {
                           placeholder="Your role in the project" />
                       </div>
                       <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-2">Start Date</label>
+                        <label class="block text-gray-700 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
                         <Datepicker v-model="projects.graduate_projects_start_date"
                           class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                           placeholder="Start Date" required />
@@ -2645,7 +2900,7 @@ onMounted(() => {
                         <label class="block text-gray-700 font-medium mb-2">End Date</label>
                         <Datepicker v-model="projects.graduate_projects_end_date"
                           class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                          placeholder="End Date":disabled="projects.is_current" />
+                          placeholder="End Date" :disabled="projects.is_current" />
                         <div class="mt-2">
                           <input type="checkbox" v-model="projects.is_current" id="isCurrentProject" />
                           <label for="isCurrentProject" class="text-sm text-gray-700 ml-2">This is an ongoing
@@ -2661,29 +2916,6 @@ onMounted(() => {
                       <div class="mb-4">
                         <input type="checkbox" v-model="noProjectUrl" id="noProjectUrl" />
                         <label for="noProjectUrl" class="text-gray-700 font-medium ml-2">No Project URL</label>
-                      </div>
-                      <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-2">Technologies Used</label>
-                        <div class="flex items-center gap-2">
-                          <input type="text" v-model="newTech"
-                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                            placeholder="Enter a skill and press Add" />
-                          <button type="button"
-                            class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
-                            @click="addTechToProject">
-                            Add
-                          </button>
-                        </div>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                          <span v-for="(tech, index) in projects.graduate_projects_tech" :key="index"
-                            class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full flex items-center">
-                            {{ tech }}
-                            <button type="button" class="ml-2 text-red-600 hover:text-red-800"
-                              @click="removeTechFromProject(index)">
-                              <i class="fas fa-times"></i>
-                            </button>
-                          </span>
-                        </div>
                       </div>
                       <div class="mb-4">
                         <label class="block text-gray-700 font-medium mb-2">Key Accomplishments</label>
@@ -2713,24 +2945,25 @@ onMounted(() => {
               </div>
               <p class="text-gray-600 mb-6">Manage your professional certifications</p>
               <div v-if="certificationsEntries.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div v-for="entry in certificationsEntries" :key="entry.id"
-                  class="bg-white p-8 rounded-lg shadow relative">
+                <div v-for="entry in certificationsEntries" :key="entry.id" class="bg-white p-8 rounded-lg shadow relative">
                   <div>
                     <h2 class="text-xl font-bold">{{ entry.graduate_certification_name }}</h2>
                     <p class="text-gray-600">{{ entry.graduate_certification_issuer }}</p>
                     <div class="flex items-center text-gray-600 mt-2">
                       <i class="far fa-calendar-alt mr-2"></i>
-                      <span>{{ entry.graduate_certification_issue_date }} - {{ entry.graduate_certification_expiry_date
-                        || 'No expiry date' }}</span>
+                      <span>{{ entry.graduate_certification_issue_date }} - {{ entry.graduate_certification_expiry_date || 'No expiry date' }}</span>
                     </div>
-                    <p class="mt-2">Credential ID: {{ entry.graduate_certification_credential_id }}</p>
                     <p class="mt-2">
-                      URL: <a :href="entry.graduate_certification_credential_url" class="text-blue-600 hover:underline"
-                        target="_blank">{{ entry.graduate_certification_credential_url }}</a>
+                      URL: 
+                      <span v-if="entry.graduate_certification_credential_url">
+                        <a :href="entry.graduate_certification_credential_url" class="text-blue-600 hover:underline" target="_blank">
+                          {{ entry.graduate_certification_credential_url }}
+                        </a>
+                      </span>
+                      <span v-else class="text-gray-500">No Credential URL</span>
                     </p>
                     <p class="mt-2" v-if="entry.file_path">
-                      File: <a :href="`/storage/${entry.file_path}`" class="text-blue-600 hover:underline"
-                        target="_blank">Download</a>
+                      Photo: <img :src="`/storage/${entry.file_path}`" class="w-24 h-24 object-cover rounded-md" alt="Certification Photo" />
                     </p>
                   </div>
                   <div class="absolute top-2 right-2 flex space-x-2">
@@ -2759,63 +2992,52 @@ onMounted(() => {
                     <i class="fas fa-times"></i>
                   </button>
                 </div>
-
-                <form @submit.prevent="addCertification">
+                <form @submit.prevent="addCertification" novalidate>
                   <div class="mb-4">
-                    <label for="certification-name" class="block text-sm font-medium text-gray-700">Name</label>
-                    <input type="text" id="certification-name" v-model="certification.graduate_certification_name"
+                    <label for="certification-name" class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="certification-name" v-model="form.graduate_certification_name"
                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required>
                   </div>
                   <div class="mb-4">
-                    <label for="certification-issuer" class="block text-sm font-medium text-gray-700">Issuer</label>
-                    <input type="text" id="certification-issuer" v-model="certification.graduate_certification_issuer"
+                    <label for="certification-issuer" class="block text-sm font-medium text-gray-700">Issuer <span class="text-red-500">*</span></label>
+                    <input type="text" id="certification-issuer" v-model="form.graduate_certification_issuer"
                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required>
                   </div>
                   <div class="mb-4">
-                    <label for="certification-issue-date" class="block text-sm font-medium text-gray-700">Issue Date</label>
-                    <Datepicker v-model="certification.graduate_certification_issue_date"
+                    <label for="certification-issue-date" class="block text-sm font-medium text-gray-700">Issue Date <span class="text-red-500">*</span></label>
+                    <Datepicker v-model="form.graduate_certification_issue_date"
                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                      placeholder="Select issue date" required>
-                      <template #input-icon>
-                        <i class="fas fa-calendar-alt"></i>
-                      </template>
-                    </Datepicker>
+                      placeholder="Select issue date" required />
                   </div>
                   <div class="mb-4">
                     <label for="certification-expiry-date" class="block text-sm font-medium text-gray-700">Expiry Date</label>
-                    <Datepicker v-model="certification.graduate_certification_expiry_date"
+                    <Datepicker v-model="form.graduate_certification_expiry_date"
                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                      placeholder="Select expiry date" :disabled="noExpiryDate" required>
-                      <template #input-icon>
-                        <i class="fas fa-calendar-alt"></i>
-                      </template>
-                    </Datepicker>
+                      placeholder="Select expiry date" :required="!form.noExpiryDate" :disabled="form.noExpiryDate" />
                     <div class="mt-2">
-                      <input type="checkbox" id="no-expiry-date" v-model="noExpiryDate" class="mr-2" />
+                      <input type="checkbox" id="no-expiry-date" v-model="form.noExpiryDate" class="mr-2" />
                       <label for="no-expiry-date" class="text-sm text-gray-700">No expiry date</label>
                     </div>
                   </div>
                   <div class="mb-4">
                     <label for="certification-credential-url" class="block text-sm font-medium text-gray-700">Credential URL</label>
-                    <input type="url" id="certification-credential-url"
-                      v-model="certification.graduate_certification_credential_url"
+                    <input type="url" id="certification-credential-url" v-model="form.graduate_certification_credential_url"
                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      :disabled="noCredentialUrl" required>
+                      :required="!form.noCredentialUrl" :disabled="form.noCredentialUrl" />
                     <div class="mt-2">
-                      <input type="checkbox" id="no-credential-url" v-model="noCredentialUrl" class="mr-2" />
+                      <input type="checkbox" id="no-credential-url" v-model="form.noCredentialUrl" class="mr-2" />
                       <label for="no-credential-url" class="text-sm text-gray-700">No Credential URL</label>
                     </div>
                   </div>
                   <div class="mb-4">
                     <label for="certification-file" class="block text-sm font-medium text-gray-700">Upload File</label>
-                    <input type="file" id="certification-file" @input="form.avatar = $event.target.files[0]"
+                    <input type="file" id="certification-file" @change="handleFileUpload"
                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                   </div>
                   <div class="flex justify-end">
-                    <button type="submit"
-                      class="w-full bg-indigo-600 text-white py-2 rounded-md flex items-center justify-center">
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md flex items-center justify-center">
                       <i class="fas fa-save mr-2"></i>
                       Save Certification
                     </button>
@@ -2825,196 +3047,139 @@ onMounted(() => {
             </div>
 
             <!-- Update Certification Modal -->
-            <div v-if="isAddCertificationModalOpen"
-              class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-              <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                <div class="flex justify-between items-center mb-4">
-                  <h2 class="text-xl font-semibold">Add Certification</h2>
-                  <button class="text-gray-500 hover:text-gray-700" @click="closeAddCertificationModal">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-
-                <form @submit.prevent="addCertification">
-                  <div class="mb-4">
-                    <label for="certification-name" class="block text-sm font-medium text-gray-700">Name</label>
-                    <input type="text" id="certification-name" v-model="certification.graduate_certification_name"
-                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      required>
-                  </div>
-                  <div class="mb-4">
-                    <label for="certification-issuer" class="block text-sm font-medium text-gray-700">Issuer</label>
-                    <input type="text" id="certification-issuer" v-model="certification.graduate_certification_issuer"
-                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      required>
-                  </div>
-                  <div class="mb-4">
-                    <label for="certification-issue-date" class="block text-sm font-medium text-gray-700">Issue
-                      Date</label>
-                    <Datepicker v-model="certification.graduate_certification_issue_date"
-                      class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                      placeholder="Select issue date" required />
-                  </div>
-                  <div class="mb-4">
-                    <label for="certification-expiry-date" class="block text-sm font-medium text-gray-700">Expiry
-                      Date</label>
-                    <Datepicker v-model="certification.graduate_certification_expiry_date"
-                      class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                      placeholder="Select expiry date" :disabled="noExpiryDate" />
-                    <div class="mt-2">
-                      <input type="checkbox" id="no-expiry-date" v-model="noExpiryDate" class="mr-2" />
-                      <label for="no-expiry-date" class="text-sm text-gray-700">No expiry date</label>
-                    </div>
-                  </div>
-                  <div class="mb-4">
-                    <label for="certification-credential-url" class="block text-sm font-medium text-gray-700">Credential
-                      URL</label>
-                    <input type="url" id="certification-credential-url"
-                      v-model="certification.graduate_certification_credential_url"
-                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      :disabled="noCredentialUrl">
-                    <div class="mt-2">
-                      <input type="checkbox" id="no-credential-url" v-model="noCredentialUrl" class="mr-2" />
-                      <label for="no-credential-url" class="text-sm text-gray-700">No Credential URL</label>
-                    </div>
-                  </div>
-                  <div class="mb-4">
-                    <label for="certification-file" class="block text-sm font-medium text-gray-700">Upload File</label>
-                    <input type="file" id="certification-file" @input="form.avatar = $event.target.files[0]"
-                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                  </div>
-                  <div class="flex justify-end">
-                    <button type="submit"
-                      class="w-full bg-indigo-600 text-white py-2 rounded-md flex items-center justify-center">
-                      <i class="fas fa-save mr-2"></i>
-                      Save Certification
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-
-            <!-- Update Certification Modal -->
-            <div v-if="isUpdateCertificationModalOpen"
-              class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div v-if="isUpdateCertificationModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
               <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                 <div class="flex justify-between items-center mb-4">
                   <h2 class="text-xl font-semibold">Update Certification</h2>
-                  <button class="text-gray-500 hover:text-gray-700" @click="closeAddedCertificationModal">
+                  <button class="text-gray-500 hover:text-gray-700" @click="closeUpdateCertificationModal">
                     <i class="fas fa-times"></i>
                   </button>
                 </div>
-                <form @submit.prevent="updateCertification">
+                <form @submit.prevent="updateCertification" novalidate>
                   <div class="mb-4">
-                    <label for="certification-name" class="block text-sm font-medium text-gray-700">Name</label>
-                    <input type="text" id="certification-name" v-model="certification.graduate_certification_name"
+                    <label for="update-certification-name" class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="update-certification-name" v-model="form.graduate_certification_name"
                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required>
                   </div>
                   <div class="mb-4">
-                    <label for="certification-issuer" class="block text-sm font-medium text-gray-700">Issuer</label>
-                    <input type="text" id="certification-issuer" v-model="certification.graduate_certification_issuer"
+                    <label for="update-certification-issuer" class="block text-sm font-medium text-gray-700">Issuer <span class="text-red-500">*</span></label>
+                    <input type="text" id="update-certification-issuer" v-model="form.graduate_certification_issuer"
                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required>
                   </div>
                   <div class="mb-4">
-                    <label for="certification-issue-date" class="block text-sm font-medium text-gray-700">Issue
-                      Date</label>
-                    <Datepicker v-model="certification.graduate_certification_issue_date"
+                    <label for="update-certification-issue-date" class="block text-sm font-medium text-gray-700">Issue Date <span class="text-red-500">*</span></label>
+                    <Datepicker v-model="form.graduate_certification_issue_date"
                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                       placeholder="Select issue date" required />
                   </div>
                   <div class="mb-4">
-                    <label for="certification-expiry-date" class="block text-sm font-medium text-gray-700">Expiry
-                      Date</label>
-                    <Datepicker v-model="certification.graduate_certification_expiry_date"
+                    <label for="update-certification-expiry-date" class="block text-sm font-medium text-gray-700">Expiry Date</label>
+                    <Datepicker v-model="form.graduate_certification_expiry_date"
                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                      placeholder="Select expiry date" :disabled="noExpiryDate" />
+                      placeholder="Select expiry date" :required="!form.noExpiryDate" :disabled="form.noExpiryDate" />
                     <div class="mt-2">
-                      <input type="checkbox" id="no-expiry-date" v-model="noExpiryDate" class="mr-2" />
-                      <label for="no-expiry-date" class="text-sm text-gray-700">No expiry date</label>
+                      <input type="checkbox" id="update-no-expiry-date" v-model="form.noExpiryDate" class="mr-2" />
+                      <label for="update-no-expiry-date" class="text-sm text-gray-700">No expiry date</label>
                     </div>
                   </div>
                   <div class="mb-4">
-                    <label for="certification-credential-url" class="block text-sm font-medium text-gray-700">Credential
-                      URL</label>
-                    <input type="url" id="certification-credential-url"
-                      v-model="certification.graduate_certification_credential_url"
+                    <label for="update-certification-credential-url" class="block text-sm font-medium text-gray-700">Credential URL</label>
+                    <input type="url" id="update-certification-credential-url" v-model="form.graduate_certification_credential_url"
                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      :disabled="noCredentialUrl">
+                      :required="!form.noCredentialUrl" :disabled="form.noCredentialUrl" />
                     <div class="mt-2">
-                      <input type="checkbox" id="no-credential-url" v-model="noCredentialUrl" class="mr-2" />
-                      <label for="no-credential-url" class="text-sm text-gray-700">No Credential URL</label>
+                      <input type="checkbox" id="update-no-credential-url" v-model="form.noCredentialUrl" class="mr-2" />
+                      <label for="update-no-credential-url" class="text-sm text-gray-700">No Credential URL</label>
                     </div>
                   </div>
                   <div class="mb-4">
-                    <label for="certification-file" class="block text-sm font-medium text-gray-700">Upload File</label>
-                    <input type="file" id="certification-file" @input="form.avatar = $event.target.files[0]"
+                    <label for="update-certification-file" class="block text-sm font-medium text-gray-700">Upload File</label>
+                    <input type="file" id="update-certification-file" @change="handleFileUpload"
                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                   </div>
                   <div class="flex justify-end">
-                    <button type="submit"
-                      class="w-full bg-indigo-600 text-white py-2 rounded-md flex items-center justify-center">
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md flex items-center justify-center">
                       <i class="fas fa-save mr-2"></i>
                       Update Certification
                     </button>
                   </div>
                 </form>
               </div>
-            </div>
+            </div> 
           </div>
 
           <!-- Achievement Section -->
-          <div v-if="activeSection === 'achievements'" class="flex -col lg:flex-row">
+          <div v-if="activeSection === 'achievements'" class="flex flex-col lg:flex-row">
             <div class="w-full lg:w-1/1 mb-6 lg:mb-0">
               <div class="flex justify-between items-center mb-4">
                 <h1 class="text-xl font-semibold mb-4">Achievements</h1>
-                <button class="bg-indigo-600 text-white px-4 py-2 rounded flex items-center"
-                  @click="isAddAchievementModalOpen = true">
+                <button class="bg-indigo-600 text-white px-4 py-2 rounded flex items-center" @click="isAddAchievementModalOpen = true">
                   <i class="fas fa-plus mr-2"></i>
                   Add Achievement
                 </button>
               </div>
               <p class="text-gray-600 mb-6">Showcase your awards and recognition</p>
-              <div v-if="achievementEntries.length > 0" class="bg-white p-8 rounded-lg shadow mb-4 relative">
-                <div v-for="(entry, index) in achievementEntries" :key="entry.id"
-                  class="flex justify-between items-center">
-                  <div>
-                    <h2 class="text-xl font-bold">{{ entry.graduate_achievement_title }}</h2>
-                    <p class="text-gray-600">{{ entry.graduate_achievement_issuer }}</p>
-                    <div class="flex items-center text-gray-600 mt-2">
-                      <i class="far fa-calendar-alt mr-2"></i>
-                      <span>{{ entry.graduate_achievement_date }}</span>
-                    </div>
-                    <p class="mt-2">{{ entry.graduate_achievement_description }}</p>
-                    <p class="mt-2">URL: {{ entry.graduate_achievement_url }}</p>
-                    <p class="mt-2">Type: {{ entry.graduate_achievement_type }}</p>
+
+              <!-- Achievement Entries -->
+              <div v-if="achievementEntries.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div v-for="achievement in achievementEntries" :key="achievement.id" class="bg-white rounded-lg shadow-md p-4 space-y-3">
+                  <!-- Achievement Title and Type -->
+                  <div class="border-b pb-2">
+                    <h3 class="text-lg font-semibold">{{ achievement.graduate_achievement_title }}</h3>
+                    <span class="text-sm text-gray-600">{{ achievement.graduate_achievement_type }}</span>
                   </div>
-                  <p class="mt-2" v-if="entry.file_path">
-                    File: <a :href="`/storage/${entry.file_path}`" class="text-blue-600 hover:underline"
-                      target="_blank">Download</a>
-                  </p>
-                  <div class="absolute top-2 right-2 flex space-x-2">
-                    <button class="text-gray-600" @click="openUpdateAchievementModal(entry, index)">
+                  
+                  <!-- Issuer and Date -->
+                  <div class="space-y-1">
+                    <p class="text-sm"><span class="font-medium">Issuer:</span> {{ achievement.graduate_achievement_issuer }}</p>
+                    <p class="text-sm"><span class="font-medium">Date:</span> {{ achievement.graduate_achievement_date }}</p>
+                  </div>
+                  
+                  <!-- Description -->
+                  <div class="text-sm">
+                    <p>{{ achievement.graduate_achievement_description }}</p>
+                  </div>
+                  
+                  <!-- URL if available -->
+                  <div v-if="achievement.graduate_achievement_url" class="text-sm">
+                    <a :href="achievement.graduate_achievement_url" 
+                      target="_blank" 
+                      class="text-blue-600 hover:text-blue-800">
+                      View Certificate
+                    </a>
+                  </div>
+                  
+                  <!-- Credential Picture -->
+                  <div v-if="achievement.credential_picture_url" class="mt-3">
+                    <img :src="`/storage/${achievement.credential_picture_url}`" 
+                        :alt="achievement.graduate_achievement_title"
+                        class="max-w-full h-auto rounded-lg shadow"
+                    />
+                  </div>
+                  
+                  <!-- Action Buttons -->
+                  <div class="flex justify-end space-x-2 mt-3">
+                    <button @click="editAchievement(achievement)" 
+                            class="text-gray-600 hover:text-indigo-600">
                       <i class="fas fa-pen"></i>
                     </button>
-                    <button class="text-red-600" @click="removeAchievement(entry.id)">
-                      <i class="fas fa-trash"></i>
-                    </button>
+                    <button @click="deleteAchievement(achievement.id)" class="text-red-600 hover:text-red-800">
+                  <i class="fas fa-trash"></i>
+                </button>
                   </div>
                 </div>
               </div>
 
-              <!-- If no education entries exist -->
+              <!-- No Achievement Entries Message -->
               <div v-else class="bg-white p-8 rounded-lg shadow mb-4">
                 <p class="text-gray-600">No achievement entries added yet.</p>
               </div>
             </div>
 
-
             <!-- Add Achievement Modal -->
-            <div v-if="isAddAchievementModalOpen"
-              class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div v-if="isAddAchievementModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
               <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                 <div class="flex justify-between items-center mb-4">
                   <h2 class="text-xl font-semibold">Add Achievement</h2>
@@ -3023,75 +3188,95 @@ onMounted(() => {
                   </button>
                 </div>
                 <p class="text-gray-600 mb-4">Add details about awards, recognition, or other achievements</p>
-                <div class="max-h-96 overflow-y-auto">
-                  <form @submit.prevent="addAchievement">
+                <form @submit.prevent="addAchievement" enctype="multipart/form-data">
+                  <div class="max-h-96 overflow-y-auto">
                     <div class="mb-4">
                       <label class="block text-gray-700 font-medium mb-2">Title</label>
-                      <input type="text" v-model="achievement.graduate_achievement_title"
+                      <input type="text" 
+                        v-model="achievementForm.graduate_achievement_title"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        placeholder="e.g. Harvard University" required>
-                    </div>
-                    <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Issuer</label>
-                      <input type="text" v-model="achievement.graduate_achievement_issuer"
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        placeholder="e.g. Bachelor of Science" required>
+                        placeholder="Name of the Award or Certification" 
+                        required>
                     </div>
 
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Date</label>
-                      <Datepicker v-model="achievement.graduate_achievement_date"
+                      <label for="achievementType" class="block text-gray-700">Achievement Type <span class="text-red-500">*</span></label>
+                      <select id="achievementType" name="graduate_achievement_type" v-model="achievementForm.graduate_achievement_type"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
+                        <option value="" disabled>Select achievement type</option>
+                        <option value="Award">Award</option>
+                        <option value="Recognition">Recognition</option>
+                        <option value="Publication">Publication</option>
+                        <option value="Patent">Patent</option>
+                      </select>
+                    </div>
+
+                    <div class="mb-4">
+                      <label class="block text-gray-700 font-medium mb-2">Issuer <span class="text-red-500">*</span></label>
+                      <input type="text" name="graduate_achievement_issuer" v-model="achievementForm.graduate_achievement_issuer"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                        placeholder="Name of the Organization or Institution" required>
+                    </div>
+
+                    <div class="mb-4">
+                      <label class="block text-gray-700 font-medium mb-2">Date <span class="text-red-500">*</span></label>
+                      <Datepicker name="graduate_achievement_date" v-model="achievementForm.graduate_achievement_date"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         placeholder="Select start date" required />
                     </div>
 
                     <div class="mb-4">
                       <label class="block text-gray-700 font-medium mb-2">Description</label>
-                      <textarea v-model="achievement.graduate_achievement_description"
+                      <textarea name="graduate_achievement_description" v-model="achievementForm.graduate_achievement_description"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        rows="3" placeholder="Describe your experience..."></textarea>
+                        placeholder="Describe your achievement"></textarea>
                     </div>
 
                     <div class="mb-4">
-                      <label for="achievement-url" class="block text-sm font-medium text-gray-700">
-                        Credential URL
-                      </label>
-                      <input type="url" id="certification-credential-url" v-model="achievement.graduate_achievement_url"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                      <label class="block text-gray-700 font-medium mb-2">URL</label>
+                      <input type="url" v-model="achievementForm.graduate_achievement_url"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                        placeholder="e.g. https://example.com" 
+                        :required="!achievementForm.noCredentialUrl"
+                        :disabled="achievementForm.noCredentialUrl" />
+                      <div class="mt-2">
+                        <input type="checkbox" id="no-credential-url" v-model="achievementForm.noCredentialUrl" class="mr-2" />
+                        <label for="no-credential-url" class="text-sm text-gray-700">No Credential URL</label>
+                      </div>
                     </div>
 
                     <div class="mb-4">
-                      <label for="achievementType" class="block text-gray-700">AchievementType</label>
-                      <select id="achievementType" v-model="achievementType"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
-                        <option value="" enabled>Select achievement type</option>
-                        <option ption value="Award">Award</option>
-                        <option value="Recognition">Recognition</option>
-                        <option value="Publication">Publication</option>
-                        <option value="Patent">Patent</option>
-                        <option value="Other">Other</option>
-                      </select>
+                      <label class="block text-gray-700 mb-2">Credential Picture</label>
+                      <input
+                        type="file"
+                        name="credential_picture"
+                        accept="image/*"
+                        @change="handleCredentialPictureUpload"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"/>
+                      <img
+                        v-if="previewImage"
+                        :src="previewImage"
+                        class="mt-2 max-w-xs rounded"
+                        alt="Credential Preview"/>
                     </div>
-                    <div class="mb-4">
-                      <label for="achievement-file" class="block text-sm font-medium text-gray-700">Upload File</label>
-                      <input type="file" id="achievement-file" @input="form.avatar = $event.target.files[0]"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
+
                     <div class="flex justify-end">
-                      <button type="submit"
-                        class="w-full bg-indigo-600 text-white py-2 rounded-md flex items-center justify-center">
-                        <i class="fas fa-save mr-2"></i>
-                        Add Achievement
+                      <button 
+                        type="submit" 
+                        class="w-full bg-indigo-600 text-white py-2 rounded-md flex items-center justify-center"
+                        :disabled="isSubmittingAchievement">
+                        <i class="fas fa-spinner fa-spin mr-2" v-if="isSubmittingAchievement"></i>
+                        <i class="fas fa-save mr-2" v-else></i>
+                        {{ isSubmittingAchievement ? 'Saving...' : 'Add Achievement' }}
                       </button>
                     </div>
-                  </form>
-                </div>
+                  </div>
+                </form>
               </div>
             </div>
 
             <!-- Update Achievement Modal -->
-            <div v-if="isUpdateAchievementModalOpen"
-              class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div v-if="isUpdateAchievementModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
               <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                 <div class="flex justify-between items-center mb-4">
                   <h2 class="text-xl font-semibold">Update Achievement</h2>
@@ -3100,41 +3285,18 @@ onMounted(() => {
                   </button>
                 </div>
                 <p class="text-gray-600 mb-4">Update details about your achievement</p>
-                <div class="max-h-96 overflow-y-auto">
-                  <form @submit.prevent="updateAchievement">
+                <form @submit.prevent="updateAchievement">
+                  <div class="max-h-96 overflow-y-auto">
                     <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Title</label>
-                      <input type="text" v-model="achievement.graduate_achievement_title"
+                      <label class="block text-gray-700 font-medium mb-2">Title <span class="text-red-500">*</span></label>
+                      <input type="text" v-model="achievementForm.graduate_achievement_title"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        placeholder="e.g. Best Employee Award" required />
+                        placeholder="Name of the Award or Certification" required />
                     </div>
-                    <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Issuer</label>
-                      <input type="text" v-model="achievement.graduate_achievement_issuer"
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        placeholder="e.g. Tech Corp" required />
-                    </div>
-                    <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Date</label>
-                      <Datepicker v-model="achievement.graduate_achievement_date"
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        placeholder="Select date" required />
-                    </div>
-                    <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">Description</label>
-                      <textarea v-model="achievement.graduate_achievement_description"
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        rows="3" placeholder="Describe your achievement..."></textarea>
-                    </div>
-                    <div class="mb-4">
-                      <label class="block text-gray-700 font-medium mb-2">URL</label>
-                      <input type="url" v-model="achievement.graduate_achievement_url"
-                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        placeholder="e.g. https://example.com" />
-                    </div>
+
                     <div class="mb-4">
                       <label class="block text-gray-700 font-medium mb-2">Type</label>
-                      <select v-model="achievement.graduate_achievement_type"
+                      <select v-model="achievementForm.graduate_achievement_type"
                         class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600">
                         <option value="" disabled>Select type</option>
                         <option value="Award">Award</option>
@@ -3144,24 +3306,69 @@ onMounted(() => {
                         <option value="Other">Other</option>
                       </select>
                     </div>
+
                     <div class="mb-4">
-                      <label for="achievement-file" class="block text-sm font-medium text-gray-700">Upload File</label>
-                      <input type="file" id="achievement-file" @input="form.avatar = $event.target.files[0]"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                      <label class="block text-gray-700 font-medium mb-2">Issuer <span class="text-red-500">*</span></label>
+                      <input type="text" v-model="achievementForm.graduate_achievement_issuer"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                        placeholder="Name of the Organization or Institution" required />
                     </div>
+
+                    <div class="mb-4">
+                      <label class="block text-gray-700 font-medium mb-2"> <span class="text-red-500">*</span></label>
+                      <Datepicker v-model="achievementForm.graduate_achievement_date"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                        placeholder="Select date" required />
+                    </div>
+
+                    <div class="mb-4">
+                      <label class="block text-gray-700 font-medium mb-2">Description</label>
+                      <textarea v-model="achievementForm.graduate_achievement_description"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                        rows="3" placeholder="Describe your achievement..."></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                      <label class="block text-gray-700 font-medium mb-2">URL</label>
+                      <input type="url" v-model="achievementForm.graduate_achievement_url"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                        placeholder="e.g. https://example.com" :disabled="noCredentialUrl" />
+                    </div>
+
+                    <div class="mb-4">
+                      <label class="inline-flex items-center">
+                        <input type="checkbox" v-model="noCredentialUrl"
+                          class="form-checkbox h-5 w-5 text-indigo-600" @change="toggleUrlField" />
+                        <span class="ml-2 text-gray-700">No Credential URL</span>
+                      </label>
+                    </div>
+
+                    <div class="mb-4">
+                      <label class="block text-gray-700 mb-2">Credential Picture</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        @change="handleCredentialPictureUpload"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"/>
+                      <img
+                        v-if="achievementForm.credential_picture_url"
+                        :src="achievementForm.credential_picture_url"
+                        class="mt-2 max-w-xs rounded"
+                        alt="Credential Preview"/>
+                    </div>
+
                     <div class="flex justify-end">
                       <button type="submit"
-                        class="w-full bg-indigo-600 text-white py-2 rounded-md flex items-center justify-center">
+                      class="w-full bg-indigo-600 text-white py-2 rounded-md flex items-center justify-center">
                         <i class="fas fa-save mr-2"></i>
                         Update Achievement
                       </button>
                     </div>
-                  </form>
-                </div>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
-
 
           <!-- Testimonials Section-->
           <div v-if="activeSection === 'testimonials'" class="flex flex-col lg:flex-row">
@@ -3181,7 +3388,7 @@ onMounted(() => {
                   <div>
                     <h2 class="text-xl font-bold">{{ entry.graduate_testimonials_name }}</h2>
                     <p class="text-gray-600">{{ entry.graduate_testimonials_role_title }}</p>
-                    <p class="mt-2">{{ entry.graduate_testimonials_testimonial }}</p>
+                    <p class="mt-2">"{{ entry.graduate_testimonials_testimonial }}"</p>
                   </div>
                   <div class="absolute top-2 right-2 flex space-x-2">
                     <button class="text-gray-600" @click="openUpdateTestimonialsModal(entry, index)">
@@ -3213,19 +3420,19 @@ onMounted(() => {
                 <p class="text-gray-600 mb-4">Add a recommendation from a colleague or client</p>
                 <form @submit.prevent="addTestimonials">
                   <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Name</label>
+                    <label class="block text-gray-700 font-medium mb-2">Name <span class="text-red-500">*</span></label>
                     <input type="text" v-model="testimonials.graduate_testimonials_name"
                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                       placeholder="e.g. John Doe" required />
                   </div>
                   <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Role/Title</label>
+                    <label class="block text-gray-700 font-medium mb-2">Role/Title <span class="text-red-500">*</span></label>
                     <input type="text" v-model="testimonials.graduate_testimonials_role_title"
                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                       placeholder="e.g. Manager" required />
                   </div>
                   <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Testimonial</label>
+                    <label class="block text-gray-700 font-medium mb-2">Testimonial <span class="text-red-500">*</span></label>
                     <textarea v-model="testimonials.graduate_testimonials_testimonial"
                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                       rows="3" placeholder="Write the testimonial here..." required></textarea>
@@ -3254,19 +3461,19 @@ onMounted(() => {
                 <p class="text-gray-600 mb-4">Update a recommendation from a colleague or client</p>
                 <form @submit.prevent="updateTestimonials">
                   <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Name</label>
+                    <label class="block text-gray-700 font-medium mb-2">Name <span class="text-red-500">*</span></label>
                     <input type="text" v-model="testimonials.graduate_testimonials_name"
                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                       placeholder="e.g. John Doe" required />
                   </div>
                   <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Role/Title</label>
+                    <label class="block text-gray-700 font-medium mb-2">Role/Title <span class="text-red-500">*</span></label>
                     <input type="text" v-model="testimonials.graduate_testimonials_role_title"
                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                       placeholder="e.g. Manager" required />
                   </div>
                   <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Testimonial</label>
+                    <label class="block text-gray-700 font-medium mb-2">Testimonial <span class="text-red-500">*</span></label>
                     <textarea v-model="testimonials.graduate_testimonials_testimonial"
                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                       rows="3" placeholder="Write the testimonial here..." required></textarea>
@@ -3286,21 +3493,23 @@ onMounted(() => {
           <!-- Employment Preferences Section -->
           <div v-if="activeSection === 'employment'" class="flex flex-col lg:flex-row">
             <div class="w-full lg:w-1/1 mb-6 lg:mb-0">
-              <!-- Saved Preferences Container -->
-              <div v-if="savedPreferences" class="mb-6 p-4 border border-gray-300 rounded-lg bg-gray-50">
-                <h2 class="text-xl font-semibold mb-4">Saved Employment Preferences</h2>
-                <p><strong>Job Types:</strong> {{ savedPreferences.jobTypes.join(', ') }}</p>
-                <p><strong>Salary Expectations:</strong> {{ savedPreferences.salaryExpectations.currency }} {{
-                  savedPreferences.salaryExpectations.range }} {{ savedPreferences.salaryExpectations.frequency }}</p>
-                <p><strong>Preferred Locations:</strong> {{ savedPreferences.preferredLocations.join(', ') }}</p>
-                <p><strong>Work Environment:</strong> {{ savedPreferences.workEnvironment.join(', ') }}</p>
-                <p><strong>Availability:</strong> {{ savedPreferences.availability.join(', ') }}</p>
-                <p><strong>Additional Notes:</strong> {{ savedPreferences.additionalNotes }}</p>
-              </div>
               <div class="flex justify-between items-center mb-4">
                 <h1 class="text-xl font-semibold mb-4">Employment Preferences</h1>
               </div>
               <p class="text-gray-600 mb-6">Set your job preferences and requirements</p>
+              <!-- Saved Preferences Container -->
+              <div v-if="employmentPreferences.jobTypes.length || employmentPreferences.salaryExpectations.range || employmentPreferences.preferredLocations.length || employmentPreferences.workEnvironment.length || employmentPreferences.availability.length || employmentPreferences.additionalNotes" class="mb-6 p-4 border border-gray-300 rounded-lg bg-gray-50">
+                <h2 class="text-xl font-semibold mb-4">Saved Employment Preferences</h2>
+                <div class="space-y-3">
+                  <p><strong>Job Types:</strong> {{ employmentPreferences.jobTypes.join(', ') }}</p>
+                  <p><strong>Salary Expectations:</strong> {{ employmentPreferences.salaryExpectations.range }} {{ employmentPreferences.salaryExpectations.frequency }}</p>
+                  <p><strong>Preferred Locations:</strong> {{ employmentPreferences.preferredLocations.join(', ') }}</p>
+                  <p><strong>Work Environment:</strong> {{ employmentPreferences.workEnvironment.join(', ') }}</p>
+                  <p><strong>Availability:</strong> {{ employmentPreferences.availability.join(', ') }}</p>
+                  <p><strong>Additional Notes:</strong> {{ employmentPreferences.additionalNotes }}</p>
+                </div>
+              </div>
+              <!-- Form Fields -->
               <div class="mb-8">
                 <h2 class="text-xl font-semibold mb-4">Job Types</h2>
                 <div class="flex flex-wrap gap-2">
@@ -3317,16 +3526,11 @@ onMounted(() => {
                   <select v-model="employmentPreferences.salaryExpectations.range"
                     class="border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-indigo-600">
                     <option value="" disabled>Select expected salary range</option>
-                    <option value="below_20000">Below ₱20,000</option>
-                    <option value="20000_30000">₱20,000 - ₱30,000</option>
-                    <option value="30000_40000">₱30,000 - ₱40,000</option>
-                    <option value="40000_50000">₱40,000 - ₱50,000</option>
-                    <option value="50000_above">₱50,000 and above</option>
-                  </select>
-                  <select v-model="employmentPreferences.salaryExpectations.currency"
-                    class="border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-indigo-600">
-                    <option>PESO</option>
-                    <option>USD</option>
+                    <option value="Below ₱20,000">Below ₱20,000</option>
+                    <option value="₱20,000 - ₱30,000">₱20,000 - ₱30,000</option>
+                    <option value="₱30,000 - ₱40,000">₱30,000 - ₱40,000</option>
+                    <option value="₱40,000 - ₱50,000">₱40,000 - ₱50,000</option>
+                    <option value="₱50,000 and above">₱50,000 and above</option>
                   </select>
                   <select v-model="employmentPreferences.salaryExpectations.frequency"
                     class="border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-indigo-600">
@@ -3339,12 +3543,13 @@ onMounted(() => {
               <div class="mb-8">
                 <h2 class="text-xl font-semibold mb-4">Preferred Locations</h2>
                 <div class="flex flex-wrap gap-2">
-                  <span v-for="location in employmentPreferences.preferredLocations" :key="location"
-                    class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full">
+                  <span v-for="location in employmentPreferences.preferredLocations" :key="location" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full flex items-center">
                     {{ location }}
+                    <button @click="removePreferredLocation(location)" class="ml-2 text-red-500 hover:text-red-700">
+                      &times; <!-- This is the "X" character -->
+                    </button>
                   </span>
-                  <button class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700"
-                    @click="isAddLocationModalOpen = true">
+                  <button class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700" @click="isAddLocationModalOpen = true">
                     + Add Location
                   </button>
                 </div>
@@ -3383,7 +3588,7 @@ onMounted(() => {
                     <span class="ml-2 text-gray-700">2 weeks notice</span>
                   </label>
                   <label class="flex items-center">
-                    <input type="checkbox" value="1 month notice" v-model="employmentPreferences.availability"
+                    <input type="checkbox" value ="1 month notice" v-model="employmentPreferences.availability"
                       class="form-checkbox text-indigo-600 focus:ring-indigo-600" />
                     <span class="ml-2 text-gray-700">1 month notice</span>
                   </label>
@@ -3396,20 +3601,16 @@ onMounted(() => {
                   placeholder="Any other preferences or requirements..."></textarea>
               </div>
               <div class="flex space-x-4">
-                <button class="bg-indigo-600 text-white px-6 py-3 rounded-lg flex items-center"
-                  @click="saveEmploymentPreferences">
+                <button class="bg-indigo-600 text-white px-6 py-3 rounded-lg flex items-center" @click="saveEmploymentPreferences">
                   <i class="fas fa-save mr-2"></i> Save Preferences
                 </button>
-                <button class="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg flex items-center hover:bg-gray-400"
-                  @click="resetEmploymentPreferences">
+                <button class="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg flex items-center hover:bg-gray-400" @click="resetEmploymentPreferences">
                   <i class="fas fa-undo mr-2"></i> Reset Preferences
                 </button>
               </div>
             </div>
-
             <!-- Add Location Modal -->
-            <div v-if="isAddLocationModalOpen"
-              class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div v-if="isAddLocationModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
               <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                 <div class="flex justify-between items-center mb-4">
                   <h2 class="text-xl font-semibold">Add Location</h2>
@@ -3420,14 +3621,11 @@ onMounted(() => {
                 <p class="text-gray-600 mb-4">Add a preferred location for employment</p>
                 <form @submit.prevent="addPreferredLocation">
                   <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Location</label>
-                    <input type="text" v-model="newLocation"
-                      class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                      placeholder="e.g. New York, NY" required />
+                    <label class="block text-gray-700 font-medium mb-2">Location <span class="text-red-500">*</span></label>
+                    <input type="text" v-model="newLocation" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600" placeholder="e.g. New York, NY" required />
                   </div>
                   <div class="flex justify-end">
-                    <button type="submit"
-                      class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Add</button>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Add</button>
                   </div>
                 </form>
               </div>
@@ -3436,62 +3634,75 @@ onMounted(() => {
 
           <!-- Career Goals Section-->
           <div v-if="activeSection === 'career-goals'" class="flex flex-col lg:flex-row">
-            <div class="w-full lg:w-1/1 mb-6 lg:mb-0">
-              <!-- Saved Career Goals Container -->
-              <div v-if="savedCareerGoals" class="mb-6 p-4 border border-gray-300 rounded-lg bg-gray-50">
-                <h2 class="text-xl font-semibold mb-4">Saved Career Goals</h2>
-                <p><strong>Short-term Goals:</strong> {{ savedCareerGoals.shortTermGoals }}</p>
-                <p><strong>Long-term Goals:</strong> {{ savedCareerGoals.longTermGoals }}</p>
-                <p><strong>Industries of Interest:</strong> {{ savedCareerGoals.industriesOfInterest.join(', ') }}</p>
-                <p><strong>Career Path:</strong> {{ savedCareerGoals.careerPath }}</p>
-              </div>
-
-              <div class="flex justify-between items-center mb-4">
-                <h1 class="text-xl font-semibold mb-4">Career Goals</h1>
-              </div>
-              <p class="text-gray-600 mb-6">Define your short and long-term career aspirations</p>
-              <div class="mb-6">
-                <h2 class="text-xl font-semibold mb-2">Short-term Goals (1-2 years)</h2>
-                <textarea class="w-full p-8 border border-gray-300 rounded-lg" rows="3"
-                  v-model="careerGoals.shortTermGoals">
-                </textarea>
-              </div>
-              <div class="mb-6">
-                <h2 class="text-xl font-semibold mb-2">Long-term Goals (3-5 years)</h2>
-                <textarea class="w-full p-8 border border-gray-300 rounded-lg" rows="3"
-                  v-model="careerGoals.longTermGoals">
-                </textarea>
-              </div>
-              <div class="mb-6">
-                <h2 class="text-xl font-semibold mb-2">Industries of Interest</h2>
-                <div class="flex flex-wrap gap-2">
-                  <span v-for="industry in careerGoals.industriesOfInterest" :key="industry"
-                    class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full">
-                    {{ industry }}
+          <div class="w-full lg:w-1/1 mb-6 lg:mb-0">
+            <div class="flex justify-between items-center mb-4">
+              <h1 class="text-xl font-semibold mb-4">Career Goals</h1>
+            </div>
+            <p class="text-gray-600 mb-6">Define your short and long-term career aspirations</p>
+            <!-- Saved Career Goals Container -->
+            <div v-if="careerGoals.shortTermGoals || careerGoals.longTermGoals" class="mb-6 p-4 border border-gray-300 rounded-lg bg-gray-50">
+              <h2 class="text-xl font-semibold mb-4">Saved Career Goals</h2>
+              <div class="space-y-3">
+                <p><strong>Short-term Goals:</strong> {{ careerGoals.shortTermGoals }}</p>
+                <p><strong>Long-term Goals:</strong> {{ careerGoals.longTermGoals }}</p>
+                <p><strong>Industries of Interest:</strong> 
+                  <span v-if="careerGoals.industriesOfInterest.length">
+                    {{ careerGoals.industriesOfInterest.join(', ') }}
                   </span>
-                  <button class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700"
-                    @click="openAddIndustryModal">
-                    + Add Industry
-                  </button>
-                </div>
+                  <span v-else>No industries specified</span>
+                </p>
+                <p><strong>Career Path:</strong> {{ careerGoals.careerPath || 'Not specified' }}</p>
               </div>
-              <div class="mb-6">
-                <h2 class="text-xl font-semibold mb-2">Career Path</h2>
-                <input type="text"
-                  class="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-indigo-600"
-                  v-model="careerGoals.careerPath" placeholder="Enter your career path" />
-              </div>
-              <div class="flex space-x-4">
-                <button class="bg-indigo-600 text-white px-6 py-3 rounded-lg flex items-center"
-                  @click="saveCareerGoals">
-                  <i class="fas fa-save mr-2"></i> Save Goals
-                </button>
-                <button class="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg flex items-center hover:bg-gray-400"
-                  @click="resetCareerGoals">
-                  <i class="fas fa-undo mr-2"></i> Reset Goals
+            </div>
+            <!-- Form Fields -->
+            <div class="mb-6">
+              <h2 class="text-xl font-semibold mb-2">Short-term Goals (1-2 years)</h2>
+              <textarea 
+                class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600" 
+                rows="3"
+                v-model="careerGoals.shortTermGoals"
+                placeholder="Enter your short-term career goals...">
+              </textarea>
+            </div>
+            <div class="mb-6">
+              <h2 class="text-xl font-semibold mb-2">Long-term Goals (3-5 years)</h2>
+              <textarea 
+                class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600" 
+                rows="3"
+                v-model="careerGoals.longTermGoals"
+                placeholder="Enter your long-term career goals...">
+              </textarea>
+            </div>
+            <div class="mb-6">
+              <h2 class="text-xl font-semibold mb-2">Industries of Interest</h2>
+              <div class="flex flex-wrap gap-2">
+                <span v-for="industry in careerGoals.industriesOfInterest" :key="industry"
+                  class="bg-gray-200 text-gray-700 px-4 py-2 rounded-full">
+                  {{ industry }}
+                </span>
+                <button class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700"
+                  @click="openAddIndustryModal">
+                  + Add Industry
                 </button>
               </div>
             </div>
+            <div class="mb-6">
+              <h2 class="text-xl font-semibold mb-2">Career Path</h2>
+              <input type="text"
+                class="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-indigo-600"
+                v-model="careerGoals.careerPath" placeholder="Enter your career path" />
+            </div>
+            <div class="flex space-x-4">
+              <button class="bg-indigo-600 text-white px-6 py-3 rounded-lg flex items-center"
+                @click="savedCareerGoals">
+                <i class="fas fa-save mr-2"></i> Save Goals
+              </button>
+              <button class="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg flex items-center hover:bg-gray-400"
+                @click="resetCareerGoals">
+                <i class="fas fa-undo mr-2"></i> Reset Goals
+              </button>
+            </div>
+          </div>
 
             <!-- Add Industry Modal -->
             <div v-if="isAddIndustryModalOpen"
@@ -3506,7 +3717,7 @@ onMounted(() => {
                 <p class="text-gray-600 mb-4">Add a preferred industry of interest to your profile.</p>
                 <form @submit.prevent="addPreferredIndustry">
                   <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Industry</label>
+                    <label class="block text-gray-700 font-medium mb-2">Industry <span class="text-red-500">*</span></label>
                     <input type="text" v-model="newIndustry"
                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                       placeholder="e.g. Technology, Healthcare" required />
@@ -3552,6 +3763,11 @@ onMounted(() => {
                   <i class="fas fa-upload mr-2"></i> Upload New Resume
                 </label>
                 <input type="file" id="resume-upload" class="hidden" accept=".pdf,.doc,.docx" @change="uploadResume" />
+
+                <button v-if="resume.file" @click="saveResume"
+                  class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 text-center mt-4">
+                  <i class="fas fa-save mr-2"></i> Save Resume
+                </button>
               </div>
             </div>
           </div>

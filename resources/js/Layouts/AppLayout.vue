@@ -72,6 +72,11 @@ console.log(page.props.permissions.canManageInstitution)
                                     Dashboard
                                 </NavLink>
 
+                                <!-- Job Inbox for Graduates -->
+                                <NavLink v-if="page.props.roles.isGraduate" :href="route('job.inbox')" :active="route().current('job.inbox')" :disabled="!page.props.auth.user.is_approved">
+                                    Job Inbox
+                                </NavLink>
+
                                 <NavLink v-if="page.props.roles.isPeso"
                                     :href="route('admin.manage_users', { user: page.props.auth.user.id })"
                                     :active="route().current('admin.manage_users')">
@@ -135,6 +140,8 @@ console.log(page.props.permissions.canManageInstitution)
                                     Graduate
                                 </NavLink>
 
+                                
+
 
                                 <!-- Institution Link -->
                                 <NavLink
@@ -150,6 +157,8 @@ console.log(page.props.permissions.canManageInstitution)
                                     :active="route().current('institution.manage_users')">
                                     Manage Approval
                                 </NavLink>
+
+                            
 
                                 <!--<NavLink 
                                     v-if="sectors" 
@@ -296,15 +305,13 @@ console.log(page.props.permissions.canManageInstitution)
 
                                         <DropdownLink v-if="!page.props.roles.isGraduate" :href="route('profile.show')">
                                             Profile
-
-
                                         </DropdownLink>
 
 
                                         <DropdownLink v-if="page.props.roles.isGraduate"
                                             :href="route('profile.index', { user: page.props.auth.user.id })"
                                             :active="route().current('profile.index')">
-                                            Profile </DropdownLink>
+                                            Profile Settings </DropdownLink>
 
                                         <DropdownLink v-if="page.props.roles.isPeso" :href="route('admin.register')">
                                             Admin Registration
@@ -362,6 +369,8 @@ console.log(page.props.permissions.canManageInstitution)
                         <!-- <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                             Dashboard
                         </ResponsiveNavLink> -->
+
+                        
 
                         <ResponsiveNavLink :href="route('jobs', { user: page.props.auth.user.id })"
                             :active="route().current('jobs')">

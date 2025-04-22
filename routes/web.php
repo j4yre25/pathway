@@ -568,15 +568,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/portfolio/{id}', [PortfolioController::class, 'show']);
     Route::put('/portfolio/{id}', [PortfolioController::class, 'update']);
 
-    // JobInbox Routes
+    // JobInbox Routes - Updated to use JobInboxController
     Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/job-inbox', [JobInboxController::class, 'inbox'])->name('job.inbox');
-        Route::get('/job-opportunities', [JobInboxController::class, 'getJobOpportunities']);
-        Route::get('/job-applications', [JobInboxController::class, 'getJobApplications']);
-        Route::get('/notifications', [JobInboxController::class, 'getNotifications']);
-        Route::post('/apply-for-job', [JobInboxController::class, 'applyForJob']);
-        Route::post('/archive-job-opportunity', [JobInboxController::class, 'archiveJobOpportunity']);
-        Route::post('/mark-notification-as-read', [JobInboxController::class, 'markNotificationAsRead']);
+        Route::get('/job-inbox', [JobInboxController::class, 'index'])
+            ->name('job.inbox')
+            ->middleware(['auth', 'verified']);
+        Route::get('/job-opportunities', [JobInboxController::class, 'getJobOpportunities'])->name('job-opportunities');
+        Route::get('/job-applications', [JobInboxController::class, 'getJobApplications'])->name('job-applications');
+        Route::get('/notifications', [JobInboxController::class, 'getNotifications'])->name('notifications');
+        Route::post('/apply-for-job', [JobInboxController::class, 'applyForJob'])->name('apply-for-job');
+        Route::post('/archive-job-opportunity', [JobInboxController::class, 'archiveJobOpportunity'])->name('archive-job-opportunity');
+        Route::post('/mark-notification-as-read', [JobInboxController::class, 'markNotificationAsRead'])->name('mark-notification-as-read');
     });
   
 });
@@ -592,7 +594,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/certifications', [ProfileController::class, 'updateCertifications'])->name('profile.certifications');
     Route::put('/profile/achievements', [ProfileController::class, 'updateAchievements'])->name('profile.achievements');
     Route::put('/profile/testimonials', [ProfileController::class, 'updateTestimonials'])->name('profile.testimonials');
-    Route::put('/profile/employment-preferences', [ProfileController::class, 'updateEmploymentPreferences'])->name('profile.employment-preferences');
     Route::put('/profile/career-goals', [ProfileController::class, 'updateCareerGoals'])->name('profile.career-goals');
     Route::put('/profile/resume', [ProfileController::class, 'updateResume'])->name('profile.resume');
 });
@@ -608,14 +609,17 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile/education/{id}', [ProfileController::class, 'removeEducation'])->name('education.remove');
 
     // Experience Routes
-    Route::post('/profile/experiences', [ProfileController::class, 'addExperience'])->name('experience.add');
-    Route::put('/profile/experiences/{id}', [ProfileController::class, 'updateExperience'])->name('experience.update');
-    Route::delete('/profile/experiences/{id}', [ProfileController::class, 'removeExperience'])->name('experience.remove');
+    Route::post('/profile/experiences', [ProfileController::class, 'addExperience'])->name('experience.addExperience');
+    Route::put('/profile/experiences/{id}', [ProfileController::class, 'updateExperience'])->name('experience.updateExperience');
+    Route::delete('/profile/experiences/{id}', [ProfileController::class, 'removeExperience'])->name('experience.remove c');
 
     // Project Routes
-    Route::post('/profile/projects', [ProfileController::class, 'addProject'])->name('projects.add');
-    Route::put('/profile/projects/{id}', [ProfileController::class, 'updateProject'])->name('projects.update');
-    Route::delete('/profile/projects/{id}', [ProfileController::class, 'removeProject'])->name('projects.remove');
+    Route::prefix('profile/projects')->group(function () {
+        // Add these project routes
+        Route::post('/projects/add', [ProfileController::class, 'addProject'])->name('projects.add');
+        Route::put('/projects/{id}', [ProfileController::class, 'updateProject'])->name('projects.update');
+        Route::delete('/projects/{id}', [ProfileController::class, 'removeProject'])->name('projects.remove');
+    });
 
     // Skill Routes
     Route::post('/profile/skills', [ProfileController::class, 'addSkill'])->name('skills.add');
@@ -630,7 +634,7 @@ Route::middleware(['auth'])->group(function () {
     // Achievement Routes
     Route::post('/profile/achievements', [ProfileController::class, 'addAchievement'])->name('achievements.add');
     Route::put('/profile/achievements/{id}', [ProfileController::class, 'updateAchievement'])->name('achievements.update');
-    Route::delete('/profile/achievements/{id}', [ProfileController::class, 'removeAchievement'])->name('achievements.remove');
+    Route::delete('/profile/achievements/{id}', [ProfileController::class, 'deleteAchievement'])->name('achievements.delete');
 
     // Testimonial Routes
     Route::post('/profile/testimonials', [ProfileController::class, 'addTestimonial'])->name('testimonials.add');
@@ -638,12 +642,21 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile/testimonials/{id}', [ProfileController::class, 'removeTestimonial'])->name('testimonials.remove');
 
     // Employment Preferences Routes
-    // Route::post('/profile/employment-preferences', [EmploymentPreferencesController::class, 'updateEmploymentPreferences'])->name('employment.preferences.update');
+    Route::post('/profile/employment-preferences', [ProfileController::class, 'updateEmploymentPreferences'])->name('employment.preferences.updateEmploymentPreferences');
+    Route::post('/employment-preferences/save', [ProfileController::class, 'saveEmploymentPreferences'])->name('employment.preferences.save');
+    Route::post('/employment-references/save', [ProfileController::class, 'saveEmploymentReference'])->name('employment.references.save');
+    Route::get('/employment-references', [ProfileController::class, 'getEmploymentReference'])->name('employment.references.get');
 
     // Career Goals Routes
     Route::post('/profile/career-goals', [ProfileController::class, 'saveCareerGoals'])->name('career.goals.save');
+    Route::post('/career-goals/add-industry', [ProfileController::class, 'addIndustry'])->name('career.goals.add.industry');
+    Route::post('/career-goals/save', [ProfileController::class, 'saveCareerGoals'])->name('career.goals.save');
+    Route::get('/career-goals', [ProfileController::class, 'getCareerGoals'])->name('career.goals.get');
 
     // Resume Routes
-    Route::post('/profile/resume', [ProfileController::class, 'uploadResume'])->name('resume.upload');
-    Route::delete('/profile/resume', [ProfileController::class, 'removeResume'])->name('resume.remove');
+    Route::post('/resume/upload', [ProfileController::class, 'uploadResume'])->name('resume.upload');
+    Route::delete('/resume/delete', [ProfileController::class, 'deleteResume'])->name('resume.delete');
+    Route::post('/upload', [ProfileController::class, 'uploadFile']);
+    Route::get('/file/{filename}', [ProfileController::class, 'getFile']);
+    Route::delete('/file/{filename}', [ProfileController::class, 'deleteFile']);
 });
