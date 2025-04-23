@@ -7,18 +7,46 @@ import PrimaryButton from '@/Components/PrimaryButton.vue'
 import FormSection from '@/Components/FormSection.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
- import InputError from '@/Components/InputError.vue';
+import InputError from '@/Components/InputError.vue';
 import { useForm } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import MyJobs from './MyJobs.vue'
 import ManageJobs from './ManageJobs.vue'
-
+import { ref, computed } from 'vue';
 
 const page = usePage()
 
-const props = defineProps ({
-    jobs: Array
+const props = defineProps({
+    jobs: Array,
+    sectors: Array,
+    categories: Array,
 })
+
+const searchQuery = ref('');
+const selectedSector = ref('');
+const selectedCategory = ref('');
+
+console.log(props.jobs);
+
+const filteredJobs = computed(() => {
+    console.log('Selected Sector:', selectedSector.value);
+    console.log('Selected Category:', selectedCategory.value);
+
+    return props.jobs.filter(job => {
+        const matchesSearch = job.job_title.toLowerCase().includes(searchQuery.value.toLowerCase());
+        const matchesSector = selectedSector.value
+            ? job.sector_id === parseInt(selectedSector.value)
+            : true;
+        const matchesCategory = selectedCategory.value
+            ? job.category_id === parseInt(selectedCategory.value)
+            : true;
+
+        console.log('Job:', job, 'Matches Search:', matchesSearch, 'Matches Sector:', matchesSector, 'Matches Category:', matchesCategory);
+
+        return matchesSearch && matchesSector && matchesCategory;
+    });
+});
+
 
 console.log('User ID:', page.props);
 
@@ -29,51 +57,82 @@ const form = useForm({
     to_datetime: '',
     location: ''
 });
-
+// console.log(route('jobs.list'));
+console.log(route('jobs.manage', { user: page.props.auth.user.id }));
 
 
 </script>
 
 
 <template>
-    <AppLayout title ="Jobs">
+    <AppLayout title="Jobs">
         <template #header>
             Jobs
         </template>
-        
+
 
 
         <Container class="py-4">
 
 
-            <!-- <PrimaryButton @click="createJob()" class="">Post Job</PrimaryButton> --> 
+            <!-- <PrimaryButton @click="createJob()" class="">Post Job</PrimaryButton> -->
             <div class="flex space-x-2">
                 <div class="mt-8">
                     <Link :href="route('jobs.create', { user: page.props.auth.user.id })">
-                        <PrimaryButton class="mr-2">Post Jobs</PrimaryButton>
+                    <PrimaryButton class="mr-2">Post Jobs</PrimaryButton>
                     </Link>
                 </div>
 
                 <div class="mt-8">
-                    
+
                     <Link :href="route('jobs.manage', { user: page.props.auth.user.id })">
-                        <PrimaryButton class="mr-2">Manage Posted Jobs</PrimaryButton>
+                    <PrimaryButton class="mr-2">Manage Posted Jobs</PrimaryButton>
                     </Link>
                 </div>
+
+                <div class="mt-8">
+
+                    <Link :href="route('jobs.archivedlist', { user: page.props.auth.user.id })">
+                    <PrimaryButton class="mr-2">Archived Jobs</PrimaryButton>
+                    </Link>
+                </div>
+
+            </div>
+
+            <div class="flex items-center mb-4 space-x-4">
+                <!-- Search Input -->
+                <input v-model="searchQuery" type="text" placeholder="Search jobs..."
+                    class="border border-gray-300 rounded px-4 py-2" />
+
+                <!-- Sector Dropdown -->
+                <select v-model="selectedSector" class="border border-gray-300 rounded px-4 py-2">
+                    <option value="">All Sectors</option>
+                    <option v-for="sector in sectors" :key="sector" :value="sector">
+                        {{ sector }}
+                    </option>
+                </select>
+
+                <!-- Category Dropdown -->
+                <select v-model="selectedCategory" class="border border-gray-300 rounded px-4 py-2">
+                    <option value="">All Categories</option>
+                    <option v-for="category in categories" :key="category" :value="category">
+                        {{ category }}
+                    </option>
+                </select>
             </div>
 
 
             <div class="mt-8">
-                <MyJobs :jobs="jobs" />
+                <MyJobs :jobs="filteredJobs" />
             </div>
 
- 
+
         </Container>
 
-  
 
-     
+
+
 
     </AppLayout>
- 
+
 </template>

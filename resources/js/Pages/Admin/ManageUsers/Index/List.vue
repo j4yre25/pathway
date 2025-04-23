@@ -32,17 +32,38 @@ const filters = ref({
 
 
 const applyFilters = () => {
-    console.log('Filters:', filters.value);
+    const activeFilters = {};
 
-    router.get(route('admin.manage_users.list'), filters.value, { preserveState: true });
+    if (filters.value.role !== 'all') {
+        activeFilters.role = filters.value.role;
+    }
+    if (filters.value.date_from) {
+        activeFilters.date_from = filters.value.date_from;
+    }
+    if (filters.value.date_to) {
+        activeFilters.date_to = filters.value.date_to;
+    }
+    if (filters.value.status !== 'all') {
+        activeFilters.status = filters.value.status;
+    }
+
+    console.log('Active Filters:', activeFilters);
+
+    router.get(route('admin.manage_users.list'), activeFilters, { preserveState: true });
 };
 
 
 const filteredUsers = computed(() => {
-    if (filters.value.role === 'all') {
-        return props.all_users;
-    }
-    return props.all_users.filter(user => user.role === filters.value.role);
+    return props.all_users.filter(user => {
+        const matchesRole = filters.value.role === 'all' || user.role === filters.value.role;
+        const matchesDateFrom = !filters.value.date_from || new Date(user.created_at) >= new Date(filters.value.date_from);
+        const matchesDateTo = !filters.value.date_to || new Date(user.created_at) <= new Date(filters.value.date_to);
+        const matchesStatus = filters.value.status === 'all' || 
+            (filters.value.status === 'active' && user.is_approved) || 
+            (filters.value.status === 'inactive' && !user.is_approved);
+
+        return matchesRole && matchesDateFrom && matchesDateTo && matchesStatus;
+    });
 });
 
 const showModal = ref(false);
@@ -56,7 +77,7 @@ const showModal = ref(false);
 
 
 <template>
-    <AppLayout title="Manage Users">
+    <AppLayout title="List Of Users">
         <template #header>
             List of Users
 

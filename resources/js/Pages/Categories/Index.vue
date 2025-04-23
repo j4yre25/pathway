@@ -34,6 +34,10 @@ console.log('Sectors:', sectors); // Debugging
                 <Link :href="route('categories.list')" class="mr-2">
                 <PrimaryButton>List of Categories</PrimaryButton>
                 </Link>
+
+                <Link :href="route('categories.archivedlist')" class="mr-2">
+                <PrimaryButton>Archived Categories</PrimaryButton>
+                </Link>
             </div>
 
             <div class="mt-8">

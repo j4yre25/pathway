@@ -62,11 +62,12 @@ const createSector = () => {
                 <PrimaryButton class="mr-2">All Sectors</PrimaryButton>
               </Link>
 
-              
-              <Link :href="route('categories.create')" class="mr-2">
-                    <PrimaryButton>Add Categories</PrimaryButton>
+              <Link class ="ml-2" v-if="page.props.roles.isPeso" :href="route('sectors.archivedlist', { user: page.props.auth.user.id })"
+                    :active="route().current('sectors.archivedlist', { user: page.props.auth.user.id })">
+                <PrimaryButton>Archived Sectors</PrimaryButton>
                 </Link>
 
+       
            
         
         

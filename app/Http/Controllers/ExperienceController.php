@@ -21,7 +21,7 @@ class ExperienceController extends Controller
         ]);
 
         $experience = new Experience($request->all());
-        $experience->user_id = auth()->id(); // Assuming you have a user_id field
+        // $experience->user_id = auth()->id(); // Assuming you have a user_id field
         $experience->save();
 
         return response()->json(['message' => 'Experience added successfully.']);

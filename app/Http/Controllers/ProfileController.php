@@ -1,3 +1,4 @@
+
 <?php
 
 namespace App\Http\Controllers;
@@ -741,3 +742,4 @@ class ProfileController extends Controller
         return response()->file($path);
     }
 }
+

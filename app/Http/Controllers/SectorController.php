@@ -47,6 +47,19 @@ class SectorController extends Controller
 
         
     }
+
+    public function archivedlist()
+    {
+
+
+        $all_sectors = Sector::with('user')->onlyTrashed()->get();
+
+        return Inertia::render('Sectors/ArchivedList', [
+            'all_sectors' => $all_sectors
+
+
+        ]);
+    }
     
     public function create(User $user) {
 
@@ -104,6 +117,15 @@ class SectorController extends Controller
      
         return Redirect(route('sectors', ['user' => $user_id]))->with('flash.banner', 'Sector archived successfully.');
         
+    }
+
+    public function restore($sector)
+    {
+        $sector = Sector::withTrashed()->findOrFail($sector);
+
+        $sector->restore();
+
+        return redirect()->back()->with('flash.banner', 'Sector restored successfully.');
     }
     
 }
