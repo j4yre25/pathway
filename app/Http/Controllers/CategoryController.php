@@ -17,6 +17,7 @@ class CategoryController extends Controller
     public function index() {
         $sectors = Sector::all(); // Fetch all sectors
         $categories = Category::all(); // Fetch all categories
+        
     
         return Inertia::render('Categories/Index', [
             'sectors' => $sectors,
@@ -53,6 +54,24 @@ class CategoryController extends Controller
         ]);
     }
 
+    public function archivedlist()
+    {
+        // Fetch archived categories with their related sector and user
+        $all_categories = Category::onlyTrashed()
+            ->with(['sector', 'user']) // Eager load both sector and user relationships
+            ->get();
+    
+        // Map the sector name and user name to each category
+        $all_categories->transform(function ($category) {
+            $category->sectorName = $category->sector->name ?? 'Unknown';
+            $category->userName = $category->user->peso_first_name ?? 'Unknown'; // Add user name
+            return $category;
+        });
+    
+        return Inertia::render('Categories/ArchivedList', [
+            'all_categories' => $all_categories
+        ]);
+    }
     
     public function create(Sector $sector) {
         $sectors = Sector::all();
@@ -106,6 +125,15 @@ class CategoryController extends Controller
 
         return redirect()->route('categories.index', ['sector' => $category->sector_id])->with('flash.banner', 'Category deleted successfully.');
     }
+
+    public function restore($category) {
+        $category = Category::withTrashed()->findOrFail($category);
+
+        $category->restore();
+
+        return redirect()->back()->with('flash.banner', 'Category restored successfully.');
+    }
+
 }
 
 

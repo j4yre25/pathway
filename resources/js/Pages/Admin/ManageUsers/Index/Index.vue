@@ -76,6 +76,10 @@ const open = ref(false)
                     :active="route().current('admin.manage_users.list')">
                 <PrimaryButton>List Of Users</PrimaryButton>
                 </Link>
+                <Link class ="ml-2" v-if="page.props.roles.isPeso" :href="route('admin.manage_users.archivedlist')"
+                    :active="route().current('admin.manage_users.archivedlist')">
+                <PrimaryButton>Archived Users</PrimaryButton>
+                </Link>
             </div>
             <div class="overflow-x-auto">
 
@@ -83,7 +87,6 @@ const open = ref(false)
                 <table class="min-w-full bg-white border border-gray-200">
                     <thead>
                         <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                            <th class="border border-gray-200 px-6 py-3 text-left">ID</th>
                             <th class="border border-gray-200 px-6 py-3 text-left">Role</th>
                             <th class="border border-gray-200 px-6 py-3 text-left">Name</th>
                             <th class="border border-gray-200 px-6 py-3 text-left">Email</th>
@@ -94,7 +97,6 @@ const open = ref(false)
                     <tbody class="text-gray-600 text-sm font-light">
                         <tr v-for="user in all_users.filter(u => u.role === 'company' || u.role === 'institution')"
                             :key="user.id" class="border-b border-gray-200 hover:bg-gray-100">
-                            <td class="border border-gray-200 px-6 py-4">{{ user.id }}</td>
                             <td class="border border-gray-200 px-6 py-4">{{ user.role }}</td>
                             <td class="border border-gray-200 px-6 py-4">
                                 <!-- Conditionally display the name based on role -->

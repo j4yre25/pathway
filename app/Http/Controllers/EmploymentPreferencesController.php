@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class EmploymentPreferencesController extends Controller
 {
@@ -19,8 +20,18 @@ class EmploymentPreferencesController extends Controller
             'additionalNotes' => 'nullable|string',
         ]);
 
-        $user = auth()->user();
-        $user->employmentPreferences()->update($request->all()); // Assuming you have a relationship set up
+        $user = Auth::user();
+        $employmentPreferences = $user->employmentPreferences()->firstOrNew(); // Get existing or create new
+
+        // Map request data to the model's attributes
+        $employmentPreferences->job_types = json_encode($request->jobTypes);
+        $employmentPreferences->salary_expectations = json_encode($request->salaryExpectations); // Store as JSON
+        $employmentPreferences->preferred_locations = json_encode($request->preferredLocations);
+        $employmentPreferences->work_environment = json_encode($request->workEnvironment);
+        $employmentPreferences->availability = json_encode($request->availability);
+        $employmentPreferences->additional_notes = $request->additionalNotes;
+
+        $employmentPreferences->save(); // Save the model
 
         return response()->json(['message' => 'Employment preferences updated successfully.']);
     }

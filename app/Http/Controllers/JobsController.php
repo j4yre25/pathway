@@ -22,12 +22,17 @@ class JobsController extends Controller
 
 
         $jobs = $user->jobs;
+        $sectors = \App\Models\Sector::pluck('name'); // Fetch all sector names
+        $categories = \App\Models\Category::pluck('name'); // Fetch all category names
         return Inertia::render('Jobs/Index/Index', [
-            'jobs' => $jobs
+            'jobs' => $jobs,
+            'sectors' => $sectors, // Array of sectors
+            'categories' => $categories,
         ]);
 
         
     }
+
 
     
     public function create(User $user) {
@@ -37,6 +42,19 @@ class JobsController extends Controller
         return Inertia::render('Jobs/Index/CreateJobs', [
             'sectors' => $sectors,
     ]);
+    }
+
+    public function archivedlist(User $user)
+    {
+
+
+        $all_jobs = Job::with('user')->onlyTrashed()->get();
+
+        return Inertia::render('Jobs/Index/ArchivedList', [
+            'all_jobs' => $all_jobs
+
+
+        ]);
     }
 
     public function manage(User $user) {
@@ -218,6 +236,15 @@ class JobsController extends Controller
         }
 
         return back()->with('flash.banner', count($matchedGraduates) . ' graduates invited successfully.');
+    }
+
+    public function restore($job)
+    {
+        $job = Job::withTrashed()->findOrFail($job);
+
+        $job->restore();
+
+        return redirect()->back()->with('flash.banner', 'Job restored successfully.');
     }
     
 }
