@@ -212,31 +212,26 @@ class JobsController extends Controller
 
 
     public function autoInvite(Job $job)
-    {
-        // Decode required skills from the job
-        $jobSkills = json_decode($job->skills, true);
+{
+    // Get all graduates who have a graduate profile
+    $allGraduates = User::where('role', 'graduate')
+        // ->whereHas('graduate') 
+        ->get();
 
-        // Find graduates that match job's course/category/skills
-        $matchedGraduates = User::where('role', 'graduate')
-            ->whereHas('graduateProfile', function ($query) use ($jobSkills) {
-                $query->where(function ($q) use ($jobSkills) {
-                    $q->whereJsonContains('skills', $jobSkills);
-                });
-            })->get();
-
-        foreach ($matchedGraduates as $graduate) {
-            JobInvitation::updateOrCreate([
-                'job_id' => $job->id,
-                'graduate_id' => $graduate->id,
-            ], [
-                'company_id' => auth()->id(),
-                'status' => 'pending',
-                'message' => 'You have been invited to apply based on your profile match.',
-            ]);
-        }
-
-        return back()->with('flash.banner', count($matchedGraduates) . ' graduates invited successfully.');
+    foreach ($allGraduates as $graduate) {
+        JobInvitation::updateOrCreate([
+            'job_id' => $job->id,
+            'graduate_id' => $graduate->id,
+        ], [
+            'company_id' => auth()->id(),
+            'status' => 'pending',
+            'message' => 'You have been invited to apply to this job opportunity.',
+        ]);
     }
+
+    return back()->with('flash.banner', count($allGraduates) . ' graduates invited successfully.');
+}
+
 
     public function restore($job)
     {
