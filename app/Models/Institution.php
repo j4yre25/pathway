@@ -13,7 +13,6 @@ class Institution extends Model
         'school_year_range',
         'term',
         'program_id', // Change this to program_id
-        'career_opportunities', // This should be removed if you are not using it
     ];
 
     public function graduates()

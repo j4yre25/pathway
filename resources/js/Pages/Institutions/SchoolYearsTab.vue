@@ -121,7 +121,7 @@ const submitForm = () => {
 
 // Filter change
 const applyFilter = () => {
-  router.get(route('school-years.index'), {
+  router.get(route('school-years'), {
     status: filter.value
   }, { preserveState: true })
 }
