@@ -189,7 +189,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('/jobs/edit/{job}', [JobsController::class, 'delete'])
     ->name('jobs.delete');
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('/jobs/{job}/auto-invite', [JobsController::class, 'autoInvite'])
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('/jobs/{job}/auto-invite', [JobsController::class, 'autoInvite'])
 ->name('jobs.auto-invite');
 
 Route::post('/jobs/edit/{job}', [JobsController::class, 'restore'])->name('jobs.restore');

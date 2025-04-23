@@ -1,7 +1,7 @@
 <script setup>
 import Container from '@/Components/Container.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { computed } from 'vue';
+import { router } from '@inertiajs/vue3'; 
 
 const props = defineProps({
   job: Object,
@@ -15,7 +15,14 @@ const jobSkills = Array.isArray(props.job.skills)
     ? props.job.skills.replace(/[\[\]"]+/g, '').split(',').map(s => s.trim()).filter(s => s)
     : [];
 
-    
+const inviteMatchedGraduates = (jobId) => {
+if (confirm("Invite all matched graduates for this job?")) {
+    router.post(route('jobs.auto-invite', jobId), {}, {
+        onSuccess: () => alert("Graduates invited successfully!"),
+        onError: () => alert("Something went wrong."),
+    });
+  }
+};
 
 </script>
 
@@ -59,7 +66,11 @@ const jobSkills = Array.isArray(props.job.skills)
             <!-- CTA Buttons -->
             <div class="space-y-2">
               <div class="flex flex-col space-y-2">
-                <button class="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700">Invite Match Graduates</button>
+                <button 
+                  class="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
+                  @click="inviteMatchedGraduates(job.id)">
+                    Invite Match Graduates
+                </button>
               </div>
             </div>
           </div>
