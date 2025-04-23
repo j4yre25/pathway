@@ -1,432 +1,356 @@
 <script setup>
-import { ref } from 'vue';
+import Graduate from '@/Layouts/AppLayout.vue';
+import Modal from '@/Components/Modal.vue';
+import { ref, onMounted, computed } from 'vue';
+import { useForm, usePage, Link, router } from '@inertiajs/vue3';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import InputError from '@/Components/InputError.vue';
+import TextArea from '@/Components/TextArea.vue';
+import SelectInput from '@/Components/SelectInput.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import '@fortawesome/fontawesome-free/css/all.css';
 
-// Reactive data
-const activeSection = ref('opportunities');
-const newJobPostings = ref(2); 
-
-// Method to set the active section
+// State Management
+const activeSection = ref(localStorage.getItem('activeSection') || 'opportunities');
 const setActiveSection = (section) => {
-  activeSection.value = section;
+    activeSection.value = section;
+    localStorage.setItem('activeSection', section);
 };
+
+// Modal States
+const isViewDetailsModalOpen = ref(false);
+const selectedApplication = ref(null);
+
+// Props and Page Data
+const { props } = usePage();
+
+// Forms for data management
+const opportunitiesForm = useForm({
+    opportunities: props.jobOpportunities || [],
+    loading: false
+});
+
+const applicationsForm = useForm({
+    applications: props.jobApplications || [],
+    loading: false
+});
+
+const notificationsForm = useForm({
+    notifications: props.notifications || [],
+    loading: false
+});
+
+// Computed Properties
+const activeApplications = computed(() => applicationsForm.applications.filter(app => app.status !== 'archived'));
+const interviewScheduled = computed(() => applicationsForm.applications.filter(app => app.status === 'interview_scheduled'));
+const totalApplications = computed(() => applicationsForm.applications.length);
+const offersReceived = computed(() => applicationsForm.applications.filter(app => app.status === 'offer_received'));
+
+// Apply for a job
+const applyForm = useForm({ job_id: null });
+const applyForJob = (jobId) => {
+    applyForm.job_id = jobId;
+    applyForm.post(route('apply-for-job'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            opportunitiesForm.get(route('job-opportunities'));
+            applicationsForm.get(route('job-applications'));
+        }
+    });
+};
+
+// Archive a job opportunity
+const archiveForm = useForm({ job_id: null });
+const archiveJobOpportunity = (jobId) => {
+    archiveForm.job_id = jobId;
+    archiveForm.post(route('archive-job-opportunity'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            opportunitiesForm.get(route('job-opportunities'));
+        }
+    });
+};
+
+// Mark notification as read
+const notificationForm = useForm({ notification_id: null });
+const markNotificationAsRead = (notificationId) => {
+    notificationForm.notification_id = notificationId;
+    notificationForm.post(route('mark-notification-as-read'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            notificationsForm.get(route('notifications'));
+        }
+    });
+};
+
+// Initialize data when component mounts
+onMounted(() => {
+    opportunitiesForm.get(route('job-opportunities'));
+    applicationsForm.get(route('job-applications'));
+    notificationsForm.get(route('notifications'));
+});
 </script>
 
 <template>
-    <div class="bg-gray-100 min-h-screen p-6">
-        <div class="container mx-auto">
-        <h1 class="text-3xl font-bold mb-4">Job Inbox</h1>
-        <p class="text-gray-600 mb-6">View and manage job opportunities and applications</p>
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex border-b border-gray-200 mb-6">
-            <button 
-                class="py-2 px-4" 
-                :class="{'text-purple-600 border-b-2 border-purple-600': activeSection === 'opportunities'}"
-                @click="setActiveSection('opportunities')"
-            >
-                Opportunities
-            </button>
-            <button 
-                class="py-2 px-4" 
-                :class="{'text-purple-600 border-b-2 border-purple-600': activeSection === 'applications'}"
-                @click="setActiveSection('applications')"
-            >
-                Applications
-            </button>
-            <button 
-            class="py-2 px-4 relative" 
-            :class="{'text-purple-600 border-b-2 border-purple-600': activeSection === 'notifications'}"
-            @click="setActiveSection('notifications')"
-          >
-            Notifications
-            <!-- Notification Badge -->
-            <span 
-              v-if="newJobPostings > 0" 
-              class="absolute top-0 right-0 mt-1 mr-1 bg-red-500 text-white text-xs rounded-full px-1.5"
-            >
-              {{ newJobPostings }}
-            </span>
-          </button>
-        </div>
-
-        <!-- Filter and Notification Bell Icons -->
-        <div class="flex items-center space-x-4 mb-6">
-          <!-- Filter Button -->
-          <button class="relative px-4 py-2 bg-white rounded-md shadow-sm text-gray-700 font-medium">
-            <i class="fas fa-filter"></i> Filter
-          </button>
-          <!-- Notification Bell Button -->
-          <button 
-            class="relative px-4 py-2 bg-white rounded-md shadow-sm text-gray-700 font-medium"
-            @click="setActiveSection('notifications')"
-          >
-            <i class="fas fa-bell"></i>
-            <!-- Notification Badge -->
-            <span 
-              v-if="newJobPostings > 0" 
-              class="absolute top-0 right-0 mt-1 mr-1 bg-red-500 text-white text-xs rounded-full px-1.5"
-            >
-              {{ newJobPostings }}
-            </span>
-          </button>
-        </div>
-
-            <!-- Opportunities Section -->
-            <div v-if="activeSection === 'opportunities'">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 space-y-4">
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                    <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold">Senior Full Stack Developer <span class="ml-2 text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full">New</span></h2>
-                    <div class="text-right">
-                        <span class="text-2xl font-bold text-purple-600">92%</span>
-                        <p class="text-sm text-gray-500">Match</p>
+    <Graduate>
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
+                    <div class="border-b border-gray-200">
+                        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                            <button
+                                @click="setActiveSection('opportunities')"
+                                :class="[
+                                    activeSection === 'opportunities'
+                                        ? 'border-indigo-500 text-indigo-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                                    'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                                ]"
+                            >
+                                Opportunities
+                            </button>
+                            <button
+                                @click="setActiveSection('applications')"
+                                :class="[
+                                    activeSection === 'applications'
+                                        ? 'border-indigo-500 text-indigo-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                                    'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                                ]"
+                            >
+                                Applications
+                            </button>
+                            <button
+                                @click="setActiveSection('notifications')"
+                                :class="[
+                                    activeSection === 'notifications'
+                                        ? 'border-indigo-500 text-indigo-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                                    'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm relative'
+                                ]"
+                            >
+                                Notifications
+                                <span v-if="notificationsForm.notifications.length" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                    {{ notificationsForm.notifications.length }}
+                                </span>
+                            </button>
+                        </nav>
                     </div>
-                    </div>
-                    <p class="text-gray-600 mb-2">Tech Innovations Inc.</p>
-                    <div class="flex items-center text-gray-600 mb-2">
-                    <i class="fas fa-map-marker-alt mr-2"></i> San Francisco, CA (Remote)
-                    </div>
-                    <div class="flex items-center text-gray-600 mb-2">
-                    <i class="fas fa-dollar-sign mr-2"></i> $120,000 - $160,000
-                    </div>
-                    <div class="flex items-center text-gray-600 mb-2">
-                    <i class="fas fa-clock mr-2"></i> Full-time
-                    </div>
-                    <div class="flex items-center text-gray-600 mb-4">
-                    <i class="fas fa-calendar-alt mr-2"></i> Posted 2 days ago
-                    </div>
-                    <p class="text-gray-700 mb-4">We are looking for a senior full stack developer to join our team and help build innovative solutions for our clients. The ideal candidate will have experience with React, Node.js, and cloud technologies.</p>
-                    <div class="flex space-x-4">
-                    <button class="px-4 py-2 bg-purple-600 text-white rounded-md">View</button>
-                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md">Apply</button>
-                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md">Archive</button>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
-                    <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold">Frontend Developer <span class="ml-2 text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Viewed</span></h2>
-                    <div class="text-right">
-                        <span class="text-2xl font-bold text-purple-600">86%</span>
-                        <p class="text-sm text-gray-500">Match</p>
-                    </div>
-                    </div>
-                    <p class="text-gray-600 mb-2">Digital Solutions LLC</p>
-                    <div class="flex items-center text-gray-600 mb-2">
-                    <i class="fas fa-map-marker-alt mr-2"></i> New York, NY (Hybrid)
-                    </div>
-                    <div class="flex items-center text-gray-600 mb-2">
-                    <i class="fas fa-dollar-sign mr-2"></i> $90,000 - $120,000
-                    </div>
-                    <div class="flex items-center text-gray-600 mb-2">
-                    <i class="fas fa-clock mr-2"></i> Full-time
-                    </div>
-                    <div class="flex items-center text-gray-600 mb-4">
-                    <i class="fas fa-calendar-alt mr-2"></i> Posted 1 week ago
-                    </div>
-                    <p class="text-gray-700 mb-4">Join our frontend team to create beautiful and responsive interfaces for our enterprise clients. Experience with React, TypeScript, and modern CSS frameworks required.</p>
-                    <div class="flex space-x-4">
-                    <button class="px-4 py-2 bg-purple-600 text-white rounded-md">View</button>
-                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md">Apply</button>
-                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md">Archive</button>
-                    </div>
-                </div>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-bold mb-4">Inbox Summary</h2>
-                <p class="text-gray-600 mb-4">Overview of your job opportunities</p>
-                <div class="flex justify-between items-center mb-4">
-                    <div class="text-center">
-                    <i class="fas fa-briefcase text-2xl text-purple-600 mb-2"></i>
-                    <p class="text-lg font-bold">5</p>
-                    <p class="text-gray-600">Total Jobs</p>
-                    </div>
-                    <div class="text-center">
-                    <i class="fas fa-bell text-2xl text-green-600 mb-2"></i>
-                    <p class="text-lg font-bold">2</p>
-                    <p class="text-gray-600">New</p>
-                    </div>
-                </div>
-                <h3 class="text-lg font-bold mb-2">Match Breakdown</h3>
-                <div class="mb-2">
-                    <p class="text-gray-600">Very High (90%+)</p>
-                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-                    <div class="bg-green-500 h-2.5 rounded-full" style="width: 40%"></div>
-                    </div>
-                </div>
-                <div class="mb-2">
-                    <p class="text-gray-600">High (80-89%)</p>
-                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-                    <div class="bg-blue-500 h-2.5 rounded-full" style="width: 40%"></div>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <p class="text-gray-600">Medium (70-79%)</p>
-                    <div class="w-full bg-gray-2 00 rounded-full h-2.5 mb-2">
-                    <div class="bg-orange-500 h-2.5 rounded-full" style="width: 20%"></div>
-                    </div>
-                </div>
-                <h3 class="text-lg font-bold mb-2">Job Type Preferences</h3>
-                <div class="flex flex-wrap gap-2">
-                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md">Full-time</button>
-                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md">Remote</button>
-                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md">Hybrid</button>
-                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md">Contract</button>
-                </div>
-                </div>
-            </div>
-            </div>
-        </div>
-
-        <!-- Applications Section -->
-        <div v-if="activeSection === 'applications'">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 space-y-4">
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold mb-4">Your Applications</h2>
-                    <div class="bg-gray-100 text-gray-800">
-                    <div class="container mx-auto p-4">
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        <div class="lg:col-span-2">
-                            <div class="bg-white p-4 rounded-lg shadow">
-                            <h2 class="text-xl font-semibold mb-4">Application Status Tracking</h2>
-                            <p class="text-gray-600 mb-4">Track the progress of your job applications</p>
-                            <div class="bg-purple-100 p-4 rounded-lg mb-4">
-                                <div class="flex justify-between items-center mb-2">
+                    
+                    <div class="mt-6">
+                        <div class="max-w-[1280px] mx-auto px-4 py-6">
+                            <header class="flex justify-between items-center pb-3 mb-6">
                                 <div>
-                                    <h3 class="text-lg font-semibold">Senior Full Stack Developer</h3>
-                                    <p class="text-gray-600">Tech Innovations Inc.</p>
+                                    <h1 class="text-lg font-extrabold leading-6">
+                                        {{ activeSection === 'opportunities' ? 'Job Opportunities' :
+                                           activeSection === 'applications' ? 'My Applications' :
+                                           'Notifications' }}
+                                    </h1>
+                                    <p class="text-xs text-[#374151] mt-1">
+                                        {{ activeSection === 'opportunities' ? 'Browse and apply for available positions' :
+                                           activeSection === 'applications' ? 'Track your job applications' :
+                                           'Stay updated with your application status' }}
+                                    </p>
                                 </div>
-                                <a href="#" class="text-purple-600">Details</a>
+                                <div class="flex items-center space-x-3">
+                                    <button
+                                        v-if="activeSection !== 'notifications'"
+                                        type="button"
+                                        class="flex items-center gap-1 text-xs text-[#374151] border border-[#d1d5db] rounded px-3 py-[6px] hover:bg-gray-100"
+                                    >
+                                        <i class="fas fa-filter text-[10px]"></i> Filter
+                                    </button>
                                 </div>
-                                <div class="relative pt-1">
-                                <div class="flex mb-2 items-center justify-between">
-                                    <div>
-                                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-purple-600 bg-purple-200">
-                                        Applied
-                                    </span>
-                                    </div>
-                                    <div class="text-right">
-                                    <span class="text-xs font-semibold inline-block text-purple-600">
-                                        Interview
-                                    </span>
-                                    </div>
-                                </div>
-                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-purple-200">
-                                    <div style="width: 50%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-600"></div>
-                                </div>
-                                </div>
-                                <div class="space-y-2">
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-check-circle text-green-500"></i>
-                                    <div>
-                                    <p class="text-sm font-semibold">Application Submitted</p>
-                                    <p class="text-xs text-gray-600">May 15, 2023 at 2:30 PM</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-check-circle text-green-500"></i>
-                                    <div>
-                                    <p class="text-sm font-semibold">Application Reviewed</p>
-                                    <p class="text-xs text-gray-600">May 18, 2023 at 10:15 AM</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-check-circle text-purple-500"></i>
-                                    <div>
-                                    <p class="text-sm font-semibold">Shortlisted for Interview</p>
-                                    <p class="text-xs text-gray-600">May 20, 2023 at 9:45 AM</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-clock text-gray-500"></i>
-                                    <div>
-                                    <p class="text-sm font-semibold">Interview Scheduled</p>
-                                    <p class="text-xs text-gray-600">Scheduled for May 25, 2023 at 2:00 PM</p>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                            <div class="bg-white p-4 rounded-lg shadow mb-4">
-                                <div class="flex justify-between items-center mb-2">
-                                <div>
-                                    <h3 class="text-lg font-semibold">Backend Engineer</h3>
-                                    <p class="text-gray-600">Data Systems Co.</p>
-                                    <p class="text-gray-600"><i class="fas fa-map-marker-alt"></i> Austin, TX</p>
-                                </div>
-                                <a href="#" class="text-gray-600">View Details</a>
-                                </div>
-                                <div class="relative pt-1">
-                                <div class="flex mb-2 items-center justify-between">
-                                    <div>
-                                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-purple-600 bg-purple-200">
-                                        Applied
-                                    </span>
-                                    </div>
-                                    <div class="text-right">
-                                    <span class="text-xs font-semibold inline-block text-purple-600">
-                                        Review
-                                    </span>
-                                    </div>
-                                </div>
-                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-purple-200">
-                                    <div style="width: 25%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-600"></div>
-                                </div>
-                                </div>
-                                <p class="text-xs text-gray-600">Applied 5 days ago</p>
-                            </div>
-                            <div class="bg-white p-4 rounded-lg shadow">
-                                <div class="flex justify-between items-center mb-2">
-                                <div>
-                                    <h3 class="text-lg font-semibold">Frontend Developer</h3>
-                                    <p class="text-gray-600">Creative Digital</p>
-                                </div>
-                                <a href="#" class="text-gray-600">View Details</a>
-                                </div>
-                                <div class="relative pt-1">
-                                <div class="flex mb-2 items-center justify-between">
-                                    <div>
-                                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-purple-600 bg-purple-200">
-                                        Applied
-                                    </span>
-                                    </div>
-                                    <div class="text-right">
-                                    <span class="text-xs font-semibold inline-block text-purple-600">
-                                        Review
-                                    </span>
-                                    </div>
-                                </div>
-                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-purple-200">
-                                    <div style="width: 25%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-600"></div>
-                                </div>
-                                </div>
-                                <p class="text-xs text-gray-600">Applied 3 days ago</p>
-                            </div>
-                            </div>
-                        </div>
-                        <div class="lg:col-span-1">
-                            <div class="bg-white p-4 rounded-lg shadow mb-4">
-                            <h2 class="text-xl font-semibold mb-4">Application Overview</h2>
-                            <div class="grid grid-cols-2 gap-4 mb-4">
-                                <div class="bg-gray-100 p-4 rounded-lg text-center">
-                                <p class="text-2xl font-semibold">3</p>
-                                <p class="text-gray-600">Active Applications</p>
-                                </div>
-                                <div class="bg-gray-100 p-4 rounded-lg text-center">
-                                <p class="text-2xl font-semibold">1</p>
-                                <p class="text-gray-600">Interview Scheduled</p>
-                                </div>
-                                <div class="bg-gray-100 p-4 rounded-lg text-center">
-                                <p class="text-2xl font-semibold">8</p>
-                                <p class="text-gray-600">All-Time Applications</p>
-                                </div>
-                                <div class="bg-gray-100 p-4 rounded-lg text-center">
-                                <p class="text-2xl font-semibold">2</p>
-                                <p class="text-gray-600">Offers Received</p>
-                                </div>
-                            </div>
-                            <h3 class="text-lg font-semibold mb-2">Applications by Role</h3>
-                            <div class="space-y-2">
-                                <div class="flex justify-between items-center">
-                                <p class="text-gray-600">Full Stack Developer</p>
-                                <div class="flex items-center space-x-2">
-                                    <p class="text-gray-600">12</p>
-                                    <span class="bg-green-200 text-green-600 rounded-full px-2 py-1 text-xs">+5</span>
-                                </div>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                <p class="text-gray-600">Frontend Developer</p>
-                                <div class="flex items-center space-x-2">
-                                    <p class="text-gray-600">8</p>
-                                    <span class="bg-green-200 text-green-600 rounded-full px-2 py-1 text-xs">+2</span>
-                                </div>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                <p class="text-gray-600">Backend Engineer</p>
-                                <div class="flex items-center space-x-2">
-                                    <p class="text-gray-600">10</p>
-                                    <span class="bg-green-200 text-green-600 rounded-full px-2 py-1 text-xs">+3</span>
-                                </div>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                <p class="text-gray-600">DevOps Specialist</p>
-                                <div class="flex items-center space-x-2">
-                                    <p class="text-gray-600">5</p>
-                                    <span class="bg-green-200 text-green-600 rounded-full px-2 py-1 text-xs">+1</span>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                            <div class="bg-white p-4 rounded-lg shadow">
-                            <h2 class="text-xl font-semibold mb-4">Application Tips</h2>
-                            <div class="space-y-4">
-                                <div class="bg-blue-100 p-4 rounded-lg">
-                                <h3 class="text-blue-600 font-semibold">Personalize Your Resume</h3>
-                                <p class="text-gray-600">Tailor your resume to each job application to highlight relevant skills and experience.</p>
-                                </div>
-                                <div class="bg-purple-100 p-4 rounded-lg">
-                                <h3 class="text-purple-600 font-semibold">Follow Up</h3>
-                                <p class="text-gray-600">Send a follow-up email one week after applying if you haven't heard back.</p>
-                                </div>
-                                <div class="bg-yellow-100 p-4 rounded-lg">
-                                <h3 class="text-yellow-600 font-semibold">Research the Company</h3>
-                                <p class="text-gray-600">Show your knowledge about the company during interviews to demonstrate your interest.</p>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            </div>
+                            </header>
 
-            <!-- Notifications Section -->
-            <div v-if="activeSection === 'notifications'">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 space-y-4">
-                    <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-2xl font-semibold">Recent Notifications</h2>
-                        <p class="text-gray-600">Stay updated on your application status</p>
-                    </div>
-                    <button class="text-sm text-blue-600 hover:underline">Mark all as read</button>
-                    </div>
+                            <!-- Job Opportunities Section -->
+                            <div v-if="activeSection === 'opportunities'" class="space-y-6">
+                                <!-- Loading State -->
+                                <div v-if="opportunitiesForm.loading" class="flex justify-center items-center py-8">
+                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                                </div>
 
-                    <!-- Notification Items -->
-                    <div class="space-y-4">
-                    <div class="bg-blue-50 p-4 rounded-lg flex items-center space-x-4">
-                        <i class="fas fa-bell text-blue-500"></i>
-                        <div>
-                        <p class="text-gray-800">Your application for Full Stack Developer has been viewed</p>
-                        <p class="text-gray-500 text-sm">2 hours ago</p>
-                        </div>
-                    </div>
-                    <div class="bg-blue-50 p-4 rounded-lg flex items-center space-x-4">
-                        <i class="fas fa-bell text-blue-500"></i>
-                        <div>
-                        <p class="text-gray-800">You have been shortlisted for the Frontend Position</p>
-                        <p class="text-gray-500 text-sm">1 day ago</p>
-                        </div>
-                    </div>
-                    <div class="p-4 rounded-lg flex items-center space-x-4">
-                        <i class="fas fa-bell text-gray-500"></i>
-                        <div>
-                        <p class="text-gray-800">Tech Solutions Inc. sent you a message</p>
-                        <p class="text-gray-500 text-sm">2 days ago</p>
-                        </div>
-                    </div>
-                    </div>
+                                <!-- Empty State -->
+                                <div v-else-if="!opportunitiesForm.opportunities.length" class="text-center py-8">
+                                    <div class="text-gray-400">
+                                        <i class="fas fa-briefcase text-4xl mb-4"></i>
+                                        <h3 class="text-lg font-medium">No Job Opportunities</h3>
+                                        <p class="text-sm">Check back later for new opportunities</p>
+                                    </div>
+                                </div>
 
-                    <!-- View All Notifications -->
-                    < div class="mt-4 text-right">
-                    <a href="#" class="text-blue-600 hover:underline">View all notifications</a>
+                                <!-- Job Opportunities List -->
+                                <div v-else v-for="opportunity in opportunitiesForm.opportunities" :key="opportunity.id" class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-gray-900">{{ opportunity.title }}</h3>
+                                            <p class="text-sm text-gray-600">{{ opportunity.company }}</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <PrimaryButton @click="applyForJob(opportunity.id)" class="text-sm">
+                                                Apply Now
+                                            </PrimaryButton>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                                        <div class="flex items-center text-gray-600">
+                                            <i class="fas fa-map-marker-alt mr-2"></i>
+                                            {{ opportunity.location }}
+                                        </div>
+                                        <div class="flex items-center text-gray-600">
+                                            <i class="fas fa-briefcase mr-2"></i>
+                                            {{ opportunity.type }}
+                                        </div>
+                                        <div class="flex items-center text-gray-600">
+                                            <i class="fas fa-clock mr-2"></i>
+                                            {{ opportunity.experience_level }}
+                                        </div>
+                                        <div class="flex items-center text-gray-600">
+                                            <i class="fas fa-dollar-sign mr-2"></i>
+                                            {{ opportunity.salary_range }}
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-4">{{ opportunity.description }}</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span v-for="skill in opportunity.required_skills" :key="skill" class="px-3 py-1 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-full">
+                                            {{ skill }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Applications Section -->
+                            <div v-if="activeSection === 'applications'" class="space-y-6">
+                                <!-- Loading State -->
+                                <div v-if="applicationsForm.loading" class="flex justify-center items-center py-8">
+                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                                </div>
+
+                                <!-- Empty State -->
+                                <div v-else-if="!applicationsForm.applications.length" class="text-center py-8">
+                                    <div class="text-gray-400">
+                                        <i class="fas fa-file-alt text-4xl mb-4"></i>
+                                        <h3 class="text-lg font-medium">No Applications</h3>
+                                        <p class="text-sm">You haven't applied to any jobs yet</p>
+                                    </div>
+                                </div>
+
+                                <!-- Applications List -->
+                                <div v-else v-for="application in activeApplications" :key="application.id" class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-gray-900">{{ application.job_title }}</h3>
+                                            <p class="text-sm text-gray-600">{{ application.company }}</p>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span :class="[
+                                                'px-3 py-1 text-xs font-medium rounded-full',
+                                                application.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                                application.status === 'interview_scheduled' ? 'bg-blue-100 text-blue-800' :
+                                                application.status === 'offer_received' ? 'bg-green-100 text-green-800' :
+                                                'bg-gray-100 text-gray-800'
+                                            ]">
+                                                {{ application.status.replace('_', ' ').charAt(0).toUpperCase() + application.status.slice(1).replace('_', ' ') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm text-gray-600 mb-4">
+                                        <div class="flex items-center space-x-4">
+                                            <span class="flex items-center">
+                                                <i class="far fa-calendar mr-2"></i>
+                                                Applied {{ application.applied_date }}
+                                            </span>
+                                            <span v-if="application.interview_date" class="flex items-center">
+                                                <i class="far fa-clock mr-2"></i>
+                                                Interview on {{ application.interview_date }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-3">
+                                        <button @click="selectedApplication = application; isViewDetailsModalOpen = true" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                                            View Details
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notifications Section -->
+                            <div v-if="activeSection === 'notifications'" class="space-y-6">
+                                <!-- Loading State -->
+                                <div v-if="notificationsForm.loading" class="flex justify-center items-center py-8">
+                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                                </div>
+
+                                <!-- Empty State -->
+                                <div v-else-if="!notificationsForm.notifications.length" class="text-center py-8">
+                                    <div class="text-gray-400">
+                                        <i class="fas fa-bell text-4xl mb-4"></i>
+                                        <h3 class="text-lg font-medium">No Notifications</h3>
+                                        <p class="text-sm">You're all caught up!</p>
+                                    </div>
+                                </div>
+
+                                <!-- Notifications List -->
+                                <div v-else v-for="notification in notificationsForm.notifications" :key="notification.id" 
+                                    class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-200"
+                                    :class="{ 'bg-gray-50': notification.read }"
+                                >
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-gray-900">{{ notification.title }}</p>
+                                            <p class="text-sm text-gray-600 mt-1">{{ notification.message }}</p>
+                                            <p class="text-xs text-gray-500 mt-2">{{ notification.created_at }}</p>
+                                        </div>
+                                        <button 
+                                            v-if="!notification.read"
+                                            @click="markNotificationAsRead(notification.id)"
+                                            class="ml-4 text-xs text-gray-500 hover:text-gray-700"
+                                        >
+                                            Mark as read
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                </div>
-            </div>
             </div>
         </div>
-    </div>
+
+        <!-- View Application Details Modal -->
+        <Modal :show="isViewDetailsModalOpen" @close="isViewDetailsModalOpen = false">
+            <div class="p-6" v-if="selectedApplication">
+                <h2 class="text-lg font-medium text-gray-900 mb-4">Application Details</h2>
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ selectedApplication.job_title }}</h3>
+                        <p class="text-sm text-gray-600">{{ selectedApplication.company }}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="text-gray-500">Status</p>
+                            <p class="font-medium text-gray-900">{{ selectedApplication.status.replace('_', ' ').charAt(0).toUpperCase() + selectedApplication.status.slice(1).replace('_', ' ') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Applied Date</p>
+                            <p class="font-medium text-gray-900">{{ selectedApplication.applied_date }}</p>
+                        </div>
+                        <div v-if="selectedApplication.interview_date">
+                            <p class="text-gray-500">Interview Date</p>
+                            <p class="font-medium text-gray-900">{{ selectedApplication.interview_date }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button
+                            @click="isViewDetailsModalOpen = false"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </Modal>
+    </Graduate>
 </template>

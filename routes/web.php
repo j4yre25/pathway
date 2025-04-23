@@ -583,15 +583,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/portfolio/{id}', [PortfolioController::class, 'show']);
     Route::put('/portfolio/{id}', [PortfolioController::class, 'update']);
 
-    // JobInbox Routes
+    // JobInbox Routes - Updated to use JobInboxController
     Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/job-inbox', [JobInboxController::class, 'inbox'])->name('job.inbox');
-        Route::get('/job-opportunities', [JobInboxController::class, 'getJobOpportunities']);
-        Route::get('/job-applications', [JobInboxController::class, 'getJobApplications']);
-        Route::get('/notifications', [JobInboxController::class, 'getNotifications']);
-        Route::post('/apply-for-job', [JobInboxController::class, 'applyForJob']);
-        Route::post('/archive-job-opportunity', [JobInboxController::class, 'archiveJobOpportunity']);
-        Route::post('/mark-notification-as-read', [JobInboxController::class, 'markNotificationAsRead']);
+        Route::get('/job-inbox', [JobInboxController::class, 'index'])
+            ->name('job.inbox')
+            ->middleware(['auth', 'verified']);
+        Route::get('/job-opportunities', [JobInboxController::class, 'getJobOpportunities'])->name('job-opportunities');
+        Route::get('/job-applications', [JobInboxController::class, 'getJobApplications'])->name('job-applications');
+        Route::get('/notifications', [JobInboxController::class, 'getNotifications'])->name('notifications');
+        Route::post('/apply-for-job', [JobInboxController::class, 'applyForJob'])->name('apply-for-job');
+        Route::post('/archive-job-opportunity', [JobInboxController::class, 'archiveJobOpportunity'])->name('archive-job-opportunity');
+        Route::post('/mark-notification-as-read', [JobInboxController::class, 'markNotificationAsRead'])->name('mark-notification-as-read');
     });
 });
 
@@ -606,7 +608,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/certifications', [ProfileController::class, 'updateCertifications'])->name('profile.certifications');
     Route::put('/profile/achievements', [ProfileController::class, 'updateAchievements'])->name('profile.achievements');
     Route::put('/profile/testimonials', [ProfileController::class, 'updateTestimonials'])->name('profile.testimonials');
-    Route::put('/profile/employment-preferences', [ProfileController::class, 'updateEmploymentPreferences'])->name('profile.employment-preferences');
     Route::put('/profile/career-goals', [ProfileController::class, 'updateCareerGoals'])->name('profile.career-goals');
     Route::put('/profile/resume', [ProfileController::class, 'updateResume'])->name('profile.resume');
 });
@@ -614,45 +615,62 @@ Route::middleware(['auth'])->group(function () {
 // Profile Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-    Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.updateProfile');
 
     // Education Routes
-    Route::post('/profile/education', [EducationController::class, 'addEducation'])->name('education.add');
-    Route::put('/profile/education/{id}', [EducationController::class, 'updateEducation'])->name('education.update');
-    Route::delete('/profile/education/{id}', [EducationController::class, 'removeEducation'])->name('education.remove');
+    Route::post('/profile/education', [ProfileController::class, 'addEducation'])->name('education.add');
+    Route::put('/profile/education/{id}', [ProfileController::class, 'updateEducation'])->name('education.update');
+    Route::delete('/profile/education/{id}', [ProfileController::class, 'removeEducation'])->name('education.remove');
 
     // Experience Routes
-    Route::post('/profile/experience', [ExperienceController::class, 'addExperience'])->name('experience.add');
-    Route::put('/profile/experience/{id}', [ExperienceController::class, 'updateExperience'])->name('experience.update');
-    Route::delete('/profile/experience/{id}', [ExperienceController::class, 'removeExperience'])->name('experience.remove');
+    Route::post('/profile/experiences', [ProfileController::class, 'addExperience'])->name('experience.addExperience');
+    Route::put('/profile/experiences/{id}', [ProfileController::class, 'updateExperience'])->name('experience.updateExperience');
+    Route::delete('/profile/experiences/{id}', [ProfileController::class, 'removeExperience'])->name('experience.remove c');
+
+    // Project Routes
+    Route::prefix('profile/projects')->group(function () {
+        // Add these project routes
+        Route::post('/projects/add', [ProfileController::class, 'addProject'])->name('projects.add');
+        Route::put('/projects/{id}', [ProfileController::class, 'updateProject'])->name('projects.update');
+        Route::delete('/projects/{id}', [ProfileController::class, 'removeProject'])->name('projects.remove');
+    });
 
     // Skill Routes
-    Route::post('/profile/skills', [SkillController::class, 'addSkill'])->name('skills.add');
-    Route::put('/profile/skills/{id}', [SkillController::class, 'updateSkill'])->name('skills.update');
-    Route::delete('/profile/skills/{id}', [SkillController::class, 'removeSkill'])->name('skills.remove');
+    Route::post('/profile/skills', [ProfileController::class, 'addSkill'])->name('skills.add');
+    Route::put('/profile/skills/{id}', [ProfileController::class, 'updateSkill'])->name('skills.update');
+    Route::delete('/profile/skills/{id}', [ProfileController::class, 'removeSkill'])->name('skills.remove');
 
     // Certification Routes
-    Route::post('/profile/certifications', [CertificationController::class, 'addCertification'])->name('certifications.add');
-    Route::put('/profile/certifications/{id}', [CertificationController::class, 'updateCertification'])->name('certifications.update');
-    Route::delete('/profile/certifications/{id}', [CertificationController::class, 'removeCertification'])->name('certifications.remove');
+    Route::post('/profile/certifications', [ProfileController::class, 'addCertification'])->name('certifications.add');
+    Route::put('/profile/certifications/{id}', [ProfileController::class, 'updateCertification'])->name('certifications.update');
+    Route::delete('/profile/certifications/{id}', [ProfileController::class, 'removeCertification'])->name('certifications.remove');
 
     // Achievement Routes
-    Route::post('/profile/achievements', [AchievementController::class, 'addAchievement'])->name('achievements.add');
-    Route::put('/profile/achievements/{id}', [AchievementController::class, 'updateAchievement'])->name('achievements.update');
-    Route::delete('/profile/achievements/{id}', [AchievementController::class, 'removeAchievement'])->name('achievements.remove');
+    Route::post('/profile/achievements', [ProfileController::class, 'addAchievement'])->name('achievements.add');
+    Route::put('/profile/achievements/{id}', [ProfileController::class, 'updateAchievement'])->name('achievements.update');
+    Route::delete('/profile/achievements/{id}', [ProfileController::class, 'deleteAchievement'])->name('achievements.delete');
 
     // Testimonial Routes
-    Route::post('/profile/testimonials', [TestimonialController::class, 'addTestimonial'])->name('testimonials.add');
-    Route::put('/profile/testimonials/{id}', [TestimonialController::class, 'updateTestimonial'])->name('testimonials.update');
-    Route::delete('/profile/testimonials/{id}', [TestimonialController::class, 'removeTestimonial'])->name('testimonials.remove');
+    Route::post('/profile/testimonials', [ProfileController::class, 'addTestimonial'])->name('testimonials.add');
+    Route::put('/profile/testimonials/{id}', [ProfileController::class, 'updateTestimonial'])->name('testimonials.update');
+    Route::delete('/profile/testimonials/{id}', [ProfileController::class, 'removeTestimonial'])->name('testimonials.remove');
 
     // Employment Preferences Routes
-    // Route::post('/profile/employment-preferences', [EmploymentPreferencesController::class, 'updateEmploymentPreferences'])->name('employment.preferences.update');
+    Route::post('/profile/employment-preferences', [ProfileController::class, 'updateEmploymentPreferences'])->name('employment.preferences.updateEmploymentPreferences');
+    Route::post('/employment-preferences/save', [ProfileController::class, 'saveEmploymentPreferences'])->name('employment.preferences.save');
+    Route::post('/employment-references/save', [ProfileController::class, 'saveEmploymentReference'])->name('employment.references.save');
+    Route::get('/employment-references', [ProfileController::class, 'getEmploymentReference'])->name('employment.references.get');
 
     // Career Goals Routes
-    Route::post('/profile/career-goals', [CareerGoalsController::class, 'saveCareerGoals'])->name('career.goals.save');
+    Route::post('/profile/career-goals', [ProfileController::class, 'saveCareerGoals'])->name('career.goals.save');
+    Route::post('/career-goals/add-industry', [ProfileController::class, 'addIndustry'])->name('career.goals.add.industry');
+    Route::post('/career-goals/save', [ProfileController::class, 'saveCareerGoals'])->name('career.goals.save');
+    Route::get('/career-goals', [ProfileController::class, 'getCareerGoals'])->name('career.goals.get');
 
     // Resume Routes
-    Route::post('/profile/resume', [ResumeController::class, 'uploadResume'])->name('resume.upload');
-    Route::delete('/profile/resume', [ResumeController::class, 'removeResume'])->name('resume.remove');
+    Route::post('/resume/upload', [ProfileController::class, 'uploadResume'])->name('resume.upload');
+    Route::delete('/resume/delete', [ProfileController::class, 'deleteResume'])->name('resume.delete');
+    Route::post('/upload', [ProfileController::class, 'uploadFile']);
+    Route::get('/file/{filename}', [ProfileController::class, 'getFile']);
+    Route::delete('/file/{filename}', [ProfileController::class, 'deleteFile']);
 });
