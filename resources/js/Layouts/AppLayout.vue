@@ -303,9 +303,9 @@ console.log(page.props.permissions.canManageInstitution)
                                             Manage Account
                                         </div>
 
-                                        <DropdownLink v-if="!page.props.roles.isGraduate" :href="route('profile.show')">
+                                        <!-- <DropdownLink v-if="!page.props.roles.isGraduate" :href="route('profile.show')">
                                             Profile
-                                        </DropdownLink>
+                                        </DropdownLink> -->
 
 
                                         <DropdownLink v-if="page.props.roles.isGraduate"

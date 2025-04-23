@@ -82,7 +82,7 @@ const disapproveJob = (job) => {
         </div>
       </div>
       <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200">
+        <table class="mt-8 min-w-full bg-white border border-gray-200">
           <thead>
             <tr class="w-full bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
               <th class="py-2 px-4 text-left border">Job Title</th>
