@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class CareerGoalsController extends Controller
 {
@@ -17,7 +18,7 @@ class CareerGoalsController extends Controller
             'careerPath' => 'nullable|string',
         ]);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $user->careerGoals()->update($request->all()); // Assuming you have a relationship set up
 
         return response()->json(['message' => 'Career goals saved successfully.']);

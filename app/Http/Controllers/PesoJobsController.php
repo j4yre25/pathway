@@ -2,32 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Job;
+use App\Models\Sector;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\Sector;
-use App\Models\Graduate;
-use Illuminate\Support\Facades\Gate;
-use Inertia\Inertia;
 use Illuminate\Validation\Rule;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Gate;
 
 
-class JobsController extends Controller
+class PesoJobsController extends Controller
 {
     public function index(User $user) {
 
 
-        $jobs = $user->jobs;
-        $sectors = \App\Models\Sector::pluck('name'); // Fetch all sector names
-        $categories = \App\Models\Category::pluck('name'); // Fetch all category names
-        return Inertia::render('Jobs/Index/Index', [
-            'jobs' =>  [
-            'posted_at' => $jobs->created_at->format('F j, Y'),
-            'job_type' => $jobs->job_type,
-            'job_level' => $jobs->experience_level,
-            'vacancy' => $jobs->vacancy,
-            ],
-            'sectors' => $sectors, // Array of sectors
+        $jobs = Job::with('user', 'sector', 'category')->get();
+        $sectors = Sector::all();
+        $categories = Category::all();
+    
+
+        return Inertia::render('Admin/Jobs/Index/Index', [
+            'jobs' => $jobs,
+            'sectors' => $sectors,
             'categories' => $categories,
         ]);
 
@@ -40,7 +37,7 @@ class JobsController extends Controller
          $sectors = Sector::with('categories')->get();
 
 
-        return Inertia::render('Jobs/Index/CreateJobs', [
+        return Inertia::render('Admin/Jobs/Index/CreateJobs', [
             'sectors' => $sectors,
     ]);
     }
@@ -51,7 +48,7 @@ class JobsController extends Controller
 
         $all_jobs = Job::with('user')->onlyTrashed()->get();
 
-        return Inertia::render('Jobs/Index/ArchivedList', [
+        return Inertia::render('Admin/Jobs/Index/ArchivedList', [
             'all_jobs' => $all_jobs
 
 
@@ -60,9 +57,8 @@ class JobsController extends Controller
 
     public function manage(User $user) {
         // Fetch jobs posted by the authenticated user
-        $jobs = $user->jobs;
-    
-        return Inertia::render('Jobs/Index/ManageJobs', [
+        $jobs = Job::with('user')->get();
+        return Inertia::render('Admin/Jobs/Index/ManageJobs', [
             'jobs' => $jobs
         ]);
     }
@@ -111,20 +107,20 @@ class JobsController extends Controller
         $new_job->save();
     
         // return redirect()->back()->with('flash.banner', 'Job posted successfully.');
-        return redirect()->route('jobs', ['user' => $user->id])->with('flash.banner', 'Job posted successfully.');
+        return redirect()->route('peso.jobs', ['user' => $user->id])->with('flash.banner', 'Job posted successfully.');
 }
 
    
 
 
     public function view(Job $job) {
-        return Inertia::render('Jobs/View/Index', [
+        return Inertia::render('Admin/Jobs/View/Index', [
             'job' => $job
         ]);
     }
 
     public function edit(Job $job) {
-        return Inertia::render('Jobs/Edit/Index', [
+        return Inertia::render('Admin/Jobs/Edit/Index', [
             'job' => $job
         ]);
     }
@@ -150,14 +146,14 @@ class JobsController extends Controller
         $job->is_approved = 1; 
         $job->save();
     
-        return redirect()->route('jobs', ['user' => $job->user_id])->with('flash.banner', 'Job approved successfully.');    }
+        return redirect()->route('peso.jobs', ['user' => $job->user_id])->with('flash.banner', 'Job approved successfully.');    }
 
     public function disapprove(Job $job)
     {
         $job->is_approved = 0; 
         $job->save();
 
-        return redirect()->route('jobs', ['user' => $job->user_id])->with('flash.banner', 'Job disapproved successfully.');
+        return redirect()->route('peso.jobs', ['user' => $job->user_id])->with('flash.banner', 'Job disapproved successfully.');
     }
 
 
@@ -169,7 +165,7 @@ class JobsController extends Controller
     
         // $user_id = $request->user()->id;
 
-        return redirect()->route('jobs', ['user' => $job->user_id])->with('flash.banner', 'Job Archived successfully.');
+        return redirect()->route('peso.jobs', ['user' => $job->user_id])->with('flash.banner', 'Job Archived successfully.');
     }
 
     public function restore($job)
@@ -180,5 +176,4 @@ class JobsController extends Controller
 
         return redirect()->back()->with('flash.banner', 'Job restored successfully.');
     }
-    
 }

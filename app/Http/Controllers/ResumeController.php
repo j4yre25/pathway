@@ -18,7 +18,7 @@ class ResumeController extends Controller
         $user = Auth::user();
         if ($request->hasFile('file')) {
             $path = $request->file('file')->store('resumes', 'public');
-            $user->resume()->update(['file' => $path]); // Assuming you have a relationship set up
+            $user->resume()->update(['file' => $path]); 
         }
 
         return response()->json(['message' => 'Resume uploaded successfully.']);

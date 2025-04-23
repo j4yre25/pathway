@@ -23,32 +23,32 @@ const props = defineProps({
 })
 
 const searchQuery = ref('');
-const selectedDate = ref('');
-const selectedJobType = ref('');
-const selectedJobLevel= ref('');
-const selectedVacancy = ref('');
+const selectedSector = ref('');
+const selectedCategory = ref('');
+const selectedStatus = ref('');
+
 
 console.log(props.jobs);
 
 const filteredJobs = computed(() => {
+    console.log('Selected Sector:', selectedSector.value);
+    console.log('Selected Category:', selectedCategory.value);
+
     return props.jobs.filter(job => {
         const matchesSearch = job.job_title.toLowerCase().includes(searchQuery.value.toLowerCase());
-        const matchesDate = selectedDate.value
-            ? job.created_at
+        const matchesSector = selectedSector.value
+            ? job.sector_id === parseInt(selectedSector.value)
             : true;
-        const matchesJobType = selectedJobType.value
-            ? job.type
+        const matchesCategory = selectedCategory.value
+            ? job.category_id === parseInt(selectedCategory.value)
             : true;
-
-        const matchesJobLevel = selectedJobLevel.value
-            ? selectedJobLevel.value 
-            : true;
-
-        const matchesVacancy = selectedVacancy.value
-            ? selectedVacancy.value 
+        const matchesStatus = selectedStatus.value
+            ? (selectedStatus.value === 'pending'
+                ? job.is_approved === null
+                : job.is_approved === parseInt(selectedStatus.value))
             : true;
 
-        return matchesSearch && matchesDate && matchesJobType && matchesJobLevel && matchesVacancy; 
+        return matchesSearch && matchesSector && matchesCategory && matchesStatus;
     });
 });
 
@@ -63,7 +63,7 @@ const form = useForm({
     location: ''
 });
 // console.log(route('jobs.list'));
-console.log(route('jobs.manage', { user: page.props.auth.user.id }));
+console.log(route('peso.jobs.manage', { user: page.props.auth.user.id }));
 
 
 </script>
@@ -81,48 +81,56 @@ console.log(route('jobs.manage', { user: page.props.auth.user.id }));
 
 
             <!-- <PrimaryButton @click="createJob()" class="">Post Job</PrimaryButton> -->
-            <div class="flex space-x-2">
+            <div class="flex space-x-2 mb-2">
                 <div class="mt-8">
-                    <Link :href="route('jobs.create', { user: page.props.auth.user.id })">
+                    <Link :href="route('peso.jobs.create', { user: page.props.auth.user.id })">
                     <PrimaryButton class="mr-2">Post Jobs</PrimaryButton>
                     </Link>
                 </div>
 
                 <div class="mt-8">
 
-                    <Link :href="route('jobs.manage', { user: page.props.auth.user.id })">
+                    <Link :href="route('peso.jobs.manage', { user: page.props.auth.user.id })">
                     <PrimaryButton class="mr-2">Manage Posted Jobs</PrimaryButton>
                     </Link>
                 </div>
 
                 <div class="mt-8">
 
-                    <Link :href="route('jobs.archivedlist', { user: page.props.auth.user.id })">
+                    <Link :href="route('peso.jobs.archivedlist', { user: page.props.auth.user.id })">
                     <PrimaryButton class="mr-2">Archived Jobs</PrimaryButton>
                     </Link>
                 </div>
 
             </div>
 
-            <div class="flex items-center mb-4 space-x-4">
+            <div class="flex items-center mt-4 mb-4 space-x-4">
                 <!-- Search Input -->
                 <input v-model="searchQuery" type="text" placeholder="Search jobs..."
                     class="border border-gray-300 rounded px-4 py-2" />
 
-                <!-- Date Dropdown -->
-                <select v-model="selectedDate" class="border border-gray-300 rounded px-4 py-2">
-                    <option value="">All Dates</option>
-                    <option v-for="(sector, index) in sectors" :key="index" :value="index + 1">
-                        {{ sector }}
+                <!-- Sector Dropdown -->
+                <select v-model="selectedSector" class="border border-gray-300 rounded px-4 py-2">
+                    <option value="">All Sectors</option>
+                    <option v-for="sector in sectors" :key="sector.id" :value="sector.id">
+                        {{ sector.name }}
                     </option>
                 </select>
 
                 <!-- Category Dropdown -->
                 <select v-model="selectedCategory" class="border border-gray-300 rounded px-4 py-2">
                     <option value="">All Categories</option>
-                    <option v-for="(category, index) in categories" :key="index" :value="index + 1">
-                        {{ category }}
+                    <option v-for="category in categories" :key="category.id" :value="category.id">
+                        {{ category.name }}
                     </option>
+                </select>
+
+                <!-- Approval Status Dropdown -->
+                <select v-model="selectedStatus" class="border border-gray-300 rounded px-4 py-2">
+                    <option value="">All Statuses</option>
+                    <option value="1">Approved</option>
+                    <option value="0">Disapproved</option>
+                    <option value="pending">Pending</option>
                 </select>
             </div>
 

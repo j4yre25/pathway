@@ -1,4 +1,3 @@
-
 <?php
 
 namespace App\Http\Controllers;
@@ -124,7 +123,7 @@ class ProfileController extends Controller
 
         $data = $request->all();
 
-        // Handle `is_current` logic
+        // Handle is_current logic
         if ($request->is_current) {
             $data['graduate_education_end_date'] = 'present';
         }
@@ -742,4 +741,3 @@ class ProfileController extends Controller
         return response()->file($path);
     }
 }
-
