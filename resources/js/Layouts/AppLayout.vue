@@ -121,11 +121,11 @@ console.log(page.props.permissions.canManageInstitution)
                                     :active="route().current('dashboard')">
                                     Manage Job Referrals
                                 </NavLink>
-
-                                <NavLink :href="route('dashboard')" v-if="page.props.roles.isPeso" Categories
-                                    :active="route().current('dashboard')">
+<!-- 
+                                <NavLink :href="route('jobs.list')" v-if="page.props.roles.isPeso" Categories
+                                    :active="route().current('job.list')">
                                     Reports
-                                </NavLink>
+                                </NavLink> -->
 
 
                                 <!-- Graduate Link -->
@@ -293,8 +293,14 @@ console.log(page.props.permissions.canManageInstitution)
                                         <div class="block px-4 py-2 text-xs text-gray-400">
                                             Manage Account
                                         </div>
-
+<!-- 
                                         <DropdownLink v-if="!page.props.roles.isGraduate" :href="route('profile.show')">
+                                            Profile
+                                        </DropdownLink> -->
+
+                                        <DropdownLink
+                                            v-if="page.props.roles.isPeso && page.props.auth.user.is_approved"
+                                            :disabled="!page.props.auth.user.is_approved" :href="route('peso.profile')">
                                             Profile
                                         </DropdownLink>
 
