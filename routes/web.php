@@ -178,6 +178,9 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('/jobs/edit/{job}', [JobsController::class, 'delete'])
     ->name('jobs.delete');
 
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('/jobs/{job}/auto-invite', [JobsController::class, 'autoInvite'])
+->name('jobs.auto-invite');
+
 Route::post('/jobs/{job}/approve', [JobsController::class, 'approve'])->name('jobs.approve');
 Route::post('/jobs/{job}/disapprove', [JobsController::class, 'disapprove'])->name('jobs.disapprove');
 
@@ -221,10 +224,11 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
     // View Company Profile
     Route::get('/company/profile', [CompanyProfileController::class, 'profile'])->name('company.profile');
+    Route::post('/company/profile', [CompanyProfileController::class, 'post'])->name('company-profile.post');
     Route::put('/company/profile', [CompanyProfileController::class, 'update'])->name('company-profile.update');
     Route::delete('/current-user-photo', [CompanyProfileController::class, 'destroyPhoto'])->name('current-user-photo.destroy');
     Route::delete('/current-user-cover-photo', [CompanyProfileController::class, 'destroyCoverPhoto'])->name('current-user-cover-photo.destroy');
-});
+}); 
 
 
 

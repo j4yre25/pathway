@@ -119,6 +119,13 @@ class Job extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function company()
+    {
+        
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+
     /**
      * Get the sector that the job belongs to.
      */
@@ -139,4 +146,10 @@ class Job extends Model
     {
         return $this->hasMany(JobApplication::class);
     }
+
+    public function invitations()
+    {
+        return $this->hasMany(JobInvitation::class);
+    }
+
 }
