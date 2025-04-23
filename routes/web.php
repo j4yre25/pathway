@@ -292,7 +292,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::delete('/graduates/{graduate}', [GraduateController::class, 'destroy'])->name('graduates.destroy');
         Route::post('/graduates/restore/{id}', [GraduateController::class, 'restore'])->name('graduates.restore');
         Route::post('/graduate/batch-upload', [GraduateController::class, 'batchUpload'])->name('graduates.batch-upload');
-        Route::get('/graduate/template', [GraduateController::class, 'downloadTemplate'])->name('graduates.template');
+        Route::get('/graduate/download-template', [GraduateController::class, 'downloadTemplate'])->name('graduates.template');
     });
 
     // Institution Routes

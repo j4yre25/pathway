@@ -89,11 +89,26 @@ class GraduateController extends Controller
 
     public function downloadTemplate(): StreamedResponse
     {
-        $headers = ['Full Name', 'Year Graduated', 'Program', 'Employment Status', 'Current Job Title'];
+        $headers = [
+            'First Name',
+            'Middle Initial',
+            'Last Name',
+            'Program',
+            'Year Graduated',
+            'Employment Status',
+            'Current Job Title'
+        ];
+
+        $rows = [
+            ['John', 'A', 'Doe', 'Computer Science', '2020-2021', 'Employed', 'Software Engineer'],
+            ['Jane', '', 'Smith', 'Business Administration', '2019-2020', 'Employed', 'Marketing Manager'],
+            ['Michael', 'B', 'Brown', 'Mechanical Engineering', '2021-2022', 'Underemployed', 'Junior Designer'],
+            ['Emily', '', 'Johnson', 'Nursing', '2022-2023', 'Unemployed', 'N/A']
+        ];
 
         $csv = Writer::createFromString('');
         $csv->insertOne($headers);
-        $csv->insertOne(['Juan D. Dela Cruz', '2023-2024', 'BS in Nursing', 'Employed', 'Nurse']);
+        $csv->insertAll($rows);
 
         return Response::streamDownload(function () use ($csv) {
             echo $csv;
@@ -113,8 +128,6 @@ class GraduateController extends Controller
 
         foreach ($records as $record) {
             try {
-                [$first, $middle, $last] = $this->splitName($record['Full Name']);
-
                 $program = Program::where('name', $record['Program'])->first();
                 $schoolYear = SchoolYear::where('school_year_range', $record['Year Graduated'])->first();
 
@@ -123,9 +136,9 @@ class GraduateController extends Controller
                 }
 
                 Graduate::create([
-                    'first_name' => $first,
-                    'middle_initial' => $middle,
-                    'last_name' => $last,
+                    'first_name' => $record['First Name'],
+                    'middle_initial' => $record['Middle Initial'] ?? null,
+                    'last_name' => $record['Last Name'],
                     'program_id' => $program->id,
                     'school_year_id' => $schoolYear->id,
                     'employment_status' => $record['Employment Status'],
@@ -140,14 +153,15 @@ class GraduateController extends Controller
         return redirect()->route('graduates.index')->with('success', 'Graduates uploaded successfully.');
     }
 
+
     private function splitName(string $fullName): array
     {
-        $parts = explode(' ', $fullName);
-
-        $first = $parts[0] ?? '';
-        $middle = count($parts) == 3 ? $parts[1] : null;
-        $last = end($parts);
+        $parts = preg_split('/\s+/', trim($fullName));
+        $first = array_shift($parts) ?? '';
+        $last = array_pop($parts) ?? '';
+        $middle = count($parts) > 0 ? implode(' ', $parts) : null;
 
         return [$first, $middle, $last];
     }
+
 }
