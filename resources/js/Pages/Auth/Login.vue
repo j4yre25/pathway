@@ -9,7 +9,6 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import Inertia from '@inertiajs/inertia';
 import Modal from '@/Components/Modal.vue';
 import { ref } from 'vue';
 

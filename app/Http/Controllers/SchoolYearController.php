@@ -21,7 +21,7 @@ class SchoolYearController extends Controller
 
         $schoolYears = $query->orderBy('school_year_range')->get();
 
-        return Inertia::render('Institutions/SchoolYears', [
+        return Inertia::render('Institutions/SchoolYearTab', [
             'schoolYears' => $schoolYears,
             'filter' => $filter,
         ]);

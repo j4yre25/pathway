@@ -25,7 +25,12 @@ class JobsController extends Controller
         $sectors = \App\Models\Sector::pluck('name'); // Fetch all sector names
         $categories = \App\Models\Category::pluck('name'); // Fetch all category names
         return Inertia::render('Jobs/Index/Index', [
-            'jobs' => $jobs,
+            'jobs' =>  [
+            'posted_at' => $jobs->created_at->format('F j, Y'),
+            'job_type' => $jobs->job_type,
+            'job_level' => $jobs->experience_level,
+            'vacancy' => $jobs->vacancy,
+            ],
             'sectors' => $sectors, // Array of sectors
             'categories' => $categories,
         ]);

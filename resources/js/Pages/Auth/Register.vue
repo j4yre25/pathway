@@ -665,7 +665,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                 
                     <!-- Graduate Fields -->
                     <div v-if="form.role === 'graduate'" class="mt-4">
                         <!-- Graduate First Name -->
