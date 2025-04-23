@@ -10,8 +10,9 @@ return new class extends Migration
     {
         Schema::create('school_years', function (Blueprint $table) {
             $table->id();
-            $table->string('school_year_range'); // This column is already created here
-            $table->integer('term'); // This column is already created here
+            $table->string('school_year_range');
+            $table->integer('term'); 
+            $table->softDeletes();         
             $table->timestamps();
         });
     }

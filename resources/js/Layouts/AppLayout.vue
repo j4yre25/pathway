@@ -150,6 +150,18 @@ console.log(page.props.permissions.canManageInstitution)
                                     Institution
                                 </NavLink>
 
+                                <NavLink
+                                    v-if="page.props.permissions.canManageInstitution && page.props.auth.user.is_approved"
+                                    :href="route('institutions.index')" :active="route().current('institutions.index')">
+                                    Manage Career Officer
+                                </NavLink>
+
+                                <NavLink
+                                    v-if="page.props.permissions.canManageInstitution && page.props.auth.user.is_approved"
+                                    :href="route('institutions.index')" :active="route().current('institutions.index')">
+                                    Manage Graduate Counseling
+                                </NavLink>
+
                                 <!-- Manage Approval Link -->
                                 <NavLink
                                     v-if="page.props.permissions.canManageApprovalGraduate && page.props.auth.user.is_approved"

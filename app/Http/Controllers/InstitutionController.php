@@ -6,21 +6,31 @@ use App\Models\Institution;
 use App\Models\Program;
 use App\Models\CareerOpportunity;
 use App\Models\SchoolYear;
+use App\Models\Degree;
+use App\Models\InstiSkill; // if you are keeping InstiSkill model name
+
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class InstitutionController extends Controller
 {
+    /**
+     * Main Institution Management Page (Tabbed)
+     */
     public function index()
     {
         return Inertia::render('Institutions/Index', [
-            'institutions' => Institution::all(),
-            'programs' => Program::all(),
-            'careerOpportunities' => CareerOpportunity::with('program')->get(),
-            'schoolYears' => SchoolYear::all(),
+            'schoolYears' => SchoolYear::withTrashed()->orderBy('school_year_range')->get(),
+            'degrees' => Degree::withTrashed()->orderBy('name')->get(),
+            'programs' => Program::withTrashed()->with('degree')->orderBy('name')->get(),
+            'careerOpportunities' => CareerOpportunity::withTrashed()->with('programs')->orderBy('title')->get(),
+            'skills' => InstiSkill::withTrashed()->with(['programs', 'careerOpportunities'])->orderBy('name')->get(),
         ]);
     }
 
+    /**
+     * Legacy function - can be removed if not used
+     */
     public function create()
     {
         return Inertia::render('Institutions/Create', [
@@ -29,20 +39,25 @@ class InstitutionController extends Controller
         ]);
     }
 
+    /**
+     * Legacy data creation – optional use for SchoolYear + Program combo
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'school_year_range' => 'required|string',
+            'school_year_range' => 'required|string|regex:/^\d{4}-\d{4}$/',
             'term' => 'required|string',
             'program_id' => 'required|exists:programs,id',
-            'career_opportunities' => 'nullable|string',
         ]);
 
         Institution::create($validated);
 
-        return redirect()->route('institutions.index')->with('success', 'Institution data added successfully.');
+        return redirect()->route('institutions.index')->with('success', 'Institution entry added successfully.');
     }
 
+    /**
+     * Show individual institution entry (optional)
+     */
     public function show(Institution $institution)
     {
         return Inertia::render('Institutions/Show', [
@@ -50,6 +65,9 @@ class InstitutionController extends Controller
         ]);
     }
 
+    /**
+     * Edit form rendering (optional, if needed)
+     */
     public function edit(Institution $institution)
     {
         return Inertia::render('Institutions/Edit', [
@@ -59,24 +77,29 @@ class InstitutionController extends Controller
         ]);
     }
 
+    /**
+     * Update entry
+     */
     public function update(Request $request, Institution $institution)
     {
         $validated = $request->validate([
-            'school_year_range' => 'required|string',
+            'school_year_range' => 'required|string|regex:/^\d{4}-\d{4}$/',
             'term' => 'required|string',
             'program_id' => 'required|exists:programs,id',
-            'career_opportunities' => 'nullable|string',
         ]);
 
         $institution->update($validated);
 
-        return redirect()->route('institutions.index')->with('success', 'Institution data updated successfully.');
+        return redirect()->route('institutions.index')->with('success', 'Institution entry updated successfully.');
     }
 
+    /**
+     * Soft delete (archive)
+     */
     public function destroy(Institution $institution)
     {
         $institution->delete();
 
-        return redirect()->route('institutions.index')->with('success', 'Institution deleted successfully.');
+        return redirect()->route('institutions.index')->with('success', 'Institution entry archived.');
     }
 }

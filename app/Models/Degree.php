@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CareerOpportunity extends Model
+class Degree extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['title'];
+    protected $fillable = ['name', 'type'];
 
     public function programs()
     {
-        return $this->belongsToMany(Program::class)->withTimestamps();
+        return $this->hasMany(Program::class);
     }
 }

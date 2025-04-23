@@ -6,14 +6,14 @@
         </button>
   
         <h2 class="text-lg font-semibold mb-4">
-          {{ editing ? 'Edit Career Opportunity' : 'Add Career Opportunity' }}
+          {{ editing ? 'Edit Skill' : 'Add Skill' }}
         </h2>
   
         <form @submit.prevent="$emit('submit')" class="space-y-4">
           <div>
-            <label class="block mb-1 text-sm">Career Title</label>
-            <input v-model="form.title" class="w-full border p-2 rounded" />
-            <p v-if="errors.title" class="text-sm text-red-500">{{ errors.title }}</p>
+            <label class="block mb-1 text-sm">Skill Name</label>
+            <input v-model="form.name" class="w-full border p-2 rounded" />
+            <p v-if="errors.name" class="text-sm text-red-500">{{ errors.name }}</p>
           </div>
   
           <div class="flex justify-end space-x-2 pt-4">
