@@ -33,18 +33,14 @@ const saveDescription = () => {
         company_description: localDescription.value,  // Edited description
     };
 
-    // Check if the payload contains all required fields
     console.log(payload);  // For debugging purposes
 
-    // Send PUT request
-    router.put(route('company-profile.update'), payload, {
+    router.post(route('company-profile.post'), payload, {
         onSuccess: () => {
             isEditing.value = false;
-            // Optionally show a success message or alert
         },
         onError: (errors) => {
-            console.error(errors);  // Log errors for debugging
-            // Optionally show an error message or alert
+            console.error(errors);  
         }
     });
 };

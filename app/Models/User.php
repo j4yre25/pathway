@@ -249,4 +249,16 @@ class User extends Authenticatable
     {
         return $this->hasOne(Resume::class);
     }
+
+    // Relationship with Job Invitations
+    public function jobInvitations()
+    {
+        return $this->hasMany(JobInvitation::class, 'graduate_id'); // For graduates
+    }
+
+    public function jobInvitationsSent()
+    {
+        return $this->hasMany(JobInvitation::class, 'company_id'); // For companies
+    }
+
 }
