@@ -2,93 +2,96 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SchoolYear; // Ensure you have a SchoolYear model
+use App\Models\SchoolYear;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class SchoolYearController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Inertia::render('Institutions/SchoolYearModal', [
-            'schoolYears' => SchoolYear::all(),
+        $filter = $request->query('status', 'active');
+
+        $query = SchoolYear::query();
+
+        if ($filter === 'inactive') {
+            $query->onlyTrashed();
+        }
+
+        $schoolYears = $query->orderBy('school_year_range')->get();
+
+        return Inertia::render('Institutions/SchoolYears', [
+            'schoolYears' => $schoolYears,
+            'filter' => $filter,
         ]);
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'school_year_range' => [
-                'required',
-                'string',
-                'regex:/^\d{4}-\d{4}$/', // Ensure format YYYY-YYYY
-                function ($attribute, $value, $fail) {
-                    $years = explode('-', $value);
-                    if (count($years) !== 2 || (int)$years[0] >= (int)$years[1]) {
-                        throw ValidationException::withMessages([
-                            'school_year_range' => 'Invalid format. The first year must be lower than the second (e.g., 2023-2024).'
-                        ]);
-                    }
-                }
-            ],
-            'term' => 'required|string|max:255',
-        ]);
+        $validated = $this->validateSchoolYear($request);
 
-        // Check for duplicate school year & term combination
-        if (SchoolYear::where('school_year_range', $request->school_year_range)
-            ->where('term', $request->term)
-            ->exists()
-        ) {
+        // Avoid duplicates
+        if (SchoolYear::where('school_year_range', $validated['school_year_range'])
+            ->where('term', $validated['term'])
+            ->exists()) {
             throw ValidationException::withMessages([
-                'school_year_range' => 'This school year and term combination already exists.'
+                'school_year_range' => 'This school year and term combination already exists.',
             ]);
         }
 
         SchoolYear::create($validated);
 
-        return back()->with('success', 'School year added successfully.');
+        return redirect()->route('school-years.index')->with('success', 'School year added successfully.');
     }
 
     public function update(Request $request, SchoolYear $schoolYear)
     {
-        $validated = $request->validate([
-            'school_year_range' => [
-                'required',
-                'string',
-                'regex:/^\d{4}-\d{4}$/',
-                function ($attribute, $value, $fail) {
-                    $years = explode('-', $value);
-                    if (count($years) !== 2 || (int)$years[0] >= (int)$years[1]) {
-                        throw ValidationException::withMessages([
-                            'school_year_range' => 'Invalid format. The first year must be lower than the second (e.g., 2023-2024).'
-                        ]);
-                    }
-                }
-            ],
-            'term' => 'required|string|max:255',
-        ]);
+        $validated = $this->validateSchoolYear($request);
 
-        // Check for duplicate excluding the current record
-        if (SchoolYear::where('school_year_range', $request->school_year_range)
-            ->where('term', $request->term)
+        // Avoid duplicates excluding current
+        if (SchoolYear::where('school_year_range', $validated['school_year_range'])
+            ->where('term', $validated['term'])
             ->where('id', '!=', $schoolYear->id)
-            ->exists()
-        ) {
+            ->exists()) {
             throw ValidationException::withMessages([
-                'school_year_range' => 'This school year and term combination already exists.'
+                'school_year_range' => 'Another entry with this year and term already exists.',
             ]);
         }
 
         $schoolYear->update($validated);
 
-        return back()->with('success', 'School year updated successfully.');
+        return redirect()->route('school-years.index')->with('success', 'School year updated successfully.');
     }
 
     public function destroy(SchoolYear $schoolYear)
     {
         $schoolYear->delete();
+        return redirect()->route('school-years.index')->with('success', 'School year archived.');
+    }
 
-        return back()->with('success', 'School year deleted successfully.');
+    public function restore($id)
+    {
+        $schoolYear = SchoolYear::withTrashed()->findOrFail($id);
+        $schoolYear->restore();
+
+        return redirect()->route('school-years.index')->with('success', 'School year restored.');
+    }
+
+    private function validateSchoolYear(Request $request)
+    {
+        return $request->validate([
+            'school_year_range' => [
+                'required',
+                'regex:/^\d{4}-\d{4}$/',
+                function ($attribute, $value, $fail) {
+                    [$start, $end] = explode('-', $value);
+                    if ((int)$start >= (int)$end) {
+                        $fail('Start year must be less than end year.');
+                    }
+                }
+            ],
+            'term' => 'required|integer|min:1|max:5',
+        ]);
     }
 }

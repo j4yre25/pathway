@@ -1,56 +1,77 @@
 <template>
-  <div v-if="show" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-      <h2 class="text-xl font-semibold mb-4">{{ graduate ? 'Edit Graduate' : 'Add Graduate' }}</h2>
+  <div v-if="show" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 relative">
+      <!-- Close Button -->
+      <button @click="$emit('close')" class="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-2xl">&times;</button>
+      
+      <h2 class="text-xl font-semibold mb-6">{{ form.id ? 'Edit Graduate' : 'Add Graduate' }}</h2>
 
-      <form @submit.prevent="saveGraduate">
-        <!-- Name -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700">Name</label>
-          <input type="text" v-model="form.name" class="w-full p-2 border rounded" required>
-          <p v-if="errors.name" class="text-red-500 text-sm">{{ errors.name }}</p>
+      <form @submit.prevent="submitForm" class="space-y-4">
+        <!-- First Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">First Name<span class="text-red-500">*</span></label>
+          <input type="text" v-model="form.first_name" class="w-full border rounded px-3 py-2" required />
+          <p v-if="errors.first_name" class="text-red-500 text-sm mt-1">{{ errors.first_name }}</p>
+        </div>
+
+        <!-- Last Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Last Name<span class="text-red-500">*</span></label>
+          <input type="text" v-model="form.last_name" class="w-full border rounded px-3 py-2" required />
+          <p v-if="errors.last_name" class="text-red-500 text-sm mt-1">{{ errors.last_name }}</p>
+        </div>
+
+        <!-- Middle Initial -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Middle Initial</label>
+          <input type="text" v-model="form.middle_initial" class="w-full border rounded px-3 py-2" maxlength="5" />
         </div>
 
         <!-- Program -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700">Program</label>
-          <select v-model="form.program_id" class="w-full p-2 border rounded" required>
-            <option v-for="program in programs" :key="program.id" :value="program.id">{{ program.name }}</option>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Program<span class="text-red-500">*</span></label>
+          <select v-model="form.program_id" class="w-full border rounded px-3 py-2" required>
+            <option disabled value="">-- Select Program --</option>
+            <option v-for="program in programs" :key="program.id" :value="program.id">
+              {{ program.name }}
+            </option>
           </select>
-          <p v-if="errors.program_id" class="text-red-500 text-sm">{{ errors.program_id }}</p>
+          <p v-if="errors.program_id" class="text-red-500 text-sm mt-1">{{ errors.program_id }}</p>
         </div>
 
         <!-- Year Graduated -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700">Year Graduated</label>
-          <select v-model="form.year_graduated" class="w-full p-2 border rounded" required>
-            <option v-for="year in years" :key="year" :value="parseInt(year)">{{ year }}</option>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Year Graduated<span class="text-red-500">*</span></label>
+          <select v-model="form.school_year_id" class="w-full border rounded px-3 py-2" required>
+            <option disabled value="">-- Select Year --</option>
+            <option v-for="year in years" :key="year.id" :value="year.id">
+              {{ year.school_year_range }}
+            </option>
           </select>
-          <p v-if="errors.year_graduated" class="text-red-500 text-sm">{{ errors.year_graduated }}</p>
+          <p v-if="errors.school_year_id" class="text-red-500 text-sm mt-1">{{ errors.school_year_id }}</p>
         </div>
 
         <!-- Employment Status -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700">Employment Status</label>
-          <select v-model="form.employment_status" @change="handleEmploymentStatus" class="w-full p-2 border rounded" required>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Employment Status<span class="text-red-500">*</span></label>
+          <select v-model="form.employment_status" @change="handleEmploymentStatus" class="w-full border rounded px-3 py-2" required>
             <option value="Employed">Employed</option>
             <option value="Underemployed">Underemployed</option>
             <option value="Unemployed">Unemployed</option>
           </select>
-          <p v-if="errors.employment_status" class="text-red-500 text-sm">{{ errors.employment_status }}</p>
+          <p v-if="errors.employment_status" class="text-red-500 text-sm mt-1">{{ errors.employment_status }}</p>
         </div>
 
-        <!-- Current Job Title (Hidden if Unemployed) -->
-        <div class="mb-4" v-if="form.employment_status !== 'Unemployed'">
+        <!-- Current Job Title -->
+        <div v-if="form.employment_status !== 'Unemployed'">
           <label class="block text-sm font-medium text-gray-700">Current Job Title</label>
-          <input type="text" v-model="form.current_job_title" class="w-full p-2 border rounded" placeholder="Ex. Software Engineer" />
-          <p v-if="errors.current_job_title" class="text-red-500 text-sm">{{ errors.current_job_title }}</p>
+          <input type="text" v-model="form.current_job_title" class="w-full border rounded px-3 py-2" placeholder="Ex. Nurse, Software Engineer" />
         </div>
 
         <!-- Buttons -->
-        <div class="flex justify-end space-x-2 mt-4">
-          <button @click="$emit('close')" type="button" class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
-          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
+        <div class="flex justify-end space-x-3 mt-6">
+          <button type="button" @click="$emit('close')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save</button>
         </div>
       </form>
     </div>
@@ -58,71 +79,80 @@
 </template>
 
 <script setup>
-import { ref, watch, defineProps, defineEmits } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { ref, watch } from 'vue'
+import { router } from '@inertiajs/vue3'
 
 const props = defineProps({
   show: Boolean,
   graduate: Object,
   programs: Array,
   years: Array
-});
+})
 
-const emit = defineEmits(['close', 'save']);
+const emit = defineEmits(['close'])
 
 const form = ref({
-  name: '',
+  first_name: '',
+  last_name: '',
+  middle_initial: '',
   program_id: '',
-  year_graduated: '',
+  school_year_id: '',
   employment_status: 'Employed',
   current_job_title: ''
-});
+})
 
-const errors = ref({});
+const errors = ref({})
 
-// Watch for changes to graduate prop (for editing)
-watch(() => props.graduate, (newGraduate) => {
-  if (newGraduate) {
-    form.value = { ...newGraduate };
+// Prefill data when editing
+watch(() => props.graduate, (grad) => {
+  if (grad) {
+    form.value = {
+      id: grad.id,
+      first_name: grad.first_name,
+      last_name: grad.last_name,
+      middle_initial: grad.middle_initial || '',
+      program_id: grad.program_id,
+      school_year_id: grad.school_year_id,
+      employment_status: grad.employment_status,
+      current_job_title: grad.current_job_title
+    }
   } else {
-    form.value = { name: '', program_id: '', year_graduated: '', employment_status: 'Employed', current_job_title: '' };
+    resetForm()
   }
-  errors.value = {}; // Reset errors when modal opens
-}, { immediate: true });
+}, { immediate: true })
 
-const handleEmploymentStatus = () => {
+function resetForm() {
+  form.value = {
+    first_name: '',
+    last_name: '',
+    middle_initial: '',
+    program_id: '',
+    school_year_id: '',
+    employment_status: 'Employed',
+    current_job_title: ''
+  }
+  errors.value = {}
+}
+
+function handleEmploymentStatus() {
   if (form.value.employment_status === 'Unemployed') {
-    form.value.current_job_title = 'N/A';
+    form.value.current_job_title = 'N/A'
   }
-};
+}
 
-const saveGraduate = () => {
-  errors.value = {}; // Clear previous errors
-  
-  if (form.value.id) {
-    // If ID exists, update the existing graduate
-    router.patch(route('graduates.update', { graduate: form.value.id }), form.value, {
-      onSuccess: () => {
-        console.log("Graduate updated successfully!");
-        emit('close'); // Close the modal
-        router.reload(); // Refresh table
-      },
-      onError: (validationErrors) => {
-        errors.value = validationErrors;
-      },
-    });
-  } else {
-    // If no ID, create a new graduate
-    router.post(route('graduates.store'), form.value, {
-      onSuccess: () => {
-        console.log("Graduate added successfully!");
-        emit('close'); // Close the modal
-        router.reload(); // Refresh table
-      },
-      onError: (validationErrors) => {
-        errors.value = validationErrors;
-      },
-    });
-  }
-};
+function submitForm() {
+  const routeName = form.value.id ? 'graduates.update' : 'graduates.store'
+  const method = form.value.id ? 'patch' : 'post'
+  const url = form.value.id ? route(routeName, { graduate: form.value.id }) : route(routeName)
+
+  router[method](url, form.value, {
+    onSuccess: () => {
+      emit('close')
+      resetForm()
+    },
+    onError: (validationErrors) => {
+      errors.value = validationErrors
+    }
+  })
+}
 </script>

@@ -2,25 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CareerOpportunity extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    // Specify the fillable fields
-    protected $fillable = [
-        'title',       // Title of the career opportunity
-        'description', // Description of the career opportunity (optional)
-        'program_id',  // Foreign key linking to the Program model
-    ];
+    protected $fillable = ['title'];
 
-    // Define the relationship with the Program model
-    public function program()
-{
-    return $this->belongsTo(Program::class);
-}
-
-    
+    public function programs()
+    {
+        return $this->belongsToMany(Program::class)->withTimestamps();
+    }
 }

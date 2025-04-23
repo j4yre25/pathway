@@ -16,10 +16,14 @@ class Achievement extends Model
         'graduate_achievement_description',
         'graduate_achievement_url',
         'graduate_achievement_type',
-        'user_id', // Foreign key
+        'credential_picture_url',
+        'user_id'
     ];
 
-    // Relationship with User
+    protected $casts = [
+        'graduate_achievement_date' => 'datetime',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

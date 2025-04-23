@@ -30,7 +30,6 @@ class Experience extends Model
         'graduate_experience_end_date',
         'graduate_experience_address',
         'graduate_experience_achievements',
-        'graduate_experience_skills_tech',
     ];
 
     /**

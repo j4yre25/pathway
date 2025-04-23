@@ -82,7 +82,7 @@ class JobsController extends Controller
             'max_salary' => 'required|integer',
             'job_type' => 'required|string',
             'experience_level' => 'required|string',
-            'description' => 'required|string',
+            'description' => 'required|string| max:5000',
             'requirements' => 'required|string',
             'skills' => 'required|array',
             'sector' => 'required|exists:sectors,id', 
