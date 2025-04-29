@@ -28,7 +28,7 @@ const filteredJobs = computed(() => {
 });
 
 const goToJob = (jobId) => {
-  router.get(route('jobs.view', { id: jobId }));
+  router.get(route('company.jobs.view', { id: jobId }));
 };
 </script>
 

@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->integer('user_id');
-
+        Schema::table('jobs', function (Blueprint $table) {
+            $table->string('posted_by')->after('user_id');
         });
     }
 
@@ -22,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('projects', function (Blueprint $table) {
-            //
+        Schema::table('jobs', function (Blueprint $table) {
+            $table->dropColumn('posted_by');
         });
     }
 };

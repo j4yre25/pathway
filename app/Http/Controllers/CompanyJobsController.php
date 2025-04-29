@@ -14,7 +14,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 
-class JobsController extends Controller
+class CompanyJobsController extends Controller
 {
     public function index(User $user) {
 
@@ -22,15 +22,16 @@ class JobsController extends Controller
 
 
         $jobs = $user->jobs;
-        $sectors = \App\Models\Sector::pluck('name'); // Fetch all sector names
+        $sectors = Sector::pluck('name'); // Fetch all sector names
         $categories = \App\Models\Category::pluck('name'); // Fetch all category names
-        return Inertia::render('Jobs/Index/Index', [
+        
+        return Inertia::render('Company/Jobs/Index/Index', [
             'jobs' => $jobs,
             'sectors' => $sectors, // Array of sectors
             'categories' => $categories,
         ]);
 
-        
+    
     }
 
 
@@ -39,7 +40,7 @@ class JobsController extends Controller
          $sectors = Sector::with('categories')->get();
 
 
-        return Inertia::render('Jobs/Index/CreateJobs', [
+        return Inertia::render('Company/Jobs/Index/CreateJobs', [
             'sectors' => $sectors,
     ]);
     }
@@ -50,7 +51,7 @@ class JobsController extends Controller
 
         $all_jobs = Job::with('user')->onlyTrashed()->get();
 
-        return Inertia::render('Jobs/Index/ArchivedList', [
+        return Inertia::render('Company/Jobs/Index/ArchivedList', [
             'all_jobs' => $all_jobs
 
 
@@ -61,7 +62,7 @@ class JobsController extends Controller
         // Fetch jobs posted by the authenticated user
         $jobs = $user->jobs;
     
-        return Inertia::render('Jobs/Index/ManageJobs', [
+        return Inertia::render('Company/Jobs/Index/ManageJobs', [
             'jobs' => $jobs
         ]);
     }
@@ -81,22 +82,30 @@ class JobsController extends Controller
                 }),
             ],
             'location' => 'required|string|max:255',
+            'branch_location' => 'nullable|string|max:255',
             'vacancy' => 'required|integer',
+            'salary_type' => 'required|string',
             'min_salary' => 'required|integer',
             'max_salary' => 'required|integer',
             'job_type' => 'required|string',
             'experience_level' => 'required|string',
             'description' => 'required|string| max:5000',
             'requirements' => 'required|string',
+            'job_benefits' => 'nullable|string',
+            'expiration_date' => 'nullable|date',
+            'application_limit' => 'nullable|integer',
             'skills' => 'required|array',
             'sector' => 'required|exists:sectors,id', 
             'category' => 'required|exists:categories,id',
+            'posted_by' => 'string|max:255',
         ]);
     
         $new_job = new Job();
         $new_job->user_id = $user->id;
         $new_job->job_title = $validated['job_title'];
         $new_job->location = $validated['location'];
+        $new_job->branch_location = $validated['branch_location'];
+        $new_job->salary_type = $validated['salary_type'];
         $new_job->min_salary = $validated['min_salary'];
         $new_job->max_salary = $validated['max_salary'];
         $new_job->job_type = $validated['job_type'];
@@ -107,10 +116,14 @@ class JobsController extends Controller
         $new_job->requirements = $validated['requirements'];
         $new_job->sector_id = $validated['sector']; 
         $new_job->category_id = $validated['category']; 
+        $new_job->job_benefits = $validated['job_benefits'];
+        $new_job->expiration_date = $validated['expiration_date'];
+        $new_job->application_limit = $validated['application_limit'];
+        $new_job->posted_by = $validated['posted_by'];
         $new_job->save();
     
         // return redirect()->back()->with('flash.banner', 'Job posted successfully.');
-        return redirect()->route('jobs', ['user' => $user->id])->with('flash.banner', 'Job posted successfully.');
+        return redirect()->route('company.jobs', ['user' => $user->id])->with('flash.banner', 'Job posted successfully.');
     }
 
     public function view(Job $job)
@@ -127,7 +140,7 @@ class JobsController extends Controller
         
         $hrFullName = trim($hrFirstName . ' ' . $hrLastName);
 
-        return Inertia::render('Jobs/View/EmployersJobDetails', [
+        return Inertia::render('Company/Jobs/View/EmployersJobDetails', [
             'job' => [
                 'id' => $job->id,
                 'job_title' => $job->job_title,
@@ -139,11 +152,8 @@ class JobsController extends Controller
                 'vacancy' => $job->vacancy,
                 'skills' => is_array($job->skills) ? $job->skills : json_decode($job->skills, true),
                 'is_approved' => $job->is_approved,
-                'user_id' => $job->user_id,
                 'posted_at' => $job->created_at->format('F j, Y'),
-                'posted_by' => $job->user?->name 
-                     ?? trim(($job->user->  company_hr_first_name ?? '') . ' ' . ($job->user->company_hr_last_name ?? '')) 
-                     ?? 'Unknown',
+                'posted_by' => $job->posted_by,
                 'user_role' => $job->user->role ?? null,
                 'category' => $job->category->name ?? null,
                 'salary_range' => $salaryRange,  
@@ -165,8 +175,9 @@ class JobsController extends Controller
             'user' => Auth::user(),
         ]);
     }
+
     public function edit(Job $job) {
-        return Inertia::render('Jobs/Edit/Index', [
+        return Inertia::render('Company/Jobs/Edit/Index', [
             'job' => $job
         ]);
     }
@@ -192,14 +203,14 @@ class JobsController extends Controller
         $job->is_approved = 1; 
         $job->save();
     
-        return redirect()->route('jobs', ['user' => $job->user_id])->with('flash.banner', 'Job approved successfully.');    }
+        return redirect()->route('company.jobs', ['user' => $job->user_id])->with('flash.banner', 'Job approved successfully.');    }
 
     public function disapprove(Job $job)
     {
         $job->is_approved = 0; 
         $job->save();
 
-        return redirect()->route('jobs', ['user' => $job->user_id])->with('flash.banner', 'Job disapproved successfully.');
+        return redirect()->route('company.jobs', ['user' => $job->user_id])->with('flash.banner', 'Job disapproved successfully.');
     }
 
 
@@ -211,7 +222,7 @@ class JobsController extends Controller
     
         // $user_id = $request->user()->id;
 
-        return redirect()->route('jobs', ['user' => $job->user_id])->with('flash.banner', 'Job Archived successfully.');
+        return redirect()->route('company.jobs', ['user' => $job->user_id])->with('flash.banner', 'Job Archived successfully.');
     }
 
 
