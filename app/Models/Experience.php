@@ -9,41 +9,24 @@ class Experience extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'user_id',
-        'role_title',
-        'company_name',
-        'start_month',
-        'start_year',
-        'still_in_role',
-        'end_month',
-        'end_year',
-        'job_description',
         'graduate_experience_title',
         'graduate_experience_company',
         'graduate_experience_start_date',
         'graduate_experience_end_date',
         'graduate_experience_address',
-        'graduate_experience_achievements',
+        'graduate_experience_description',
+        'graduate_experience_employment_type',
+        'is_current'
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
     protected $casts = [
-        'still_in_role' => 'boolean',
+        'graduate_experience_start_date' => 'date',
+        'graduate_experience_end_date' => 'date',
+        'is_current' => 'boolean'
     ];
 
-    /**
-     * Get the user that owns the experience.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
