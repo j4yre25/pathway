@@ -74,7 +74,7 @@ class ProfileController extends Controller
             'graduate_education_institution_id' => 'required|string|max:255',
             'graduate_education_program' => 'required|string|max:255',
             'graduate_education_field_of_study' => 'required|string|max:255',
-            'graduate_education_start_date' => 'required|date',
+            'graduate_educationW_start_date' => 'required|date',
             'graduate_education_end_date' => 'nullable|date',
             'graduate_education_description' => 'nullable|string',
             'is_current' => 'boolean',
@@ -159,7 +159,7 @@ class ProfileController extends Controller
             return redirect()->back()->with('flash.banner', 'Experience added successfully.');
         } catch (\Exception $e) {
             Log::error('Error adding experience: ' . $e->getMessage());
-            return redirect()->back()->with('flash.banner', 'Failed to add experience. Please try again.', 'flash.bannerStyle', 'danger');
+            return redirect()->back()->with('flash.banner', 'Failed to add experience. Please try again.',);
         }
     }
     
@@ -170,7 +170,7 @@ class ProfileController extends Controller
             $experience = Experience::findOrFail($id);
             
             if ($experience->user_id !== Auth::id()) {
-                return redirect()->back()->with('flash.banner', 'Unauthorized access.', 'flash.bannerStyle', 'danger');
+                return redirect()->back()->with('flash.banner', 'Unauthorized access.',);
             }
 
             $validated = $request->validate([
@@ -193,7 +193,7 @@ class ProfileController extends Controller
             return redirect()->back()->with('flash.banner', 'Experience updated successfully.');
         } catch (\Exception $e) {
             Log::error('Error updating experience: ' . $e->getMessage());
-            return redirect()->back()->with('flash.banner', 'Failed to update experience. Please try again.', 'flash.bannerStyle', 'danger');
+            return redirect()->back()->with('flash.banner', 'Failed to update experience. Please try again.',);
         }
     }
 
