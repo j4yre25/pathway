@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
 use Inertia\Inertia;
 
 
@@ -92,8 +93,8 @@ class CompanyJobsController extends Controller
             'description' => 'required|string| max:5000',
             'requirements' => 'required|string',
             'job_benefits' => 'nullable|string',
-            'expiration_date' => 'nullable|date',
-            'application_limit' => 'nullable|integer',
+            'expiration_date' => 'required|date',
+            'applicants_limit' => 'nullable|integer',
             'skills' => 'required|array',
             'sector' => 'required|exists:sectors,id', 
             'category' => 'required|exists:categories,id',
@@ -117,9 +118,9 @@ class CompanyJobsController extends Controller
         $new_job->sector_id = $validated['sector']; 
         $new_job->category_id = $validated['category']; 
         $new_job->job_benefits = $validated['job_benefits'];
-        $new_job->expiration_date = $validated['expiration_date'];
-        $new_job->application_limit = $validated['application_limit'];
-        $new_job->posted_by = $validated['posted_by'];
+        $new_job->expiration_date = \Carbon\Carbon::parse($validated['expiration_date'])->format('Y-m-d');
+        $new_job->applicants_limit = $validated['applicants_limit'] ?? null; 
+        $new_job->posted_by = $validated['posted_by'] ?? null; 
         $new_job->save();
     
         // return redirect()->back()->with('flash.banner', 'Job posted successfully.');

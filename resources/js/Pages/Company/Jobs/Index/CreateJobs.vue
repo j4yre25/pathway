@@ -39,6 +39,8 @@ const form = useForm({
     salary_type: '',
     job_benefits: '',
     branch_location: '',
+    expiration_date: '',
+    applicants_limit: '',
     posted_by: `${page.props.auth.user.company_hr_first_name} ${page.props.auth.user.company_hr_last_name}`,
 });
 
@@ -413,22 +415,22 @@ const createJob = () => {
 
                             <!-- Application Deadline -->
                             <div class="col-span-6 sm:col-span-4 mt-5">
-                                <InputLabel for="application_deadline" value="Application Deadline" />
+                                <InputLabel for="expiration_date" value="Application Deadline" />
                                 <Datepicker 
-                                    v-model="form.application_deadline" 
+                                    v-model="form.expiration_date" 
                                     :enable-time-picker="false"
                                     input-class-name="w-full p-2 border rounded-lg mt-2"
-                                    :max-date= "today"
+                                    :min-date= "today"
                                     placeholder="Select date"
                                     required />
-                                <InputError :message="form.errors.application_deadline" class="mt-2" />
+                                <InputError :message="form.errors.expiration_date" class="mt-2" />
                             </div>
 
                             <!-- Application Limit -->
                             <div class="col-span-6 sm:col-span-4 mt-5">
-                                <InputLabel for="application_limit" value="Application Limit (optional)" />
-                                <TextInput id="application_limit" v-model="form.application_limit" type="number" min="1" class="w-full p-2 border rounded-lg mt-2" />
-                                <InputError :message="form.errors.application_limit" class="mt-2" />
+                                <InputLabel for="applicants_limit" value="Application Limit (optional)" />
+                                <TextInput id="applicants_limit" v-model="form.applicants_limit" type="number" min="1" class="w-full p-2 border rounded-lg mt-2" />
+                                <InputError :message="form.errors.applicants_limit" class="mt-2" />
                             </div>
                         </div>
                         

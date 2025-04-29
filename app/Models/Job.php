@@ -56,7 +56,7 @@ class Job extends Model
 
         'application_deadline',
         'expiration_date',
-        'application_limit',
+        'applicants_limit',
 
         'work_type',
     ];
@@ -163,11 +163,11 @@ class Job extends Model
 
     public function hasApplicationLimitReached()
     {
-        if (!$this->application_limit) {
+        if (!$this->applicants_limit) {
             return false;
         }
 
-        return $this->applicants()->count() >= $this->application_limit;
+        return $this->applicants()->count() >= $this->applicants_limit;
     }
 
     public function shouldBeArchived()
