@@ -193,16 +193,6 @@ const apexchart = VueApexCharts;
 
 // Experience Data
 const experienceEntries = ref(props.experienceEntries || []);
-const employmentTypes = [
-  'Full-time',
-  'Part-time',
-  'Contract',
-  'Temporary',
-  'Internship',
-  'Freelance',
-  'Remote'
-];
-
 const experience = ref({
   graduate_experience_title: '',
   graduate_experience_company: '',
@@ -223,13 +213,6 @@ const validateExperience = () => {
   if (!experience.value.is_current && !experience.value.graduate_experience_end_date) {
     errors.endDate = 'End date is required when not current position';
   }
-  if (experience.value.graduate_experience_end_date && experience.value.graduate_experience_start_date) {
-    const startDate = new Date(experience.value.graduate_experience_start_date);
-    const endDate = new Date(experience.value.graduate_experience_end_date);
-    if (endDate < startDate) {
-      errors.endDate = 'End date must be after or equal to start date';
-    }
-  }
   return Object.keys(errors).length === 0 ? null : errors;
 };
 
@@ -238,8 +221,8 @@ const openUpdateExperienceModal = (experienceEntry) => {
     id: experienceEntry.id,
     graduate_experience_title: experienceEntry.graduate_experience_title,
     graduate_experience_company: experienceEntry.graduate_experience_company,
-    graduate_experience_start_date: formatDate(experienceEntry.graduate_experience_start_date),
-    graduate_experience_end_date: experienceEntry.is_current ? null : formatDate(experienceEntry.graduate_experience_end_date),
+    graduate_experience_start_date: experienceEntry.graduate_experience_start_date ? new Date(experienceEntry.graduate_experience_start_date).toISOString().split('T')[0] : null,
+    graduate_experience_end_date: experienceEntry.graduate_experience_end_date ? new Date(experienceEntry.graduate_experience_end_date).toISOString().split('T')[0] : null,
     graduate_experience_address: experienceEntry.graduate_experience_address,
     graduate_experience_description: experienceEntry.graduate_experience_description || '',
     graduate_experience_employment_type: experienceEntry.graduate_experience_employment_type,
@@ -315,37 +298,25 @@ const resetProject = () => {
 };
 const noProjectUrl = ref(false);
 
-const projectForm = useForm({
-  graduate_projects_title: '',
-  graduate_projects_description: '',
-  graduate_projects_role: '',
-  graduate_projects_start_date: new Date(),
-  graduate_projects_end_date: new Date(),
-  graduate_projects_url: '',
-  graduate_projects_key_accomplishments: '',
-  is_current: false
-});
-
 const addProject = () => {
-  projectForm.post(route('profile.project.store'), {
+  ensureDateObjects();
+  const formData = new FormData();
+  formData.append('graduate_projects_title', projects.value.graduate_projects_title);
+  formData.append('graduate_projects_description', projects.value.graduate_projects_description || 'No description provided');
+  formData.append('graduate_projects_role', projects.value.graduate_projects_role);
+  formData.append('graduate_projects_start_date', formatDate(projects.value.graduate_projects_start_date));
+  formData.append('graduate_projects_end_date', projects.value.is_current ? null : formatDate(projects.value.graduate_projects_end_date));
+  formData.append('graduate_projects_url', noProjectUrl.value ? 'No project URL provided' : projects.value.graduate_projects_url);
+  formData.append('graduate_projects_key_accomplishments', projects.value.graduate_projects_key_accomplishments || 'No key accomplishments provided');
+  formData.append('is_current', projects.value.is_current);
+
+  router.post(route('profile.project.store'), formData, {
     onSuccess: () => {
       isAddProjectModalOpen.value = false;
-      projectForm.reset();
+      resetProject();
     },
     onError: (errors) => {
       console.error('Error adding project:', errors);
-    }
-  });
-};
-
-const updateProject = (id) => {
-  projectForm.put(route('project.update', id), {
-    onSuccess: () => {
-      isUpdateProjectModalOpen.value = false;
-      projectForm.reset();
-    },
-    onError: (errors) => {
-      console.error('Error updating project:', errors);
     }
   });
 };
@@ -450,27 +421,37 @@ const testimonials = ref({
 });
 
 // Employment Data
-const employmentPreferencesForm = useForm({
-  jobTypes: props.employmentPreferencesEntries?.jobTypes || [],
-  salaryExpectations: props.employmentPreferencesEntries?.salaryExpectations || {
+const employmentPreferences = ref(props.employmentPreferencesEntries || {
+  jobTypes: [],
+  salaryExpectations: {
     range: 'Select expected salary range',
     frequency: 'per year'
   },
-  preferredLocations: props.employmentPreferencesEntries?.preferredLocations || [],
-  workEnvironment: props.employmentPreferencesEntries?.workEnvironment || [],
-  availability: props.employmentPreferencesEntries?.availability || [],
-  additionalNotes: props.employmentPreferencesEntries?.additionalNotes || ''
+  preferredLocations: [],
+  workEnvironment: [],
+  availability: [],
+  additionalNotes: ''
 });
 
-const updateEmploymentPreferences = () => {
-  employmentPreferencesForm.put(route('employment.preferences.update'), {
-    onSuccess: () => {
-      console.log('Employment preferences updated successfully');
-    },
-    onError: (errors) => {
-      console.error('Error updating employment preferences:', errors);
+const fetchEmploymentPreferences = async () => {
+  try {
+    const response = await axios.get(route('employment.references.get'));
+    if (response.data) {
+      employmentPreferences.value = {
+        jobTypes: response.data.jobTypes ? response.data.jobTypes.split(', ') : [],
+        salaryExpectations: response.data.salaryExpectations ? JSON.parse(response.data.salaryExpectations) : { // Parse the JSON string
+          range: 'Select expected salary range',
+          frequency: 'per year'
+        },
+        preferredLocations: response.data.preferredLocations ? response.data.preferredLocations.split(', ') : [],
+        workEnvironment: response.data.workEnvironment ? response.data.workEnvironment.split(', ') : [],
+        availability: response.data.availability ? response.data.availability.split(', ') : [],
+        additionalNotes: response.data.additionalNotes || ''
+      };
     }
-  });
+  } catch (error) {
+    console.error('Error fetching employment preferences:', error);
+  }
 };
 
 onMounted(() => {
@@ -481,22 +462,27 @@ onMounted(() => {
 const newIndustry = ref('');
 const careerGoalsEntries = ref(props.careerGoalsEntries || []);
 
-const careerGoalsForm = useForm({
-  shortTermGoals: props.careerGoalsEntries?.shortTermGoals || '',
-  longTermGoals: props.careerGoalsEntries?.longTermGoals || '',
-  industriesOfInterest: props.careerGoalsEntries?.industriesOfInterest || [],
-  careerPath: props.careerGoalsEntries?.careerPath || ''
+const careerGoals = ref({
+  shortTermGoals: '',
+  longTermGoals: '',
+  industriesOfInterest: [],
+  careerPath: ''
 });
 
-const updateCareerGoals = () => {
-  careerGoalsForm.put(route('career.goals.update'), {
-    onSuccess: () => {
-      console.log('Career goals updated successfully');
-    },
-    onError: (errors) => {
-      console.error('Error updating career goals:', errors);
+const fetchCareerGoals = async () => {
+  try {
+    const response = await axios.get(route('career.goals.get'));
+    if (response.data) {
+      careerGoals.value = {
+        shortTermGoals: response.data.shortTermGoals || '',
+        longTermGoals: response.data.longTermGoals || '',
+        industriesOfInterest: response.data.industriesOfInterest ? response.data.industriesOfInterest.split(',') : [],
+        careerPath: response.data.careerPath || ''
+      };
     }
-  });
+  } catch (error) {
+    console.error('Error fetching career goals:', error);
+  }
 };
 
 onMounted(() => {
@@ -892,56 +878,77 @@ const newSkill = ref('');
 // Experience Handlers
 const addExperience = () => {
   const errors = validateExperience();
-  if (errors) return;
+  if (errors) {
+    alert('Please fill in all required fields.');
+    return;
+  }
 
-  const formData = {
-    ...experience.value,
+  const experienceForm = useForm({
+    graduate_experience_title: experience.value.graduate_experience_title,
+    graduate_experience_company: experience.value.graduate_experience_company,
+    graduate_experience_employment_type: experience.value.graduate_experience_employment_type,
     graduate_experience_start_date: formatDate(experience.value.graduate_experience_start_date),
-    graduate_experience_end_date: experience.value.is_current ? null : formatDate(experience.value.graduate_experience_end_date)
-  };
+    graduate_experience_end_date: stillInRole.value ? null : formatDate(experience.value.graduate_experience_end_date),
+    graduate_experience_address: experience.value.graduate_experience_address,
+    graduate_experience_description: experience.value.graduate_experience_description || 'No description provided',
+    is_current: stillInRole.value,
+  });
 
-  router.post(route('profile.experience.store'), formData, {
-    onSuccess: () => {
-      isAddExperienceModalOpen.value = false;
+  // Log data being sent to the backend
+  console.log('Data being sent to backend for adding experience:', experienceForm.data());
+
+  experienceForm.post(route('profile.experience.store'), {
+    onSuccess: ( response) => {
+      console.log('Experience added successfully:', response);
+      experienceEntries.value.push({ ...experienceForm.data(), id: response.id });
       resetExperience();
+      isAddExperienceModalOpen.value = false;
     },
     onError: (errors) => {
       console.error('Error adding experience:', errors);
-    }
+      alert('An error occurred while adding experience. Please try again.');
+    },
   });
 };
 
 const updateExperience = () => {
-  const errors = validateExperience();
-  if (errors) {
-    console.error('Validation errors:', errors);
-    return;
-  }
+  const experienceForm = useForm({
+    graduate_experience_title: experience.value.graduate_experience_title,
+    graduate_experience_company: experience.value.graduate_experience_company,
+    graduate_experience_employment_type: experience.value.graduate_experience_employment_type,
+    graduate_experience_start_date: experience.value.graduate_experience_start_date,
+    graduate_experience_end_date: stillInRole.value ? null : experience.value.graduate_experience_end_date,
+    graduate_experience_address: experience.value.graduate_experience_address,
+    graduate_experience_description: experience.value.graduate_experience_description,
+    is_current: stillInRole.value,
+  });
 
-  const formData = {
-    ...experience.value,
-    graduate_experience_start_date: formatDate(experience.value.graduate_experience_start_date),
-    graduate_experience_end_date: experience.value.is_current ? null : formatDate(experience.value.graduate_experience_end_date)
-  };
+  // Log data being sent to the backend
+  console.log('Data being sent to backend for updating experience:', experienceForm.data());
 
-  router.put(route('experience.update', experience.value.id), formData, {
+  experienceForm.put(route('experience.update', experience.value.id), {
     onSuccess: () => {
-      isUpdateExperienceModalOpen.value = false;
-      resetExperience();
+      console.log('Experience updated successfully.');
+      const index = experienceEntries.value.findIndex(entry => entry.id === experience.value.id);
+      if (index !== -1) {
+        experienceEntries.value[index] = { ...experienceForm.data(), id: experience.value.id };
+      }
+      closeUpdateExperienceModal();
+      isExperienceUpdatedModalOpen.value = true;
     },
     onError: (errors) => {
-      console.error('Error updating experience:', errors);
-    }
-  });
+      console.error('Error updating experience entry:', errors);
       alert('An error occurred while updating the experience entry. Please try again.');
-    }
+    },
+  });
+};
 
 
 // Project Handlers
 
 
-const updateProjectForm = () => {
-  Object.assign(projectForm, {
+const updateProject = () => {
+  const projectForm = useForm({
     graduate_projects_title: projects.value.graduate_projects_title,
     graduate_projects_description: projects.value.graduate_projects_description || 'No description provided',
     graduate_projects_role: projects.value.graduate_projects_role,
@@ -949,7 +956,7 @@ const updateProjectForm = () => {
     graduate_projects_end_date: projects.value.is_current ? null : projects.value.graduate_projects_end_date,
     graduate_projects_url: noProjectUrl.value ? null : projects.value.graduate_projects_url,
     graduate_projects_key_accomplishments: projects.value.graduate_projects_key_accomplishments || 'No key accomplishment provided',
-    is_current: projects.value.is_current
+    is_current: projects.value.is_current,
   });
 
   projectForm.put(route('projects.update', projects.value.id), {
@@ -1577,7 +1584,6 @@ const resetExperience = () => {
     graduate_experience_end_date: null,
     graduate_experience_address: '',
     graduate_experience_description: '',
-    graduate_experience_employment_type: '',
     is_current: false,
   };
   stillInRole.value = false;
@@ -1935,10 +1941,9 @@ const removeAchievement = (achievement) => {
   }
 };
 
-
 const removeProject = (project) => {
-  if (!project || !project.id || !project.graduate_projects_title) {
-    console.error('Invalid project data:', project);
+  if (!project || !project.graduate_projects_title) {
+    console.error('Invalid project data');
     return;
   }
   if (confirm(`Are you sure you want to remove this project: ${project.graduate_projects_title}?`)) {
@@ -2543,9 +2548,6 @@ onMounted(() => {
                   </div>
                   <h3 class="text-lg font-medium text-gray-900 mb-2">No skills added yet</h3>
                   <p class="text-gray-600 mb-6">Start building your skill profile by adding your technical, soft, and language skills.</p>
-                  <PrimaryButton @click="openAddSkillModal" class="inline-flex items-center">
-                    <i class="fas fa-plus mr-2"></i> Add Your First Skill
-                  </PrimaryButton>
                 </div>
               </div>
 
@@ -3624,11 +3626,11 @@ onMounted(() => {
                       class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                       rows="3" placeholder="Write the testimonial here..." required></textarea>
                   </div>
-                  <!-- <div class="mb-4">
+                  <div class="mb-4">
                     <label for="testimonial-file" class="block text-sm font-medium text-gray-700">Upload File</label>
                     <input type="file" id="testimonial-file" @change="handleFileUpload"
                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                  </div> -->
+                  </div>
                   <div class="flex justify-end">
                     <button type="submit"
                       class="w-full bg-indigo-600 text-white py-2 rounded-md flex items-center justify-center">
@@ -4007,4 +4009,4 @@ onMounted(() => {
       </div>
     </div>
   </Graduate>
-</template>>
+</template>

@@ -74,7 +74,7 @@ class ProfileController extends Controller
             'graduate_education_institution_id' => 'required|string|max:255',
             'graduate_education_program' => 'required|string|max:255',
             'graduate_education_field_of_study' => 'required|string|max:255',
-            'graduate_educationW_start_date' => 'required|date',
+            'graduate_education_start_date' => 'required|date',
             'graduate_education_end_date' => 'nullable|date',
             'graduate_education_description' => 'nullable|string',
             'is_current' => 'boolean',
@@ -111,7 +111,6 @@ class ProfileController extends Controller
 
         $data = $request->all();
 
-        // Handle is_current logic
         if ($request->is_current) {
             $data['graduate_education_end_date'] = null;
         } elseif (isset($data['graduate_education_end_date'])) {
@@ -137,32 +136,34 @@ class ProfileController extends Controller
     public function addExperience(Request $request)
     {
         try {
-            $validated = $request->validate([
-                'graduate_experience_title' => 'required|string|max:255',
-                'graduate_experience_company' => 'required|string|max:255',
-                'graduate_experience_start_date' => 'required|date',
-                'graduate_experience_end_date' => 'nullable|date|after_or_equal:graduate_experience_start_date',
-                'graduate_experience_address' => 'nullable|string|max:255',
-                'graduate_experience_description' => 'nullable|string',
-                'graduate_experience_employment_type' => 'required|string|in:Full-time,Part-time,Contract,Temporary,Internship,Freelance,Remote',
-                'is_current' => 'boolean'
-            ]);
+            $request->validate(Experience::$rules);
 
-            $experience = new Experience();
-            $experience->fill($validated);
-            $experience->graduate_experience_start_date = Carbon::parse($validated['graduate_experience_start_date'])->format('Y-m-d');
-            $experience->graduate_experience_end_date = $validated['is_current'] ? null : 
-                (isset($validated['graduate_experience_end_date']) ? Carbon::parse($validated['graduate_experience_end_date'])->format('Y-m-d') : null);
-            $experience->user_id = Auth::id();
-            $experience->save();
+            $data = $request->all();
+            $data['user_id'] = Auth::id();
+
+            if ($request->is_current) {
+                $data['graduate_experience_end_date'] = null;
+            }
+
+            Experience::create($data);
 
             return redirect()->back()->with('flash.banner', 'Experience added successfully.');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
         } catch (\Exception $e) {
-            Log::error('Error adding experience: ' . $e->getMessage());
-            return redirect()->back()->with('flash.banner', 'Failed to add experience. Please try again.',);
+            Log::error('Error saving experience:', [
+                'error' => $e->getMessage(),
+                'request_data' => $request->all()
+            ]);
+            return redirect()->back()
+                ->with('flash.banner', 'An error occurred while adding experience. Please try again.')
+                ->with('flash.bannerStyle', 'danger');
         }
     }
-    
+
     // Update experience
     public function updateExperience(Request $request, $id)
     {
@@ -170,30 +171,36 @@ class ProfileController extends Controller
             $experience = Experience::findOrFail($id);
             
             if ($experience->user_id !== Auth::id()) {
-                return redirect()->back()->with('flash.banner', 'Unauthorized access.',);
+                return redirect()->back()
+                    ->with('flash.banner', 'Unauthorized access')
+                    ->with('flash.bannerStyle', 'danger');
             }
 
-            $validated = $request->validate([
-                'graduate_experience_title' => 'required|string|max:255',
-                'graduate_experience_company' => 'required|string|max:255',
-                'graduate_experience_start_date' => 'required|date',
-                'graduate_experience_end_date' => 'nullable|date|after_or_equal:graduate_experience_start_date',
-                'graduate_experience_address' => 'nullable|string|max:255',
-                'graduate_experience_description' => 'nullable|string',
-                'graduate_experience_employment_type' => 'required|string|in:Full-time,Part-time,Contract,Temporary,Internship,Freelance,Remote',
-                'is_current' => 'boolean'
-            ]);
+            $request->validate(Experience::$rules);
 
-            $experience->fill($validated);
-            $experience->graduate_experience_start_date = Carbon::parse($validated['graduate_experience_start_date'])->format('Y-m-d');
-            $experience->graduate_experience_end_date = $validated['is_current'] ? null : 
-                (isset($validated['graduate_experience_end_date']) ? Carbon::parse($validated['graduate_experience_end_date'])->format('Y-m-d') : null);
-            $experience->save();
+            $data = $request->all();
+            
+            if ($request->is_current) {
+                $data['graduate_experience_end_date'] = null;
+            }
+
+            $experience->update($data);
 
             return redirect()->back()->with('flash.banner', 'Experience updated successfully.');
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()
+                ->with('flash.banner', 'Experience not found')
+                ->with('flash.bannerStyle', 'danger');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
         } catch (\Exception $e) {
-            Log::error('Error updating experience: ' . $e->getMessage());
-            return redirect()->back()->with('flash.banner', 'Failed to update experience. Please try again.',);
+            Log::error('Error updating experience:', ['error' => $e->getMessage()]);
+            return redirect()->back()
+                ->with('flash.banner', 'An error occurred while updating experience')
+                ->with('flash.bannerStyle', 'danger');
         }
     }
 
@@ -492,30 +499,11 @@ class ProfileController extends Controller
             }
             
             $certification->delete();
-            
+
             return redirect()->back()->with('flash.banner', 'Certification removed successfully.');
         } catch (\Exception $e) {
             Log::error('Error removing certification: ' . $e->getMessage());
             return redirect()->back()->with('flash.banner', 'Failed to remove certification. Please try again.');
-        }
-    }
-
-    // Remove achievement
-    public function removeAchievement($id)
-    {
-        try {
-            $achievement = Achievement::findOrFail($id);
-            
-            if ($achievement->user_id !== Auth::id()) {
-                return redirect()->back()->with('flash.banner', 'Unauthorized access.');
-            }
-            
-            $achievement->delete();
-            
-            return redirect()->back()->with('flash.banner', 'Achievement removed successfully.');
-        } catch (\Exception $e) {
-            Log::error('Error removing achievement: ' . $e->getMessage());
-            return redirect()->back()->with('flash.banner', 'Failed to remove achievement. Please try again.');
         }
     }
 
@@ -615,8 +603,9 @@ class ProfileController extends Controller
         $request->validate([
             'graduate_testimonials_name' => 'required|string|max:255',
             'graduate_testimonials_role_title' => 'required|string|max:255',
+            'graduate_testimonials_relationship' => 'required|string|max:255',
             'graduate_testimonials_testimonial' => 'required|string',
-            // 'graduate_testimonials_letters' => 'nullable|file|mimes:pdf,doc,docx|max:2048'
+            'graduate_testimonials_letters' => 'nullable|file|mimes:pdf,doc,docx|max:2048'
         ]);
 
         $data = $request ->all();
