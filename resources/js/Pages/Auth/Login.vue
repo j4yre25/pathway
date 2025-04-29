@@ -2,13 +2,13 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
-import LoginCard from '@/Components/LoginCard.vue'; // UPDATE 04/04 This is the new component for the login form layout. Remove the authentication card component
+import LoginCard from '@/Components/LoginCard.vue';
+import { Inertia } from '@inertiajs/inertia';
 import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import Inertia from '@inertiajs/inertia';
 import Modal from '@/Components/Modal.vue';
 import { ref } from 'vue';
 

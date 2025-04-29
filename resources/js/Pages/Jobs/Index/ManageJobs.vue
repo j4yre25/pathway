@@ -11,6 +11,7 @@ import { ref } from 'vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 
+
 const page = usePage()
 
 const props = defineProps({
@@ -82,7 +83,7 @@ const disapproveJob = (job) => {
         </div>
       </div>
       <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200">
+        <table class="mt-8 min-w-full bg-white border border-gray-200">
           <thead>
             <tr class="w-full bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
               <th class="py-2 px-4 text-left border">Job Title</th>
@@ -105,9 +106,9 @@ const disapproveJob = (job) => {
                 <span v-else class="text-yellow-600 font-semibold">Pending</span>
               </td>
               <td class="border border-gray-200 px-6 py-4">
-                <PrimaryButton class="mr-2 mb-2" @click="approveJob(job)" v-if="!job.is_approved">Approve
+                <PrimaryButton class="mr-2 mb-2" @click="approveJob(job)" v-if="page.props.roles.isPeso && !job.is_approved">Approve
                 </PrimaryButton>
-                <DangerButton class="mr-2" @click="disapproveJob(job)" v-if="!job.is_approved">
+                <DangerButton class="mr-2" @click="disapproveJob(job)" v-if="page.props.roles.isPeso && !job.is_approved">
                   Disapprove
                 </DangerButton>
                 <Link :href="route('jobs.view', { job: job.id })">

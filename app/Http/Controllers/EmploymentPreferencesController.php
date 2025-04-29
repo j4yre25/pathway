@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class EmploymentPreferencesController extends Controller
 {
     // Update employment preferences
-    public function updateEmploymentPreferences(Request $request)
+    public function updateEmploymentPreferences(Request $request, User $user)
     {
         $request->validate([
             'jobTypes' => 'array',

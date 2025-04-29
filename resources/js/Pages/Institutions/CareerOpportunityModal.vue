@@ -1,78 +1,52 @@
 <template>
-    <dialog ref="dialog" class="z-50 m-0 min-h-full min-w-full overflow-y-auto bg-transparent">
-      <div class="bg-white p-6 rounded shadow-lg max-w-lg mx-auto">
-        <h2 class="text-xl font-bold mb-4">{{ props.opportunity ? "Edit" : "Add" }} Career Opportunity</h2>
-        
-        <!-- Program Selection -->
-        <div class="mb-4">
-          <InputLabel for="program" value="Select Program" />
-          <select v-model="form.program_id" id="program" class="w-full p-2 border rounded">
-            <option v-for="program in props.programs" :key="program.id" :value="program.id">{{ program.name }}</option>
-          </select>
-        </div>
-  
-        <!-- Career Opportunities -->
-        <div class="mb-4">
-            <InputLabel for="title" value="Career Opportunity Title" />
-            <TextInput v-model="form.title" id="title" class="w-full" placeholder="Ex. Nurse, Doctor" />
+  <div v-if="show" class="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+    <div class="bg-white w-full max-w-lg p-6 rounded-lg shadow relative">
+      <button @click="$emit('close')" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+        &times;
+      </button>
+      <h2 class="text-lg font-semibold mb-4">
+        {{ editing ? 'Edit Career Opportunity' : 'Add Career Opportunity' }}
+      </h2>
 
+      <form @submit.prevent="$emit('submit')" class="space-y-4">
+        <!-- Program Multi-select -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Program Name</label>
+          <select v-model="form.program_ids" multiple class="w-full border p-2 rounded">
+            <option v-for="program in programs" :key="program.id" :value="program.id">
+              {{ program.name }}
+            </option>
+          </select>
+          <p v-if="errors.program_ids" class="text-sm text-red-500 mt-1">{{ errors.program_ids }}</p>
         </div>
-  
-        <!-- Action Buttons -->
-        <div class="flex justify-end space-x-2 mt-4">
-          <button @click="closeModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded">Cancel</button>
-          <PrimaryButton @click="save">Save</PrimaryButton>
+
+        <!-- Title Comma-Separated -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Career Opportunity Title</label>
+          <input
+            v-model="form.titles"
+            placeholder="Ex. Doctor, Nurse (Separate with comma)."
+            class="w-full border p-2 rounded"
+          />
+          <p v-if="errors.titles" class="text-sm text-red-500 mt-1">{{ errors.titles }}</p>
         </div>
-      </div>
-    </dialog>
-  </template>
-  <script setup>
-  import { ref, watch, defineProps, defineEmits } from "vue";
-  import PrimaryButton from "@/Components/PrimaryButton.vue";
-  import InputLabel from "@/Components/InputLabel.vue";
-  import TextInput from "@/Components/TextInput.vue";
-  
-  const props = defineProps({
-      show: Boolean,
-      opportunity: Object, // Receives opportunity data when editing
-      programs: Array, // List of programs for selection
-  });
-  
-  const emit = defineEmits(["close", "save"]);
-  
-  const dialog = ref(null);
-  const form = ref({
-    program_id: "",
-    title: "", // Ensure this is included
-});
-  
-  // Watch for prop changes when opening the modal
-  watch(
-      () => props.show,
-      (newValue) => {
-          if (newValue) {
-              document.body.style.overflow = "hidden";
-              dialog.value?.showModal();
-  
-              // If editing, pre-fill the form
-              if (props.opportunity) {
-                  form.value = { ...props.opportunity };
-              }
-          } else {
-              document.body.style.overflow = null;
-              dialog.value?.close();
-          }
-      }
-  );
-  
-  const closeModal = () => {
-      emit("close");
-  };
-  
-  const save = () => {
-    emit("save", {
-        title: form.value.title,
-        program_id: form.value.program_id,
-    });
-};
-  </script>
+
+        <div class="flex justify-end gap-2 pt-4">
+          <button type="button" @click="$emit('close')" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script setup>
+defineProps({
+  show: Boolean,
+  editing: Boolean,
+  form: Object,
+  errors: Object,
+  programs: Array
+})
+defineEmits(['close', 'submit'])
+</script>

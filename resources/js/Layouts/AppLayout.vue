@@ -177,6 +177,7 @@ const redirectToLogin = () => {
 
             
 
+<<<<<<< HEAD
             <form @submit.prevent="submit" autocomplete="off">
                 <!-- Company Fields -->
              <div v-if="form.role === 'company'" class="flex space-x-12  ">
@@ -188,6 +189,341 @@ const redirectToLogin = () => {
                             Join us in shaping the future of education. We are excited to partner with you in this
                             journey.
                         </p>
+=======
+                                <NavLink v-if="page.props.roles.isPeso"
+                                    :href="route('sectors', { user: page.props.auth.user.id })"
+                                    :active="route().current('sectors')">
+                                    Manage Sectors
+                                </NavLink>
+
+                                <NavLink :href="route('categories.index', { user: page.props.auth.user.id })"
+                                    v-if="page.props.roles.isPeso" Categories
+                                    :active="route().current('categories.index')">
+                                    Manage Categories
+                                </NavLink>
+
+
+                                <NavLink
+                                    
+                                    v-if="page.props.roles.isCompany || page.props.roles.isInstitution && page.props.auth.user.is_approved"
+                                    :href="route('jobs', { user: page.props.auth.user.id })"
+                                    :active="route().current('jobs')" :disabled="!page.props.auth.user.is_approved">
+                                    Manage Job Posting
+                                </NavLink>
+
+                                
+                                <NavLink
+                                    
+                                    v-if="page.props.roles.isPeso && page.props.auth.user.is_approved"
+                                    :href="route('peso.jobs', { user: page.props.auth.user.id })"
+                                    :active="route().current('pesojobs')" :disabled="!page.props.auth.user.is_approved">
+                                    PESO Job Posting
+                                </NavLink>
+
+
+                                <NavLink v-if="page.props.roles.isCompany || page.props.roles.isInstitution " :href="route('jobs' , { user: page.props.auth.user.id })" :active="route().current('jobs')"    :disabled="!page.props.auth.user.is_approved"
+                                >
+                                    Manage Applicants
+                                </NavLink>
+
+                                <NavLink v-if="page.props.roles.isCompany" :href="route('dashboard' , { user: page.props.auth.user.id })" :active="route().current('dashboard')"    :disabled="!page.props.auth.user.is_approved"
+                                >
+                                    Manage HR Accounts
+                                </NavLink>
+
+                                <NavLink v-if="page.props.roles.isCompany" :href="route('dashboard' , { user: page.props.auth.user.id })" :active="route().current('jdashboard')"    :disabled="!page.props.auth.user.is_approved"
+                                >
+                                    Reports
+                                </NavLink>
+
+                                <NavLink :href="route('dashboard')" v-if="page.props.roles.isPeso" Categories
+                                    :active="route().current('dashboard')">
+                                    Manage Job Referrals
+                                </NavLink>
+<!-- 
+                                <NavLink :href="route('jobs.list')" v-if="page.props.roles.isPeso" Categories
+                                    :active="route().current('job.list')">
+                                    Reports
+                                </NavLink> -->
+
+
+                                <!-- Graduate Link -->
+                                <NavLink
+                                    v-if="page.props.permissions.canManageGraduate && page.props.auth.user.is_approved"
+                                    :href="route('graduates.index')" :active="route().current('graduates.index')">
+                                    Graduate
+                                </NavLink>
+
+                                
+
+
+                                <!-- Institution Link -->
+                                <NavLink
+                                    v-if="page.props.permissions.canManageInstitution && page.props.auth.user.is_approved"
+                                    :href="route('institutions.index')" :active="route().current('institutions.index')">
+                                    Institution
+                                </NavLink>
+
+                                <NavLink
+                                    v-if="page.props.permissions.canManageInstitution && page.props.auth.user.is_approved"
+                                    :href="route('institutions.index')" :active="route().current('institutions.index')">
+                                    Manage Career Officer
+                                </NavLink>
+
+                                <NavLink
+                                    v-if="page.props.permissions.canManageInstitution && page.props.auth.user.is_approved"
+                                    :href="route('institutions.index')" :active="route().current('institutions.index')">
+                                    Manage Graduate Counseling
+                                </NavLink>
+
+                                <!-- Manage Approval Link -->
+                                <NavLink
+                                    v-if="page.props.permissions.canManageApprovalGraduate && page.props.auth.user.is_approved"
+                                    :href="route('institution.manage_users')"
+                                    :active="route().current('institution.manage_users')">
+                                    Manage Approval
+                                </NavLink>
+
+                            
+
+                                <!--<NavLink 
+                                    v-if="sectors" 
+
+                                 <NavLink :href="route('sectors' , { user: page.props.auth.user.id })" :active="route().current('sectors')" >
+                                    Sectors 
+                                </NavLink> -->
+
+
+                                <!-- <NavLink 
+                                    v-if="sector" 
+
+                                    :href="route('categories', { sector: sector.id })" 
+                                    :active="route().current('categories')"
+                                >
+                                    Categories
+                                </NavLink>
+                                
+                            
+
+                                <NavLink :href="route('manage_graduates')" :active="route().current('manage_graduates')">
+                                    Manage Graduates
+                                </NavLink> -->
+
+                            </div>
+                        </div>
+
+                        <div class="hidden sm:flex sm:items-center sm:ms-6">
+                            <div class="ms-3 relative">
+                                <!-- Teams Dropdown -->
+                                <Dropdown v-if="$page.props.jetstream.hasTeamFeatures" align="right" width="60">
+                                    <template #trigger>
+                                        <span class="inline-flex rounded-md">
+                                            <button type="button"
+                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
+                                                {{ $page.props.auth.user.current_team.name }}
+
+                                                <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    </template>
+
+                                    <template #content>
+                                        <div class="w-60">
+                                            <!-- Team Management -->
+                                            <div class="block px-4 py-2 text-xs text-gray-400">
+                                                Manage Team
+                                            </div>
+
+                                            <!-- Team Settings -->
+                                            <DropdownLink
+                                                :href="route('teams.show', $page.props.auth.user.current_team)">
+                                                Team Settings
+                                            </DropdownLink>
+
+                                            <DropdownLink v-if="$page.props.jetstream.canCreateTeams"
+                                                :href="route('teams.create')">
+                                                Create New Team
+                                            </DropdownLink>
+
+                                            <!-- Team Switcher -->
+                                            <template v-if="$page.props.auth.user.all_teams.length > 1">
+                                                <div class="border-t border-gray-200" />
+
+                                                <div class="block px-4 py-2 text-xs text-gray-400">
+                                                    Switch Teams
+                                                </div>
+
+                                                <template v-for="team in $page.props.auth.user.all_teams"
+                                                    :key="team.id">
+                                                    <form @submit.prevent="switchToTeam(team)">
+                                                        <DropdownLink as="button">
+                                                            <div class="flex items-center">
+                                                                <svg v-if="team.id == $page.props.auth.user.current_team_id"
+                                                                    class="me-2 size-5 text-green-400"
+                                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                    viewBox="0 0 24 24" stroke-width="1.5"
+                                                                    stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                                        d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+
+                                                                <div>{{ team.name }}</div>
+                                                            </div>
+                                                        </DropdownLink>
+                                                    </form>
+                                                </template>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </Dropdown>
+                            </div>
+
+                            <!-- Settings Dropdown -->
+                            <div class="ms-3 relative">
+                                <Dropdown align="right" width="48">
+                                    <template #trigger>
+                                        <button v-if="$page.props.jetstream.managesProfilePhotos"
+                                            class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
+                                            <img class="size-8 rounded-full object-cover"
+                                                :src="$page.props.auth.user.profile_photo_url"
+                                                :alt="$page.props.auth.user.name">
+                                        </button>
+
+                                        <span v-else class="inline-flex rounded-md">
+                                            <button type="button"
+                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
+                                                <template v-if="$page.props.auth.user.role === 'graduate'">
+                                                    {{ $page.props.auth.user.graduate_first_name }}
+                                                </template>
+                                                <template v-if="$page.props.auth.user.role === 'peso'">
+                                                    {{ $page.props.auth.user.peso_first_name }}
+                                                </template>
+                                                <template v-else-if="$page.props.auth.user.role === 'company'">
+                                                    {{ $page.props.auth.user.company_name }}
+                                                </template>
+                                                <template v-else-if="$page.props.auth.user.role === 'institution'">
+                                                    {{ $page.props.auth.user.institution_name }}
+                                                </template>
+                                                <template v-else>
+                                                    {{ $page.props.auth.user.name }}
+                                                </template>
+
+                                                <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    </template>
+
+                                    <template #content>
+                                        <!-- Account Management -->
+                                        <div class="block px-4 py-2 text-xs text-gray-400">
+                                            Manage Account
+                                        </div>
+
+
+                                        <DropdownLink
+                                            v-if="page.props.roles.isPeso && page.props.auth.user.is_approved"
+                                            :disabled="!page.props.auth.user.is_approved" :href="route('peso.profile')">
+                                            Profile
+                                        </DropdownLink>
+
+
+                                        <DropdownLink v-if="page.props.roles.isGraduate"
+                                            :href="route('profile.index', { user: page.props.auth.user.id })"
+                                            :active="route().current('profile.index')">
+                                            Profile Settings </DropdownLink>
+
+                                        <DropdownLink v-if="page.props.roles.isPeso" :href="route('admin.register')">
+                                            Admin Registration
+                                        </DropdownLink>
+
+
+                                        <DropdownLink
+                                            v-if="page.props.roles.isCompany && page.props.auth.user.is_approved"
+                                            :disabled="!page.props.auth.user.is_approved" :href="route('company.profile')">
+                                            Profile
+                                        </DropdownLink>
+                                        
+                                        <DropdownLink
+                                            v-if="page.props.roles.isCompany && page.props.auth.user.is_approved"
+                                            :disabled="!page.props.auth.user.is_approved" :href="route('hr.register')">
+                                            Add Human Resource Officer (HRO)
+
+                                        </DropdownLink>
+
+                                        <DropdownLink v-if="$page.props.jetstream.hasApiFeatures"
+                                            :href="route('api-tokens.index')">
+                                            API Tokens
+                                        </DropdownLink>
+
+                                        <div class="border-t border-gray-200" />
+
+                                        <!-- Authentication -->
+                                        <form @submit.prevent="logout">
+                                            <DropdownLink as="button">
+                                                Log Out
+                                            </DropdownLink>
+                                        </form>
+                                    </template>
+                                </Dropdown>
+                            </div>
+                        </div>
+
+                        <!-- Hamburger -->
+                        <div class="-me-2 flex items-center sm:hidden">
+                            <button
+                                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
+                                @click="showingNavigationDropdown = !showingNavigationDropdown">
+                                <svg class="size-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                    <path
+                                        :class="{ 'hidden': showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown }"
+                                        stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h16" />
+                                    <path
+                                        :class="{ 'hidden': !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }"
+                                        stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Responsive Navigation Menu -->
+                <div :class="{ 'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown }"
+                    class="sm:hidden">
+                    <div class="pt-2 pb-3 space-y-1">
+                        <!-- <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                            Dashboard
+                        </ResponsiveNavLink> -->
+
+                        
+
+                        <ResponsiveNavLink :href="route('jobs', { user: page.props.auth.user.id })"
+                            :active="route().current('jobs')">
+                            Jobs
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink v-if="page.props.roles.isPeso"
+                            :href="route('admin.manage_users', { user: page.props.auth.user.id })"
+                            :active="route().current('admin.manage_users')">
+                            Manage Users
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink v-if="page.props.roles.isPeso"
+                            :href="route('', { user: page.props.auth.user.id })" :active="route().current('')">
+                            List of Users
+                        </ResponsiveNavLink>
+
+>>>>>>> 1236799fa2a05b7c821cc17e108f9fca41f9f193
                     </div>
 
                     <div class="flex-1 space-y-2">

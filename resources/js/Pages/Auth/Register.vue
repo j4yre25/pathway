@@ -646,37 +646,22 @@ const redirectToLogin = () => {
                                 </div>
                             </div>
 
-                            <div>
-                                <div class="flex items-center gap-1">
-                                    <InputLabel for="password_confirmation" value="Confirm Password" />
-                                    <span class="text-red-500">*</span>
-                                </div>
-                                <div class="mb-2">
-                                    <TextInput id="password_confirmation" v-model="form.password_confirmation"
-                                        type="password" class="mt-1 mb-4 block w-full" required />
-                                    <InputError class="mt-1" :message="form.errors.password_confirmation" />
+                                    <div>
+                                        <div class="flex items-center gap-1">
+                                            <InputLabel for="password_confirmation" value="Confirm Password" />
+                                            <span class="text-red-500">*</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <TextInput id="password_confirmation" v-model="form.password_confirmation"
+                                                type="password" class="mt-1 mb-4 block w-full" required />
+                                            <InputError class="mt-1" :message="form.errors.password_confirmation" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Graduate Fields -->
-                <div v-if="form.role === 'graduate'" class="flex space-x-12">
-                    <div
-                        class="flex-1 flex flex-col items-start justify-center p-6 bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg shadow-lg text-white ">
-                        <AuthenticationCardLogo class="mx-20 fill-white-100" />
-                        <h2 class="text-6xl font-bold">Welcome to</h2>
-                        <h1 class="text-7xl font-extrabold">Pathway</h1>
-                        <p class="mt-4 text-sm">
-                            Join us in shaping the future of education. We are excited to partner with you in this
-                            journey.
-                        </p>
-                    </div>
-
-                    <div class="flex-1 space-y-2">
-                        <h2 class="text-xl font-semibold text-gray-900">Graduate Information</h2>
-                        <p class="text-sm text-gray-600">Provide key details about you.</p>
+                    <!-- Graduate Fields -->
+                    <div v-if="form.role === 'graduate'" class="mt-4">
                         <!-- Graduate First Name -->
                         <div class="grid grid-cols-1 gap-4">
 
@@ -853,7 +838,6 @@ const redirectToLogin = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
 
 
                 <div class="flex items-center justify-end mt-8 border-t border-gray-200 pt-12">

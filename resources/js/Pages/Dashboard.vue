@@ -32,16 +32,16 @@ const handleLogout = () => {
 
             <div v-if="page.props.roles.isCompany" class="py-12">
                 <Welcome v-if="!page.props.roles.isCompany" />
-                    <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-800">
-                            Welcome to the Dashboard
-                        </h3>
-                        <p class="mt-2 text-gray-600">
-                            Here you can manage your account and view your
-                            statistics.
-                        </p>
-                    </div>
-                    <CompanyDashboard :summary="page.props.summary" />
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-800">
+                        Welcome to the Dashboard
+                    </h3>
+                    <p class="mt-2 text-gray-600">
+                        Here you can manage your account and view your
+                        statistics.
+                    </p>
+                </div>
+                <CompanyDashboard :summary="page.props.summary" />
             </div>
 
         </template>
@@ -58,21 +58,13 @@ const handleLogout = () => {
                             </p>
                         </template>
                         <template #footer>
-                            <button
-                                class="bg-blue-500 text-white px-4 py-2 rounded"
-                                @click="handleLogout"
-                            >
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded" @click="handleLogout">
                                 Okay
                             </button>
                         </template>
                     </Modal>
-                    
-                    <CompanyDashboard
-                        v-if="page.props.auth.user.role === 'company'"
 
-                        :summary="props.summary"
-
-                    />
+                    <CompanyDashboard v-if="page.props.auth.user.role === 'company'" />
                 </div>
             </div>
         </div>
