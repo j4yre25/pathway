@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateExperiencesTable extends Migration
+return new class extends Migration
 {
     public function up()
     {
@@ -16,8 +16,17 @@ class CreateExperiencesTable extends Migration
             $table->date('graduate_experience_start_date');
             $table->date('graduate_experience_end_date')->nullable();
             $table->string('graduate_experience_address')->nullable();
-            $table->text('graduate_experience_achievements')->nullable();
-            $table->text('graduate_experience_skills_tech')->nullable();
+            $table->text('graduate_experience_description')->nullable();
+            $table->enum('graduate_experience_employment_type', [
+                'Full-time',
+                'Part-time',
+                'Contract',
+                'Temporary',
+                'Internship',
+                'Freelance',
+                'Remote'
+            ]);
+            $table->boolean('is_current')->default(false);
             $table->timestamps();
         });
     }
@@ -26,4 +35,4 @@ class CreateExperiencesTable extends Migration
     {
         Schema::dropIfExists('experiences');
     }
-}
+};

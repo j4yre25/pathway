@@ -25,8 +25,13 @@
         "@inertiajs/inertia-vue3": "^0.6.0",
         "chart.js": "^4.4.8",
         "dayjs": "^1.11.13",
+<<<<<<< HEAD
+        "vue-the-mask": "^0.11.1",
+        "vue3-apexcharts": "^1.8.0",
+=======
         "lucide-vue-next": "^0.503.0",
         "vue-the-mask": "^0.11.1",
+>>>>>>> 1236799fa2a05b7c821cc17e108f9fca41f9f193
         "vue3-datepicker": "^0.4.0"
     }
 }

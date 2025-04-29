@@ -149,201 +149,234 @@ const submit = () => {
     <Head title="Register" />
 
     <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
-
-        <form @submit.prevent="submit" autocomplete="off">
-    
- <!-- Graduate Fields -->
- <div v-if="form.role === 'graduate'" class="mt-4">
-                <!-- Graduate First Name -->
-                <InputLabel for="graduate_first_name" value="Graduate First Name" />
-                <TextInput
-                    id="graduate_first_name"
-                    v-model="form.graduate_first_name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    required/>
-                <InputError class="mt-2" :message="form.errors.graduate_first_name" />
-
-                <!-- Graduate Middle Initial -->
-                <InputLabel for="graduate_last_name" value="Graduate Last Name" />
-                <TextInput
-                    id="graduate_middle_initial"
-                    v-model="form.graduate_middle_initial"
-                    type="text"
-                    class="mt-1 block w-full"
-                    required/>  
-                <InputError class="mt-2" :message="form.errors.graduate_middle_initial" />
-
-                <!-- Graduate Last Name -->
-                <InputLabel for="graduate_last_name" value="Graduate Last Name" />
-                <TextInput
-                    id="graduate_last_name"
-                    v-model="form.graduate_last_name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    required/>
-                <InputError class="mt-2" :message="form.errors.graduate_last_name" />
-
-          
-
-               
-                <!-- Graduate Graduated From -->
-                <div class="mt-4">
-                    <InputLabel for="graduate_school_graduated_from" value="School Graduated From" />
-                    <select
-        id="graduate_school_graduated_from"
-        v-model="form.graduate_school_graduated_from"
-        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-        required
-    >
-        <option value="" disabled>Select a School</option>
-        <option 
-            v-for="user in insti_users" 
-            :key="user.id" 
-            :value="user.institution_name"
-        >
-            {{ user.institution_name }}
-        </option>
-    </select>
-                    <InputError class="mt-2" :message="form.errors.graduate_school_graduated_from" />
+        <template #registerForm>
+            <form @submit.prevent="submit" autocomplete="off">
+            <div v-if="form.role === 'graduate'" class="flex space-x-12">
+                <!-- Left Side: Welcome Section -->
+                <div class="flex-1 flex flex-col items-start justify-center p-6 bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg shadow-lg text-white">
+                    <AuthenticationCardLogo class="mx-20 fill-white-100" />
+                    <h2 class="text-6xl font-bold">Welcome to</h2>
+                    <h1 class="text-7xl font-extrabold">Pathway</h1>
+                    <p class="mt-4 text-sm">
+                        Join us in shaping the future of education. We are excited to have you as part of our graduate community.
+                    </p>
                 </div>
 
-                <!-- Program Completed -->
-               
+                <!-- Right Side: Graduate Fields -->
+                <div class="flex-1 space-y-2">
+                    <h2 class="text-xl font-semibold text-gray-900">Graduate Information</h2>
+                    <p class="text-sm text-gray-600">Please provide your personal and educational details.</p>
 
-                <!-- Year Graduated -->
-                <div class="mt-4">
-                    <InputLabel for="graduate_year_graduated" value="Year Graduated" />
-                    <select
-                        id="graduate_year_graduated"
-                        v-model="form.graduate_year_graduated"
-                        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                        required>
-                        <option value="" disabled>Select Year</option>
-                        <option v-for="year in year_graduated" :key="year" :value="year">{{ year }}</option>
-                    </select>
-                    <InputError class="mt-2" :message="form.errors.graduate_year_graduated" />
-                </div>
-            </div>
-
-
-
-            <div class="grid grid-cols-3 ">
-                <div class=" col-span-1">
-                    <h2 class="text-lg font-semibold text-gray-900"></h2>
-                    <p class="text-sm text-gray-600"></p>
-                </div>
-
-                <div class=" col-span-2">
-                <!-- Gender -->
-                    <div>
-                        <div class="flex items-center gap-1">
-                            <InputLabel for="company_hr_gender" value="Gender" />
-                            <span class="text-red-500">*</span>
-                        </div>
+                    <div class="grid grid-cols-1 gap-4">
+                        <!-- Personal Information Section -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <!-- First Name -->
                         <div>
-                            <select id="company_hr_gender" v-model="form.company_hr_gender" class="mt-1 mb-4 block w-full" required>
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <InputError class="" :message="form.errors.company_hr_gender" />
-                        </div>
-                    </div>
-                    <!-- Date of Birth -->
-                    <div>
-                        <div class="flex items-center gap-1">
-                            <InputLabel for="company_hr_dob" value="Date of Birth" />
-                            <span class="text-red-500">*</span>
-                        </div>
-                        <div>
-                            <TextInput 
-                                id="company_hr_dob" 
-                                v-model="form.company_hr_dob" 
-                                type="date" 
-                                class="mt-1 mb-4 block w-full" 
-                                required />
-                            <InputError class="mt-2" :message="form.errors.company_hr_dob" />
-                        </div>
-                    </div>
-                    <!-- HR Email -->
-                    <div>
-                        <div class="flex items-center gap-1">
-                            <InputLabel for="email" value="Email Address" />
-                            <span class="text-red-500">*</span>
-                        </div>
-                        <div>
-                            <TextInput 
-                                id="email" 
-                                v-model="form.email" 
-                                type="email" 
-                                class="mt-1 mb-4 block w-full" 
-                                required />
-                            <InputError class="mt-2" :message="form.errors.email" />
-                        </div>
-                    </div>
-
-                    <!-- HR Contact Number -->
-                    <div>
-                        <div class="flex items-center gap-1">
-                            <InputLabel for="company_hr_contact_number" value="Contact Number" />
-                            <span class="text-red-500">*</span>
-                        </div>
-                        <div>
-                            <TextInput 
-                                id="company_hr_contact_number"
-                                v-model="form.company_hr_contact_number"
-                                v-mask="'# (###) ###-####'"
+                            <div class="flex items-center gap-1">
+                                <InputLabel for="graduate_first_name" value="First Name" />
+                                <span class="text-red-500">*</span>
+                            </div>
+                            <TextInput
+                                id="graduate_first_name"
+                                v-model="form.graduate_first_name"
                                 type="text"
-                                class="mt-1 mb-4 block w-full"
-                                required />
-                            <InputError class="mt-2" :message="form.errors.company_hr_contact_number" />
+                                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
+                                required/>
+                            <InputError class="mt-2" :message="form.errors.graduate_first_name" />
+                        </div>
+
+                        <!-- Middle Initial -->
+                        <div>
+                            <div class="flex items-center gap-1">
+                                <InputLabel for="graduate_middle_initial" value="Middle Initial" />
+                                <span class="text-red-500">*</span>
+                            </div>
+                            <TextInput
+                                id="graduate_middle_initial"
+                                v-model="form.graduate_middle_initial"
+                                type="text"
+                                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
+                                required/>  
+                            <InputError class="mt-2" :message="form.errors.graduate_middle_initial" />
+                        </div>
+
+                        <!-- Last Name -->
+                        <div>
+                            <div class="flex items-center gap-1">
+                                <InputLabel for="graduate_last_name" value="Last Name" />
+                                <span class="text-red-500">*</span>
+                            </div>
+                            <TextInput
+                                id="graduate_last_name"
+                                v-model="form.graduate_last_name"
+                                type="text"
+                                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
+                                required/>
+                            <InputError class="mt-2" :message="form.errors.graduate_last_name" />
                         </div>
                     </div>
 
-                    <!-- Set Password -->
-                    <h3 class="mt-6 mb-2 font-semibold">Set Password</h3>
+                    <!-- Educational Information Section -->
+                    <div class="border-t border-gray-200 pt-4">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Educational Information</h2>
+                        
+                        <!-- School Graduated From -->
+                        <div class="mb-4">
+                            <div class="flex items-center gap-1">
+                                <InputLabel for="graduate_school_graduated_from" value="School Graduated From" />
+                                <span class="text-red-500">*</span>
+                            </div>
+                            <select
+                                id="graduate_school_graduated_from"
+                                v-model="form.graduate_school_graduated_from"
+                                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm transition duration-300 ease-in-out transform hover:shadow-lg"
+                                required>
+                                <option value="" disabled>Select a School</option>
+                                <option 
+                                    v-for="user in insti_users" 
+                                    :key="user.id" 
+                                    :value="user.institution_name">
+                                    {{ user.institution_name }}
+                                </option>
+                            </select>
+                            <InputError class="mt-2" :message="form.errors.graduate_school_graduated_from" />
+                        </div>
 
-                    <div>
-                        <div class="flex items-center gap-1">
-                            <InputLabel for="password" value="Password" />
-                            <span class="text-red-500">*</span>
+                        <!-- Year Graduated -->
+                        <div>
+                            <div class="flex items-center gap-1">
+                                <InputLabel for="graduate_year_graduated" value="Year Graduated" />
+                                <span class="text-red-500">*</span>
+                            </div>
+                            <select
+                                id="graduate_year_graduated"
+                                v-model="form.graduate_year_graduated"
+                                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm transition duration-300 ease-in-out transform hover:shadow-lg"
+                                required>
+                                <option value="" disabled>Select Year</option>
+                                <option v-for="year in year_graduated" :key="year" :value="year">{{ year }}</option>
+                            </select>
+                            <InputError class="mt-2" :message="form.errors.graduate_year_graduated" />
                         </div>
-                        <div class="mb-2">
-                            <TextInput 
-                                id="password" 
-                                v-model="form.password" 
-                                type="password" 
-                                class="mt-1 block w-full" 
-                                required />
-                            <InputError class="mt-1" :message="form.errors.password" />
+                    </div>
+
+
+
+                    <!-- Contact Information Section -->
+                    <div class="border-t border-gray-200 pt-4">
+                        <h2 class="text-xl font-semibold text-gray-900">Contact Information</h2>
+                        <p class="text-sm text-gray-600 mb-4">Please provide your contact details for communication.</p>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Email Address -->
+                            <div>
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="email" value="Email Address" />
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <TextInput 
+                                    id="email" 
+                                    v-model="form.email" 
+                                    type="email" 
+                                    class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg" 
+                                    required />
+                                <InputError class="mt-2" :message="form.errors.email" />
+                            </div>
+
+                            <!-- Contact Number -->
+                            <div>
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="contact_number" value="Contact Number" />
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <TextInput 
+                                    id="contact_number"
+                                    v-model="form.contact_number"
+                                    v-mask="'# (###) ###-####'"
+                                    type="text"
+                                    class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg"
+                                    required />
+                                <InputError class="mt-2" :message="form.errors.contact_number" />
+                            </div>
                         </div>
 
-                        <div class="flex items-center gap-1">
-                            <InputLabel for="password_confirmation" value="Confirm Password" />
-                            <span class="text-red-500">*</span>
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            <!-- Gender -->
+                            <div>
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="gender" value="Gender" />
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <select 
+                                    id="gender" 
+                                    v-model="form.gender" 
+                                    class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm transition duration-300 ease-in-out transform hover:shadow-lg" 
+                                    required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <InputError class="mt-2" :message="form.errors.gender" />
+                            </div>
+
+                            <!-- Date of Birth -->
+                            <div>
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="dob" value="Date of Birth" />
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <TextInput 
+                                    id="dob" 
+                                    v-model="form.dob" 
+                                    type="date" 
+                                    class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg" 
+                                    required />
+                                <InputError class="mt-2" :message="form.errors.dob" />
+                            </div>
                         </div>
-                        <div class="mb-2">
-                            <TextInput 
-                                id="password_confirmation" 
-                                v-model="form.password_confirmation" 
-                                type="password" 
-                                class="mt-1 mb-4 block w-full" 
-                                required />
-                            <InputError class="mt-1" :message="form.errors.password_confirmation" />
+                    </div>
+
+                    <!-- Password Section -->
+                    <div class="border-t border-gray-200 pt-4">
+                        <h2 class="text-xl font-semibold text-gray-900">Set Password</h2>
+                        <p class="text-sm text-gray-600 mb-4">Create a secure password for your account.</p>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Password -->
+                            <div>
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="password" value="Password" />
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <TextInput 
+                                    id="password" 
+                                    v-model="form.password" 
+                                    type="password" 
+                                    class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg" 
+                                    required />
+                                <InputError class="mt-2" :message="form.errors.password" />
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div>
+                                <div class="flex items-center gap-1">
+                                    <InputLabel for="password_confirmation" value="Confirm Password" />
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <TextInput 
+                                    id="password_confirmation" 
+                                    v-model="form.password_confirmation" 
+                                    type="password" 
+                                    class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:shadow-lg" 
+                                    required />
+                                <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-
-               
-
-            
+        </div>
 
             <div class="flex items-center justify-end mt-8 border-t border-gray-200 pt-12">
                 <Link :href="route('login')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -353,6 +386,7 @@ const submit = () => {
                     Register
                 </PrimaryButton>
             </div>
-        </form>
+            </form>
+        </template>
     </AuthenticationCard>
 </template>
