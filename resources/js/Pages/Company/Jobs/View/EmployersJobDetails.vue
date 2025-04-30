@@ -17,7 +17,7 @@ const jobSkills = Array.isArray(props.job.skills)
 
 const inviteMatchedGraduates = (jobId) => {
 if (confirm("Invite all matched graduates for this job?")) {
-    router.post(route('jobs.auto-invite', jobId), {}, {
+    router.post(route('company.jobs.auto-invite', jobId), {}, {
         onSuccess: () => alert("Graduates invited successfully!"),
         onError: () => alert("Something went wrong."),
     });

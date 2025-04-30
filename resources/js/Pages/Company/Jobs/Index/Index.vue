@@ -63,14 +63,14 @@ const form = useForm({
     location: ''
 });
 // console.log(route('jobs.list'));
-console.log(route('jobs.manage', { user: page.props.auth.user.id }));
+console.log(route('company.jobs.manage', { user: page.props.auth.user.id }));
 
 
 </script>
 
 
 <template>
-    <AppLayout title="Jobs">
+    <AppLayout title="Manage Jobs">
         <template #header>
             Jobs
         </template>
@@ -83,21 +83,21 @@ console.log(route('jobs.manage', { user: page.props.auth.user.id }));
             <!-- <PrimaryButton @click="createJob()" class="">Post Job</PrimaryButton> -->
             <div class="flex space-x-2">
                 <div class="mt-8">
-                    <Link :href="route('jobs.create', { user: page.props.auth.user.id })">
+                    <Link :href="route('company.jobs.create', { user: page.props.auth.user.id })">
                     <PrimaryButton class="mr-2">Post Jobs</PrimaryButton>
                     </Link>
                 </div>
 
                 <div class="mt-8">
 
-                    <Link :href="route('jobs.manage', { user: page.props.auth.user.id })">
+                    <Link :href="route('company.jobs.manage', { user: page.props.auth.user.id })">
                     <PrimaryButton class="mr-2">Manage Posted Jobs</PrimaryButton>
                     </Link>
                 </div>
 
                 <div class="mt-8">
 
-                    <Link :href="route('jobs.archivedlist', { user: page.props.auth.user.id })">
+                    <Link :href="route('company.jobs.archivedlist', { user: page.props.auth.user.id })">
                     <PrimaryButton class="mr-2">Archived Jobs</PrimaryButton>
                     </Link>
                 </div>
@@ -133,11 +133,6 @@ console.log(route('jobs.manage', { user: page.props.auth.user.id }));
 
 
         </Container>
-
-
-
-
-
     </AppLayout>
 
 </template>

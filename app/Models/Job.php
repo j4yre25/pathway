@@ -29,34 +29,38 @@ class Job extends Model
      */
     protected $fillable = [
         'title',
-        'is_approved',
         'company',
         'location',
-        'description',
-        'min_salary',
-        'max_salary',
-        'salary_frequency',
-        'work_type',
+        'branch_location',
         'sector',
         'sector_category',
-        'posted_at',
-        'application_deadline',
+        'category',
         'status',
         'user_id',
         'job_title',
         'location',
         'vacancy',
-        'salary',
+        'salary_type',
+        'min_salary',
+        'max_salary',
         'job_type',
         'experience_level',
         'description',
+        'requirements',
+        'job_benefits',
         'skills',
         'sector',
-        'category',
-        'requirements',
         'status',
-    ];
+        'is_approved',
+        'posted_at',
 
+        'application_deadline',
+        'expiration_date',
+        'application_limit',
+
+        'work_type',
+    ];
+    
     /**
      * The attributes that should be cast.
      *
@@ -150,6 +154,25 @@ class Job extends Model
     public function invitations()
     {
         return $this->hasMany(JobInvitation::class);
+    }
+
+    public function isExpired()
+    {
+        return $this->expiration_date && $this->expiration_date < now();
+    }
+
+    public function hasApplicationLimitReached()
+    {
+        if (!$this->application_limit) {
+            return false;
+        }
+
+        return $this->applicants()->count() >= $this->application_limit;
+    }
+
+    public function shouldBeArchived()
+    {
+        return $this->isExpired() || $this->hasApplicationLimitReached();
     }
 
 }

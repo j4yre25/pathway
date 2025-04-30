@@ -14,8 +14,6 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SectorController;
-use App\Http\Controllers\HRRegisterController;
-use App\Http\Controllers\ManageHRController;
 use App\Http\Controllers\GraduateController;
 use App\Http\Controllers\GraduateRegisterController;
 use App\Http\Controllers\InstitutionController;
@@ -24,13 +22,17 @@ use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\CareerOpportunityController;
 use App\Http\Controllers\ManageGraduatesApprovalController;
 use App\Http\Controllers\BatchUploadController;
-use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DegreeController;
 use App\Http\Controllers\InstiSkillController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomRegisteredUserController;
 use App\Http\Controllers\JobSearchController;
+// Company 
+use App\Http\Controllers\CompanyProfileController;
+use App\Http\Controllers\HRRegisterController;
+use App\Http\Controllers\CompanyJobsController;
+use App\Http\Controllers\ManageHRController;
 
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Http\Controllers\ConfirmablePasswordController;
@@ -76,10 +78,42 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/peso/register', [AdminRegisterController::class, 'register'])->name('admin.register.submit');
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/hr/register', [HRRegisterController::class, 'showRegistrationForm'])->name('hr.register');
-    Route::post('/hr/register', [HRRegisterController::class, 'register'])->name('hr.register.submit');
-});
+// PESO Jobs
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('peso/jobs/{user}', [PesoJobsController::class, 'index'])
+    ->name('peso.jobs');
+
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('peso/jobs/{user}/archivedlist', [PesoJobsController::class, 'archivedlist'])
+    ->name('peso.jobs.archivedlist');
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('peso/jobs/{user}/create', [PesoJobsController::class, 'create'])
+    ->name('peso.jobs.create');
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('peso/jobs/{user}', [PesoJobsController::class, 'store'])
+    ->name('peso.jobs.store');
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->get('peso/jobs/manage/{user}', [PesoJobsController::class, 'manage'])
+    ->name('peso.jobs.manage');
+
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('peso/jobs/view/{job}', [PesoJobsController::class, 'view'])
+    ->name('peso.jobs.view');
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('peso/jobs/edit/{job}', [PesoJobsController::class, 'edit'])
+    ->name('peso.jobs.edit');
+
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->put('peso/jobs/edit/{job}', [PesoJobsController::class, 'update'])
+    ->name('peso.jobs.update');
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('peso/jobs/edit/{job}', [PesoJobsController::class, 'delete'])
+    ->name('peso.jobs.delete');
+
+Route::post('peso/jobs/edit/{job}', [PesoJobsController::class, 'restore'])->name('peso.jobs.restore');
+
+
+Route::post('peso/jobs/{job}/approve', [PesoJobsController::class, 'approve'])->name('peso.jobs.approve');
+Route::post('peso/jobs/{job}/disapprove', [PesoJobsController::class, 'disapprove'])->name('peso.jobs.disapprove');
 
 
 
@@ -119,7 +153,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
         // Show the form for creating a new graduate
         Route::get('/graduates/create', [GraduateController::class, 'create'])->name('graduates.create');
-
+        
         // Store a new graduate
         Route::post('/graduates', [GraduateController::class, 'store'])->name('graduates.store');
 
@@ -155,7 +189,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 // });
 
 // // User Routes
-// Route::prefix('user')->group(function () {
 //     Route::get('/login', [CustomRegisteredUserController::class, 'showLoginForm'])->name('user.login');
 //     Route::post('/login', [CustomRegisteredUserController::class, 'login'])->name('user.login.submit');
 //     Route::get('/register', [CustomRegisteredUserController::class, 'showRegistrationForm'])->name('user.register');
@@ -176,90 +209,59 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 // ]);
 
 // Companies Routes
-// Dashboar Contents 
+
+//Company Register Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('company/hr/register', [HRRegisterController::class, 'showRegistrationForm'])->name('hr.register');
+    Route::post('company/hr/register', [HRRegisterController::class, 'register'])->name('hr.register.submit');
+});
+
+// CompanyDashboard Contents 
 // Route::middleware(['auth' , config('jetstream.auth_session'), 'verified',])->group(function () {
 //     Route::get('/dashboard', [ApplicationController::class, 'summary'])->name('dashboard');
 // });
-// Jobs Routes
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}', [JobsController::class, 'index'])
-    ->name('jobs');
 
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}/archivedlist', [JobsController::class, 'archivedlist'])
-    ->name('jobs.archivedlist');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}/create', [JobsController::class, 'create'])
-    ->name('jobs.create');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('/jobs/{user}', [JobsController::class, 'store'])
-    ->name('jobs.store');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->get('/jobs/manage/{user}', [JobsController::class, 'manage'])
-    ->name('jobs.manage');
+// Company Jobs Routes
+// Route::prefix('user')->group(function () {
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('company/jobs/{user}', [CompanyJobsController::class, 'index'])
+->name('company.jobs');
 
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/view/{job}', [JobsController::class, 'view'])
-    ->name('jobs.view');
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('company/jobs/{user}/archivedlist', [CompanyJobsController::class, 'archivedlist'])
+    ->name('company.jobs.archivedlist');
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/edit/{job}', [JobsController::class, 'edit'])
-    ->name('jobs.edit');
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('company/jobs/{user}/create', [CompanyJobsController::class, 'create'])
+    ->name('company.jobs.create');
 
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->put('/jobs/edit/{job}', [JobsController::class, 'update'])
-    ->name('jobs.update');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('/jobs/edit/{job}', [JobsController::class, 'delete'])
-    ->name('jobs.delete');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('/jobs/{job}/auto-invite', [JobsController::class, 'autoInvite'])
-->name('jobs.auto-invite');
-
-Route::post('/jobs/edit/{job}', [JobsController::class, 'restore'])->name('jobs.restore');
-
-
-Route::post('/jobs/{job}/approve', [JobsController::class, 'approve'])->name('jobs.approve');
-Route::post('/jobs/{job}/disapprove', [JobsController::class, 'disapprove'])->name('jobs.disapprove');
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('company/jobs/{user}', [CompanyJobsController::class, 'store'])
+    ->name('company.jobs.store');
+    
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->get('company/jobs/manage/{user}', [CompanyJobsController::class, 'manage'])
+    ->name('company.jobs.manage');
+    
+    
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('company/jobs/view/{job}', [CompanyJobsController::class, 'view'])
+    ->name('company.jobs.view');
+    
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('company/jobs/edit/{job}', [CompanyJobsController::class, 'edit'])
+    ->name('company.jobs.edit');
 
 
-// PESO Jobs
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('peso/jobs/{user}', [PesoJobsController::class, 'index'])
-    ->name('peso.jobs');
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->put('company/jobs/edit/{job}', [CompanyJobsController::class, 'update'])
+    ->name('company.jobs.update');
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('company/jobs/edit/{job}', [CompanyJobsController::class, 'delete'])
+    ->name('company.jobs.delete');
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('company/jobs/{job}/auto-invite', [CompanyJobsController::class, 'autoInvite'])
+->name('company.jobs.auto-invite');
+
+Route::post('company/jobs/edit/{job}', [CompanyJobsController::class, 'restore'])->name('company.jobs.restore');
 
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('peso/jobs/{user}/archivedlist', [PesoJobsController::class, 'archivedlist'])
-    ->name('peso.jobs.archivedlist');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('peso/jobs/{user}/create', [PesoJobsController::class, 'create'])
-    ->name('peso.jobs.create');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('peso/jobs/{user}', [PesoJobsController::class, 'store'])
-    ->name('peso.jobs.store');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->get('peso/jobs/manage/{user}', [PesoJobsController::class, 'manage'])
-    ->name('peso.jobs.manage');
-
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('peso/jobs/view/{job}', [PesoJobsController::class, 'view'])
-    ->name('peso.jobs.view');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('peso/jobs/edit/{job}', [PesoJobsController::class, 'edit'])
-    ->name('peso.jobs.edit');
-
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->put('peso/jobs/edit/{job}', [PesoJobsController::class, 'update'])
-    ->name('peso.jobs.update');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('peso/jobs/edit/{job}', [PesoJobsController::class, 'delete'])
-    ->name('peso.jobs.delete');
-
-Route::post('peso/jobs/edit/{job}', [PesoJobsController::class, 'restore'])->name('peso.jobs.restore');
-
-
-Route::post('peso/jobs/{job}/approve', [PesoJobsController::class, 'approve'])->name('peso.jobs.approve');
-Route::post('peso/jobs/{job}/disapprove', [PesoJobsController::class, 'disapprove'])->name('peso.jobs.disapprove');
-
-
+Route::post('company/jobs/{job}/approve', [CompanyJobsController::class, 'approve'])->name('company.jobs.approve');
+Route::post('company/jobs/{job}/disapprove', [CompanyJobsController::class, 'disapprove'])->name('company.jobs.disapprove');
 
 
 //Manage Applicants Routes
@@ -306,10 +308,62 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::delete('/current-user-cover-photo', [CompanyProfileController::class, 'destroyCoverPhoto'])->name('current-user-cover-photo.destroy');
 }); 
 
+//End of Company Routes
+
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
     // View Company Profile
     Route::get('/admin/profile', [PesoProfileController::class, 'profile'])->name('peso.profile');
 });
+
+
+
+
+// Jobs Routes
+// Route::prefix('user')->group(function () {
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}', [JobsController::class, 'index'])
+    ->name('jobs');
+    
+    
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}/archivedlist', [JobsController::class, 'archivedlist'])
+        ->name('jobs.archivedlist');
+    
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/{user}/create', [JobsController::class, 'create'])
+        ->name('jobs.create');
+    
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('/jobs/{user}', [JobsController::class, 'store'])
+        ->name('jobs.store');
+        
+        Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->get('/jobs/manage/{user}', [JobsController::class, 'manage'])
+        ->name('jobs.manage');
+        
+        
+        Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/view/{job}', [JobsController::class, 'view'])
+        ->name('jobs.view');
+        
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->get('/jobs/edit/{job}', [JobsController::class, 'edit'])
+        ->name('jobs.edit');
+    
+    
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->put('/jobs/edit/{job}', [JobsController::class, 'update'])
+        ->name('jobs.update');
+    
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->delete('/jobs/edit/{job}', [JobsController::class, 'delete'])
+        ->name('jobs.delete');
+    
+    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->post('/jobs/{job}/auto-invite', [JobsController::class, 'autoInvite'])
+    ->name('jobs.auto-invite');
+    
+    Route::post('/jobs/edit/{job}', [JobsController::class, 'restore'])->name('jobs.restore');
+    
+    
+    Route::post('/jobs/{job}/approve', [JobsController::class, 'approve'])->name('jobs.approve');
+    Route::post('/jobs/{job}/disapprove', [JobsController::class, 'disapprove'])->name('jobs.disapprove');
+    
+
+
+
+
+
 
 
 
