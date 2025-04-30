@@ -4,99 +4,90 @@ namespace App\Http\Controllers;
 
 use App\Models\CareerOpportunity;
 use App\Models\Program;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Illuminate\Support\Str;
 
 class CareerOpportunityController extends Controller
 {
-    public function index(Request $request)
+    public function index(User $user)
     {
-        $filter = $request->query('status', 'active');
+        $careerOpportunities = $user->careerOpportunities()->with('programs')->withTrashed()->get();
 
-        $query = CareerOpportunity::with('programs');
+        return Inertia::render('Institutions/CareerOpportunities/Index', [
+            'careerOpportunities' => $careerOpportunities
+        ]);
+    }
 
-        if ($filter === 'inactive') {
-            $query->onlyTrashed();
-        }
+    public function list(Request $request)
+    {
+        $status = $request->input('status', 'all');
 
-        return Inertia::render('Institutions/CareerOpportunities', [
-            'careerOpportunities' => $query->get()->map(function ($co) {
-                return [
-                    'id' => $co->id,
-                    'title' => $co->title,
-                    'programs' => $co->programs->pluck('name'),
-                    'program_ids' => $co->programs->pluck('id'),
-                ];
-            }),
-            'programs' => Program::all(),
-            'filter' => $filter,
+        $careerOpportunities = CareerOpportunity::with(['programs', 'user'])->withTrashed()
+            ->when($status === 'active', fn($q) => $q->whereNull('deleted_at'))
+            ->when($status === 'inactive', fn($q) => $q->whereNotNull('deleted_at'))
+            ->where('user_id', Auth::id())
+            ->get();
+
+        return Inertia::render('Institutions/CareerOpportunityList', [
+            'careerOpportunities' => $careerOpportunities,
+            'status' => $status
+        ]);
+    }
+
+    public function archivedList()
+    {
+        $careerOpportunities = CareerOpportunity::with(['user', 'programs'])->onlyTrashed()
+            ->where('user_id', Auth::id())
+            ->get();
+
+        return Inertia::render('Institutions/ArchivedCareerOpportunities', [
+            'all_career_opportunities' => $careerOpportunities
         ]);
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string',
-            'program_ids' => 'required|array|min:1',
-            'program_ids.*' => 'exists:programs,id',
+        $request->validate([
+            'title' => ['required', 'string'],
+            'program_ids' => ['required', 'array'],
+            'program_ids.*' => ['exists:programs,id'],
         ]);
 
-        // Split multiple titles from comma input
-        $titles = array_map('trim', explode(',', $validated['title']));
+        $titles = array_map('trim', explode(',', $request->title));
 
         foreach ($titles as $title) {
-            // Check if title already exists (case-insensitive)
-            $existing = CareerOpportunity::whereRaw('LOWER(title) = ?', [strtolower($title)])->first();
+            $existing = CareerOpportunity::withTrashed()
+                ->whereRaw('LOWER(title) = ?', [strtolower($title)])
+                ->where('user_id', Auth::id())
+                ->first();
 
             if ($existing) {
-                // Attach new programs (avoids duplicates)
-                $existing->programs()->syncWithoutDetaching($validated['program_ids']);
+                $existing->restore();
+                $existing->programs()->syncWithoutDetaching($request->program_ids);
             } else {
-                // Create and attach programs
-                $opportunity = CareerOpportunity::create(['title' => $title]);
-                $opportunity->programs()->attach($validated['program_ids']);
+                $co = CareerOpportunity::create([
+                    'title' => $title,
+                    'user_id' => Auth::id()
+                ]);
+                $co->programs()->attach($request->program_ids);
             }
         }
 
-        return redirect()->route('career-opportunities.index')->with('success', 'Career opportunities saved.');
-    }
-
-    public function update(Request $request, CareerOpportunity $careerOpportunity)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string',
-            'program_ids' => 'required|array|min:1',
-            'program_ids.*' => 'exists:programs,id',
-        ]);
-
-        // Ensure no duplicate title exists in other record
-        $duplicate = CareerOpportunity::whereRaw('LOWER(title) = ?', [strtolower($validated['title'])])
-            ->where('id', '!=', $careerOpportunity->id)
-            ->first();
-
-        if ($duplicate) {
-            return back()->withErrors(['msg' => 'A career opportunity with this title already exists.']);
-        }
-
-        $careerOpportunity->update(['title' => $validated['title']]);
-        $careerOpportunity->programs()->sync($validated['program_ids']);
-
-        return redirect()->route('career-opportunities.index')->with('success', 'Career opportunity updated.');
+        return back()->with('success', 'Career opportunity saved.');
     }
 
     public function destroy(CareerOpportunity $careerOpportunity)
     {
         $careerOpportunity->delete();
-
-        return redirect()->route('career-opportunities.index')->with('success', 'Career opportunity archived.');
+        return back()->with('success', 'Career opportunity archived.');
     }
 
     public function restore($id)
     {
-        $opportunity = CareerOpportunity::withTrashed()->findOrFail($id);
-        $opportunity->restore();
-
-        return redirect()->route('career-opportunities.index')->with('success', 'Career opportunity restored.');
+        $co = CareerOpportunity::withTrashed()->findOrFail($id);
+        $co->restore();
+        return back()->with('success', 'Career opportunity restored.');
     }
 }

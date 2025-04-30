@@ -192,20 +192,16 @@ console.log(page.props.permissions.canManageInstitution)
                                 <!-- Institution Link -->
                                 <NavLink
                                     v-if="page.props.permissions.canManageInstitution && page.props.auth.user.is_approved"
-                                    :href="route('institutions.index')" :active="route().current('institutions.index')">
-                                    Institution
+                                    :href="route('school-years', { user: page.props.auth.user.id })"
+                                    :active="route().current('school-years')">
+                                    Manage School Year
                                 </NavLink>
 
                                 <NavLink
                                     v-if="page.props.permissions.canManageInstitution && page.props.auth.user.is_approved"
-                                    :href="route('institutions.index')" :active="route().current('institutions.index')">
-                                    Manage Career Officer
-                                </NavLink>
-
-                                <NavLink
-                                    v-if="page.props.permissions.canManageInstitution && page.props.auth.user.is_approved"
-                                    :href="route('institutions.index')" :active="route().current('institutions.index')">
-                                    Manage Graduate Counseling
+                                    :href="route('degrees', { user: page.props.auth.user.id })"
+                                    :active="route().current('degrees')">
+                                    Manage Degrees
                                 </NavLink>
 
                                 <!-- Manage Approval Link -->

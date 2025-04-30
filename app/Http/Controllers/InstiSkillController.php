@@ -5,85 +5,81 @@ namespace App\Http\Controllers;
 use App\Models\InstiSkill;
 use App\Models\Program;
 use App\Models\CareerOpportunity;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class InstiSkillController extends Controller
 {
-    public function index(Request $request)
+    public function index(User $user)
     {
-        $filter = $request->query('status', 'active');
+        $instiskills = $user->instiSkills()->with(['programs', 'careerOpportunities'])->withTrashed()->get();
 
-        $query = InstiSkill::with(['programs', 'careerOpportunities']);
+        return Inertia::render('Institutions/InstiSkills/Index', [
+            'skills' => $instiskills
+        ]);
+    }
 
-        if ($filter === 'inactive') {
-            $query->onlyTrashed();
-        }
+    public function list(Request $request)
+    {
+        $status = $request->input('status', 'all');
 
-        $skills = $query->get()->map(function ($skill) {
-            return [
-                'id' => $skill->id,
-                'name' => $skill->name,
-                'programs' => $skill->programs->pluck('name'),
-                'program_ids' => $skill->programs->pluck('id'),
-                'career_opportunities' => $skill->careerOpportunities->pluck('title'),
-                'career_opportunity_ids' => $skill->careerOpportunities->pluck('id'),
-            ];
-        });
+        $instiskills = InstiSkill::with(['user', 'programs', 'careerOpportunities'])->withTrashed()
+            ->when($status === 'active', fn($q) => $q->whereNull('deleted_at'))
+            ->when($status === 'inactive', fn($q) => $q->whereNotNull('deleted_at'))
+            ->where('user_id', Auth::id())
+            ->get();
 
-        return Inertia::render('Institutions/InstiSkills', [
-            'skills' => $skills,
-            'programs' => Program::all(),
-            'careerOpportunities' => CareerOpportunity::all(),
-            'filter' => $filter,
+        return Inertia::render('Institutions/SkillList', [
+            'skills' => $instiskills,
+            'status' => $status
+        ]);
+    }
+
+    public function archivedList()
+    {
+        $instiskills = InstiSkill::with(['user', 'programs', 'careerOpportunities'])->onlyTrashed()
+            ->where('user_id', Auth::id())
+            ->get();
+
+        return Inertia::render('Institutions/ArchivedSkills', [
+            'all_skills' => $instiskills
         ]);
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:skills,name',
-            'program_ids' => 'required|array|min:1',
-            'program_ids.*' => 'exists:programs,id',
-            'career_opportunity_ids' => 'required|array|min:1',
-            'career_opportunity_ids.*' => 'exists:career_opportunities,id',
+        $request->validate([
+            'name' => ['required', 'string', 'unique:instiskills,name'],
+            'program_ids' => ['required', 'array'],
+            'program_ids.*' => ['exists:programs,id'],
+            'career_opportunity_ids' => ['required', 'array'],
+            'career_opportunity_ids.*' => ['exists:career_opportunities,id'],
         ]);
 
-        $skill = InstiSkill::create(['name' => $validated['name']]);
-        $skill->programs()->attach($validated['program_ids']);
-        $skill->careerOpportunities()->attach($validated['career_opportunity_ids']);
-
-        return redirect()->route('skills.index')->with('success', 'Skill added successfully.');
-    }
-
-    public function update(Request $request, InstiSkill $skill)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:skills,name,' . $skill->id,
-            'program_ids' => 'required|array|min:1',
-            'program_ids.*' => 'exists:programs,id',
-            'career_opportunity_ids' => 'required|array|min:1',
-            'career_opportunity_ids.*' => 'exists:career_opportunities,id',
+        $instiskill = InstiSkill::create([
+            'name' => $request->name,
+            'user_id' => Auth::id()
         ]);
 
-        $skill->update(['name' => $validated['name']]);
-        $skill->programs()->sync($validated['program_ids']);
-        $skill->careerOpportunities()->sync($validated['career_opportunity_ids']);
+        $instiskill->programs()->attach($request->program_ids);
+        $instiskill->careerOpportunities()->attach($request->career_opportunity_ids);
 
-        return redirect()->route('skills.index')->with('success', 'Skill updated successfully.');
+        return back()->with('success', 'Skill added.');
     }
 
-    public function destroy(InstiSkill $skill)
+    public function destroy(InstiSkill $instiskill)
     {
-        $skill->delete();
-        return redirect()->route('skills.index')->with('success', 'Skill archived.');
+        $instiskill->delete();
+        return back()->with('success', 'Skill archived.');
     }
 
     public function restore($id)
     {
-        $skill = InstiSkill::withTrashed()->findOrFail($id);
-        $skill->restore();
+        $instiskill = InstiSkill::withTrashed()->findOrFail($id);
+        $instiskill->restore();
 
-        return redirect()->route('skills.index')->with('success', 'Skill restored.');
+        return back()->with('success', 'Skill restored.');
     }
 }
