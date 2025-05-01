@@ -12,5 +12,5 @@ class SchoolYear extends Model
         return $this->belongsTo(User::class);
     }
 
-    protected $fillable = ['school_year_range', 'term'];
+    protected $fillable = ['school_year_range','user_id', 'term'];
 }

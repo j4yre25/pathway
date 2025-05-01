@@ -25,10 +25,9 @@ class DegreeController extends Controller
         $status = $request->input('status', 'all');
 
         $degrees = Degree::with('user')->withTrashed()
-            ->when($status === 'active', fn($q) => $q->whereNull('deleted_at'))
-            ->when($status === 'inactive', fn($q) => $q->whereNotNull('deleted_at'))
-            ->where('user_id', Auth::id())
-            ->get();
+        ->when($status === 'active', fn($query) => $query->whereNull('deleted_at'))
+        ->when($status === 'inactive', fn($query) => $query->whereNotNull('deleted_at'))
+        ->get();
 
         return Inertia::render('Institutions/Degrees/List', [
             'degrees' => $degrees,
@@ -82,7 +81,6 @@ class DegreeController extends Controller
 
     public function update(Request $request, Degree $degree)
     {
-        Gate::authorize('update', $degree);
 
         $request->validate([
             'type' => ['required', 'in:Bachelor,Associate,Master,Doctoral,Diploma'],
@@ -109,8 +107,8 @@ class DegreeController extends Controller
     {
         $degree->delete();
 
-        return redirect()->route('degrees.index', ['user' => $request->user()->id])
-            ->with('flash.banner', 'Degree archived.');
+    return redirect()->route('degrees', ['user' => $degree->user_id])
+        ->with('flash.banner', 'Degree archived.');
     }
 
     public function restore($id)

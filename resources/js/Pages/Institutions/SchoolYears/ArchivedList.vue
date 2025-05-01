@@ -24,8 +24,8 @@ const restoreSchoolYear = () => {
     });
 };
 
-const confirmRestore = (schoolYear) => {
-    schoolYearToRestore.value = schoolYear;
+const confirmRestore = (school_years) => {
+    schoolYearToRestore.value = school_years;
     showModal.value = true;
 };
 </script>

@@ -204,6 +204,13 @@ console.log(page.props.permissions.canManageInstitution)
                                     Manage Degrees
                                 </NavLink>
 
+                                <NavLink
+                                    v-if="page.props.permissions.canManageInstitution && page.props.auth.user.is_approved"
+                                    :href="route('programs', { user: page.props.auth.user.id })"
+                                    :active="route().current('programs')">
+                                    Manage Programs
+                                </NavLink>
+
                                 <!-- Manage Approval Link -->
                                 <NavLink
                                     v-if="page.props.permissions.canManageApprovalGraduate && page.props.auth.user.is_approved"

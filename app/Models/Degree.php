@@ -12,6 +12,10 @@ class Degree extends Model
     public function user() {
         return $this->belongsTo(User::class);
     }
+    public function programs()
+    {
+        return $this->hasMany(Program::class);
+    }
 
     protected $fillable = ['user_id', 'type'];
 }

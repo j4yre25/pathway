@@ -495,6 +495,19 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 
 });
 
+// PROGRAM ROUTES
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'can:manage institution'])->group(function () {
+    Route::get('/programs/{user}', [ProgramController::class, 'index'])->name('programs');
+    Route::get('/programs/{user}/list', [ProgramController::class, 'list'])->name('programs.list');
+    Route::get('/programs/{user}/create', [ProgramController::class, 'create'])->name('programs.create');
+    Route::post('/programs/{user}', [ProgramController::class, 'store'])->name('programs.store');
+    Route::get('/programs/edit/{program}', [ProgramController::class, 'edit'])->name('programs.edit');
+    Route::put('/programs/edit/{program}', [ProgramController::class, 'update'])->name('programs.update');
+    Route::delete('/programs/edit/{program}', [ProgramController::class, 'delete'])->name('programs.delete');
+    Route::get('/programs/{user}/archivedlist', [ProgramController::class, 'archivedlist'])->name('programs.archivedlist');
+    Route::post('/programs/edit/{program}', [ProgramController::class, 'restore'])->name('programs.restore');
+});
+
 
 
 

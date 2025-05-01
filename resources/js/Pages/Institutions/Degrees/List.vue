@@ -49,10 +49,10 @@ function handleDelete() {
                         </tr>
                     </thead>
                     <tbody class="text-gray-600 text-sm font-light">
-                        <tr v-for="deg in filteredDegrees" :key="deg.id" class="border-b border-gray-200 hover:bg-gray-100">
-                            <td class="border border-gray-200 px-6 py-4">{{ deg.type }}</td>
-                            <td class="border border-gray-200 px-6 py-4" :class="deg.deleted_at ? 'text-red-500 font-bold' : 'text-green-500 font-bold'">
-                                {{ deg.deleted_at ? 'Inactive' : 'Active' }}
+                        <tr v-for="degree in filteredDegrees" :key="degree.id" class="border-b border-gray-200 hover:bg-gray-100">
+                            <td class="border border-gray-200 px-6 py-4">{{ degree.type }}</td>
+                            <td class="border border-gray-200 px-6 py-4" :class="degree.deleted_at ? 'text-red-500 font-bold' : 'text-green-500 font-bold'">
+                                {{ degree.deleted_at ? 'Inactive' : 'Active' }}
                             </td>
                         </tr>
                     </tbody>

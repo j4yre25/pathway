@@ -8,8 +8,10 @@ import DangerButton from '@/Components/DangerButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 const props = defineProps({
-    school_years: Array,
+school_years: Array,
 });
+
+console.log(props);
 
 const selectedSchoolYear = ref(null);
 const open = ref(false);

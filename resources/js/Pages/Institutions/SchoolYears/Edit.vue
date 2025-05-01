@@ -13,10 +13,11 @@ const props = defineProps({
     schoolYear: Object,
 });
 
+console.log(props.schoolYear);
 const page = usePage();
 
 const form = useForm({
-    year: props.schoolYear.year,
+    school_year_range: props.schoolYear.school_year_range,
     term: props.schoolYear.term,
 });
 
@@ -45,15 +46,15 @@ const updateSchoolYear = () => {
 
                 <template #form>
                     <div class="col-span-6 sm:col-span-4">
-                        <InputLabel for="year" value="School Year" />
+                        <InputLabel for="school_year_range" value="School Year" />
                         <TextInput
                             id="year"
-                            v-model="form.year"
+                            v-model="form.school_year_range"
                             type="text"
                             class="mt-1 block w-full"
                             autocomplete="year"
                         />
-                        <InputError :message="form.errors.year" class="mt-2" />
+                        <InputError :message="form.errors.school_year_range" class="mt-2" />
                     </div>
 
                     <div class="col-span-6 sm:col-span-4 mt-4">

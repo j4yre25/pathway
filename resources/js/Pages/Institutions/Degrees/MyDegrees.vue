@@ -11,6 +11,8 @@ const props = defineProps({
     degrees: Array,
 });
 
+console.log(props);
+
 const selectedDegree = ref(null);
 const open = ref(false);
 
@@ -38,13 +40,13 @@ const confirmArchive = (degree) => {
                 </tr>
             </thead>
             <tbody class="text-gray-600 text-sm font-light">
-                <tr v-for="deg in degrees" :key="deg.id" class="border-b border-gray-200 hover:bg-gray-100">
-                    <td class="border border-gray-200 px-6 py-4">{{ deg.type }}</td>
+                <tr v-for="degree in degrees" :key="degree.id" class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="border border-gray-200 px-6 py-4">{{ degree.type }}</td>
                     <td class="border border-gray-200 px-6 py-4">
-                        <Link :href="route('degrees.edit', { id: deg.id })">
+                        <Link :href="route('degrees.edit', { id: degree.id })">
                             <PrimaryButton class="mr-2">Edit</PrimaryButton>
                         </Link>
-                        <DangerButton @click="confirmArchive(deg)">
+                        <DangerButton @click="confirmArchive(degree)">
                             Archive
                         </DangerButton>
                     </td>

@@ -14,9 +14,11 @@ class ProgramController extends Controller
     public function index(User $user)
     {
         $programs = $user->programs()->with('degree')->withTrashed()->get();
+        $degrees = $user->degrees;
 
         return Inertia::render('Institutions/Programs/Index', [
-            'programs' => $programs
+            'programs' => $programs,
+            'degrees' => $degrees,
         ]);
     }
 
@@ -25,29 +27,35 @@ class ProgramController extends Controller
         $status = $request->input('status', 'all');
 
         $programs = Program::with(['user', 'degree'])->withTrashed()
-            ->when($status === 'active', fn($q) => $q->whereNull('deleted_at'))
-            ->when($status === 'inactive', fn($q) => $q->whereNotNull('deleted_at'))
-            ->where('user_id', Auth::id())
+            ->when($status === 'active', fn($query) => $query->whereNull('deleted_at'))
+            ->when($status === 'inactive', fn($query) => $query->whereNotNull('deleted_at'))
             ->get();
 
-        return Inertia::render('Institutions/ProgramList', [
+        return Inertia::render('Institutions/Programs/List', [
             'programs' => $programs,
-            'status' => $status
+            'status' => $status,
         ]);
     }
 
     public function archivedList()
     {
-        $programs = Program::with(['user', 'degree'])->onlyTrashed()
-            ->where('user_id', Auth::id())
-            ->get();
+        $all_programs = Program::with(['user', 'degree'])->onlyTrashed()->get();
 
-        return Inertia::render('Institutions/ArchivedPrograms', [
-            'all_programs' => $programs
+        return Inertia::render('Institutions/Programs/ArchivedList', [
+            'all_programs' => $all_programs,
         ]);
     }
 
-    public function store(Request $request)
+    public function create(User $user)
+    {
+        $degrees = $user->degrees()->get();
+
+        return Inertia::render('Institutions/Programs/Create', [
+            'degrees' => $degrees,
+        ]);
+    }
+
+    public function store(Request $request, User $user)
     {
         $request->validate([
             'name' => ['required', 'string'],
@@ -55,40 +63,54 @@ class ProgramController extends Controller
         ]);
 
         $exists = Program::withTrashed()
-            ->where('user_id', Auth::id())
+            ->where('user_id', $user->id)
             ->where('name', $request->name)
             ->where('degree_id', $request->degree_id)
             ->exists();
 
         if ($exists) {
-            return back()->withErrors(['msg' => 'This program already exists.']);
+            return back()->withErrors(['flash.banner' => 'This program already exists.']);
         }
 
         Program::create([
             'name' => $request->name,
             'degree_id' => $request->degree_id,
-            'user_id' => Auth::id(),
+            'user_id' => $user->id,
         ]);
 
-        return back()->with('success', 'Program added.');
+        return redirect()->back()->with('flash.banner', 'Program added.');
+    }
+
+    public function edit(Program $program)
+    {
+        
+
+        $degrees = Degree::where('user_id', $program->user_id)->get();
+
+        return Inertia::render('Institutions/Programs/Edit', [
+            'program' => $program,
+            'degrees' => $degrees,
+        ]);
     }
 
     public function update(Request $request, Program $program)
     {
+        
+
         $request->validate([
             'name' => ['required', 'string'],
             'degree_id' => ['required', 'exists:degrees,id'],
         ]);
 
         $exists = Program::withTrashed()
-            ->where('user_id', Auth::id())
+            ->where('user_id', $program->user_id)
             ->where('name', $request->name)
             ->where('degree_id', $request->degree_id)
             ->where('id', '!=', $program->id)
             ->exists();
 
         if ($exists) {
-            return back()->withErrors(['msg' => 'Duplicate program entry.']);
+            return back()->withErrors(['flash.banner' => 'Duplicate program entry.']);
         }
 
         $program->update([
@@ -96,13 +118,15 @@ class ProgramController extends Controller
             'degree_id' => $request->degree_id,
         ]);
 
-        return back()->with('success', 'Program updated.');
+        return redirect()->back()->with('flash.banner', 'Program updated.');
     }
 
-    public function destroy(Program $program)
+    public function delete(Request $request, Program $program)
     {
         $program->delete();
-        return back()->with('success', 'Program archived.');
+
+        return redirect()->route('programs.index', ['user' => $request->user()->id])
+            ->with('flash.banner', 'Program archived.');
     }
 
     public function restore($id)
@@ -110,6 +134,6 @@ class ProgramController extends Controller
         $program = Program::withTrashed()->findOrFail($id);
         $program->restore();
 
-        return back()->with('success', 'Program restored.');
+        return redirect()->back()->with('flash.banner', 'Program restored.');
     }
 }

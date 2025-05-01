@@ -13,10 +13,10 @@ class SchoolYearController extends Controller
 {
     public function index(User $user)
     {
-        $schoolYears = $user->schoolYears;
+        $user->load('school_years');
 
         return Inertia::render('Institutions/SchoolYears/Index', [
-            'schoolYears' => $schoolYears
+            'school_years' => $user->school_years
         ]);
     }
 
@@ -24,13 +24,13 @@ class SchoolYearController extends Controller
     {
         $status = $request->input('status', 'all');
 
-        $schoolYears = SchoolYear::with('user')->withTrashed()
+        $school_years = SchoolYear::with('user')->withTrashed()
             ->when($status === 'active', fn($query) => $query->whereNull('deleted_at'))
             ->when($status === 'inactive', fn($query) => $query->whereNotNull('deleted_at'))
             ->get();
 
         return Inertia::render('Institutions/SchoolYears/List', [
-            'schoolYears' => $schoolYears,
+            'school_years' => $school_years,
             'status' => $status,
         ]);
     }
@@ -68,7 +68,7 @@ class SchoolYearController extends Controller
             ->exists();
 
         if ($exists) {
-            return back()->withErrors(['flash.banner' => 'This school year and term already exists.']);
+            return back()->with(['flash.banner' => 'This school year and term already exists.']);
         }
 
         SchoolYear::create([
@@ -89,7 +89,6 @@ class SchoolYearController extends Controller
 
     public function update(Request $request, SchoolYear $schoolYear)
     {
-        Gate::authorize('update', $schoolYear);
 
         $request->validate([
             'school_year_range' => ['required', 'regex:/^\d{4}-\d{4}$/'],
@@ -126,7 +125,7 @@ class SchoolYearController extends Controller
 
         $user_id = $request->user()->id;
 
-        return redirect(route('school-years.index', ['user' => $user_id]))->with('flash.banner', 'School year archived.');
+        return redirect(route('school-years', ['user' => $user_id]))->with('flash.banner', 'School year archived.');
     }
 
     public function restore($schoolYear)
