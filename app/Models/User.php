@@ -149,6 +149,21 @@ class User extends Authenticatable
         return $this->hasManyThrough(Category::class, Sector::class);
 
     }
+    public function programs()
+    {
+    return $this->hasMany(Program::class);
+    }
+
+    public function degrees()
+    {
+    return $this->hasMany(Degree::class);
+    }
+
+    public function school_years()
+    {
+    return $this->hasMany(SchoolYear::class);
+    }
+
 
     /**
      * Get the user's settings.
