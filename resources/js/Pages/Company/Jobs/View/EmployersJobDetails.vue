@@ -9,6 +9,7 @@ const props = defineProps({
 });
 
 
+
 const jobSkills = Array.isArray(props.job.skills)
   ? props.job.skills
   : typeof props.job.skills === 'string'
@@ -52,7 +53,7 @@ if (confirm("Invite all matched graduates for this job?")) {
               <p><strong>Offered Salary:</strong> ₱ {{ job.salary_range }}</p>
               <p><strong>Posted By:</strong>  {{ job.posted_by}}</p>
               <p><strong>Posted Date:</strong> {{ job.posted_at }}</p>
-              <p><strong>Application Deadline:</strong> {{ job.application_deadline }}</p>
+              <p><strong>Application Deadline:</strong> {{ job.expiration_date }}</p>
               <p><strong>Location:</strong> {{ job.location }}</p>
               <p><strong>No. Vacancy:</strong> {{ job.vacancy }}</p>
               <p><strong>Status:</strong> 
@@ -67,7 +68,7 @@ if (confirm("Invite all matched graduates for this job?")) {
             </div>
   
             <!-- CTA Buttons -->
-            <div class="space-y-2" v-if="user?.id === job.company_id && job.is_approved === 'approved'">
+            <div class="space-y-2" v-if = "job,is_approved === 'approved'">
               <div class="flex flex-col space-y-2">
                 <button 
                   class="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"

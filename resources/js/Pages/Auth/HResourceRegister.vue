@@ -77,7 +77,7 @@ const passwordCriteria = computed(() => {
 
 // Handle form submission
 const submit = () => {
-    form.post(route('hr.register'), {
+    form.post(route('hr.register.form'), {
         onFinish: () => {
             console.log("Form submission finished");
             console.log(form.errors);

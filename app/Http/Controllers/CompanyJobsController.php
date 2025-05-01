@@ -118,7 +118,7 @@ class CompanyJobsController extends Controller
         $new_job->sector_id = $validated['sector']; 
         $new_job->category_id = $validated['category']; 
         $new_job->job_benefits = $validated['job_benefits'];
-        $new_job->expiration_date = Carbon::parse($validated['expiration_date'])->format('Y-m-d');
+        $new_job->expiration_date = Carbon::parse($validated['expiration_date'])->format('F j, Y');
         $new_job->applicants_limit = $validated['applicants_limit'] ?? null; 
         $new_job->posted_by = $validated['posted_by'] ?? null; 
         $new_job->save();
@@ -155,6 +155,7 @@ class CompanyJobsController extends Controller
                 'is_approved' => $job->is_approved,
                 'posted_at' => $job->created_at->format('F j, Y'),
                 'posted_by' => $job->posted_by,
+                'expiration_date' => Carbon::parse($job->expiration_date)->format('F j, Y'),
                 'user_role' => $job->user->role ?? null,
                 'category' => $job->category->name ?? null,
                 'salary_range' => $salaryRange,  

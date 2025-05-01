@@ -88,7 +88,7 @@ console.log(page.props.permissions.canManageInstitution)
                                     Manage Applicants
                                 </NavLink>
 
-                                <NavLink v-if="page.props.roles.isCompany" :href="route('dashboard' , { user: page.props.auth.user.id })" :active="route().current('dashboard')"    :disabled="!page.props.auth.user.is_approved"
+                                <NavLink v-if="page.props.roles.isCompany && page.props.auth.user.is_main_hr" :href="route('company.manage-hrs' , { user: page.props.auth.user.id })" :active="route().current('company.manage-hrs')"    :disabled="!page.props.auth.user.is_approved"
                                 >
                                     Manage HR Accounts
                                 </NavLink>
@@ -387,7 +387,7 @@ console.log(page.props.permissions.canManageInstitution)
                                         
                                         <DropdownLink
                                             v-if="page.props.roles.isCompany && page.props.auth.user.is_approved"
-                                            :disabled="!page.props.auth.user.is_approved" :href="route('hr.register')">
+                                            :disabled="!page.props.auth.user.is_approved" :href="route('hr.register.form')">
                                             Add Human Resource Officer (HRO)
 
                                         </DropdownLink>
