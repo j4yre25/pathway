@@ -19,10 +19,13 @@ class CompanyJobsController extends Controller
 {
     public function index(User $user) {
 
-        // $jobs = $user->jobs()->withCount('applicant')->get();
+        $userCompany = auth()->user()->company_name;
+
+    $jobs = Job::whereHas('user', function ($query) use ($userCompany) {
+        $query->where('company_name', $userCompany);
+    })->with('user')->get(); // Optional: eager load 'user' for posted_by display
 
 
-        $jobs = $user->jobs;
         $sectors = Sector::pluck('name'); // Fetch all sector names
         $categories = \App\Models\Category::pluck('name'); // Fetch all category names
         
@@ -31,8 +34,6 @@ class CompanyJobsController extends Controller
             'sectors' => $sectors, // Array of sectors
             'categories' => $categories,
         ]);
-
-    
     }
 
 

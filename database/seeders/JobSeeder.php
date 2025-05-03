@@ -3,15 +3,20 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Job; 
+use App\Models\User;
+use App\Models\Job;
 use Faker\Factory as Faker;
 use Illuminate\Support\Arr;
+use App\Models\Sector;
+use App\Models\Category;
 
 class JobSeeder extends Seeder
 {
     public function run(): void
     {
         $faker = Faker::create('en_PH');
+        $sectors = Sector::pluck('id')->toArray(); // Fetch all valid sector IDs
+        $categories = Category::pluck('id')->toArray(); // Fetch all valid category IDs
 
         $companies = [
             ['name' => 'Sydney Hotel', 'address' => 'PIONEER-PENDATUN AVE.', 'brgy' => 'DADIANGAS WEST'],
@@ -33,93 +38,227 @@ class JobSeeder extends Seeder
 
         $jobTitlesPerCompany = [
             "Sydney Hotel" => [
-                "Front Desk Officer", "Housekeeping Attendant", "Hotel Manager", "Room Service Staff", "Concierge",
-                "Bellhop", "Night Auditor", "Security Personnel", "Kitchen Staff", "Event Coordinator"
+                "Front Desk Officer",
+                "Housekeeping Attendant",
+                "Hotel Manager",
+                "Room Service Staff",
+                "Concierge",
+                "Bellhop",
+                "Night Auditor",
+                "Security Personnel",
+                "Kitchen Staff",
+                "Event Coordinator"
             ],
             "KCC Mall of Gensan" => [
-                "Sales Clerk", "Inventory Associate", "Customer Service Representative", "Cashier", "Mall Operations Assistant",
-                "Store Supervisor", "Janitorial Staff", "Marketing Assistant", "Visual Merchandiser", "Security Guard"
+                "Sales Clerk",
+                "Inventory Associate",
+                "Customer Service Representative",
+                "Cashier",
+                "Mall Operations Assistant",
+                "Store Supervisor",
+                "Janitorial Staff",
+                "Marketing Assistant",
+                "Visual Merchandiser",
+                "Security Guard"
             ],
             "SM Mall of Gensan / SM PRIME HOLDINGS, INC." => [
-                "Mall Administrator", "Leasing Assistant", "Customer Service Associate", "Facilities Technician",
-                "Security Supervisor", "Marketing Executive", "Janitor", "Elevator Technician", "Cashiering Officer", "Events Coordinator"
+                "Mall Administrator",
+                "Leasing Assistant",
+                "Customer Service Associate",
+                "Facilities Technician",
+                "Security Supervisor",
+                "Marketing Executive",
+                "Janitor",
+                "Elevator Technician",
+                "Cashiering Officer",
+                "Events Coordinator"
             ],
             "SECURITY BANK CORPORATION" => [
-                "Bank Teller", "Branch Manager", "Loan Officer", "Customer Service Associate", "ATM Custodian",
-                "Account Officer", "Credit Analyst", "Marketing Assistant", "Compliance Officer", "Financial Advisor"
+                "Bank Teller",
+                "Branch Manager",
+                "Loan Officer",
+                "Customer Service Associate",
+                "ATM Custodian",
+                "Account Officer",
+                "Credit Analyst",
+                "Marketing Assistant",
+                "Compliance Officer",
+                "Financial Advisor"
             ],
             "1 Cooperative Insurance System of the Philippines Life and General Insurance" => [
-                "Insurance Agent", "Claims Processor", "Policy Underwriter", "Member Services Officer", "Field Verifier",
-                "Claims Adjuster", "Finance Officer", "Risk Analyst", "Customer Support Staff", "Office Clerk"
+                "Insurance Agent",
+                "Claims Processor",
+                "Policy Underwriter",
+                "Member Services Officer",
+                "Field Verifier",
+                "Claims Adjuster",
+                "Finance Officer",
+                "Risk Analyst",
+                "Customer Support Staff",
+                "Office Clerk"
             ],
             "KCD Real Estate Lessor" => [
-                "Leasing Officer", "Property Manager", "Real Estate Agent", "Maintenance Technician", "Marketing Associate",
-                "Documentation Staff", "Front Desk Clerk", "Collection Officer", "Customer Relations Officer", "Building Attendant"
+                "Leasing Officer",
+                "Property Manager",
+                "Real Estate Agent",
+                "Maintenance Technician",
+                "Marketing Associate",
+                "Documentation Staff",
+                "Front Desk Clerk",
+                "Collection Officer",
+                "Customer Relations Officer",
+                "Building Attendant"
             ],
             "Land Bank of the Philippines" => [
-                "Bank Teller", "Credit Officer", "Agricultural Loan Specialist", "Branch Operations Assistant", "IT Support Staff",
-                "Risk Management Officer", "Loans Processor", "Finance Analyst", "Marketing Officer", "Audit Assistant"
+                "Bank Teller",
+                "Credit Officer",
+                "Agricultural Loan Specialist",
+                "Branch Operations Assistant",
+                "IT Support Staff",
+                "Risk Management Officer",
+                "Loans Processor",
+                "Finance Analyst",
+                "Marketing Officer",
+                "Audit Assistant"
             ],
             "SOUTH COTABATO II ELECTRIC COOPERATIVE" => [
-                "Electrical Engineer", "Lineman", "Customer Service Staff", "Billing Analyst", "Collections Officer",
-                "Meter Reader", "Power Systems Technician", "Inventory Clerk", "Safety Officer", "Maintenance Crew"
+                "Electrical Engineer",
+                "Lineman",
+                "Customer Service Staff",
+                "Billing Analyst",
+                "Collections Officer",
+                "Meter Reader",
+                "Power Systems Technician",
+                "Inventory Clerk",
+                "Safety Officer",
+                "Maintenance Crew"
             ],
             "WILCON DEPOT, INC." => [
-                "Warehouse Assistant", "Sales Consultant", "Inventory Controller", "Delivery Driver", "Cashier",
-                "Product Specialist", "Store Supervisor", "Visual Merchandiser", "Customer Care Associate", "Procurement Staff"
+                "Warehouse Assistant",
+                "Sales Consultant",
+                "Inventory Controller",
+                "Delivery Driver",
+                "Cashier",
+                "Product Specialist",
+                "Store Supervisor",
+                "Visual Merchandiser",
+                "Customer Care Associate",
+                "Procurement Staff"
             ],
             "AGRIBUSINESS RURAL BANK, INC." => [
-                "Loans Officer", "Rural Banking Staff", "Teller", "Marketing Officer", "Field Collector",
-                "Microfinance Officer", "Credit Investigator", "Compliance Assistant", "Finance Assistant", "Client Support Specialist"
+                "Loans Officer",
+                "Rural Banking Staff",
+                "Teller",
+                "Marketing Officer",
+                "Field Collector",
+                "Microfinance Officer",
+                "Credit Investigator",
+                "Compliance Assistant",
+                "Finance Assistant",
+                "Client Support Specialist"
             ],
             "ASIA UNITED BANK CORPORATION" => [
-                "Customer Relationship Officer", "Teller", "Credit Analyst", "Branch Operations Supervisor", "Loan Processor",
-                "Digital Banking Specialist", "Security Officer", "Administrative Aide", "Treasury Assistant", "Business Development Officer"
+                "Customer Relationship Officer",
+                "Teller",
+                "Credit Analyst",
+                "Branch Operations Supervisor",
+                "Loan Processor",
+                "Digital Banking Specialist",
+                "Security Officer",
+                "Administrative Aide",
+                "Treasury Assistant",
+                "Business Development Officer"
             ],
             "DOLE PHILIPPINES, INC" => [
-                "Production Worker", "Quality Assurance Analyst", "Agricultural Technician", "Supply Chain Staff", "Machine Operator",
-                "HR Assistant", "Forklift Operator", "Farm Supervisor", "Food Safety Inspector", "Logistics Coordinator"
+                "Production Worker",
+                "Quality Assurance Analyst",
+                "Agricultural Technician",
+                "Supply Chain Staff",
+                "Machine Operator",
+                "HR Assistant",
+                "Forklift Operator",
+                "Farm Supervisor",
+                "Food Safety Inspector",
+                "Logistics Coordinator"
             ],
             "SAN ANDRES FISHING INDUSTRIES, INC." => [
-                "Factory Worker", "Refrigeration Technician", "Marine Engineer", "Production Supervisor", "Procurement Officer",
-                "Quality Control Staff", "Inventory Assistant", "Net Repairman", "Operations Manager", "Logistics Staff"
+                "Factory Worker",
+                "Refrigeration Technician",
+                "Marine Engineer",
+                "Production Supervisor",
+                "Procurement Officer",
+                "Quality Control Staff",
+                "Inventory Assistant",
+                "Net Repairman",
+                "Operations Manager",
+                "Logistics Staff"
             ],
             "SMART COMMUNICATIONS INC." => [
-                "Retail Sales Associate", "Customer Support Representative", "Field Technician", "Network Engineer", "IT Specialist",
-                "Store Supervisor", "Marketing Officer", "Data Analyst", "Account Executive", "Inventory Clerk"
+                "Retail Sales Associate",
+                "Customer Support Representative",
+                "Field Technician",
+                "Network Engineer",
+                "IT Specialist",
+                "Store Supervisor",
+                "Marketing Officer",
+                "Data Analyst",
+                "Account Executive",
+                "Inventory Clerk"
             ],
             "ST. ELIZABETH HOSPITAL, INC." => [
-                "Staff Nurse", "Medical Technologist", "Pharmacist", "Nursing Aide", "Billing Clerk",
-                "Laboratory Assistant", "Radiologic Technologist", "Health Records Officer", "Hospital Admin Assistant", "ER Attendant"
+                "Staff Nurse",
+                "Medical Technologist",
+                "Pharmacist",
+                "Nursing Aide",
+                "Billing Clerk",
+                "Laboratory Assistant",
+                "Radiologic Technologist",
+                "Health Records Officer",
+                "Hospital Admin Assistant",
+                "ER Attendant"
             ]
         ];
 
-        $sectorsWithCategories = [
-            1 => [1, 2], // Sector 1 has categories 1 and 2
-            2 => [3, 4], // Sector 2 has categories 3 and 4
-            3 => [5],    // Sector 3 has category 5
-            4 => [1, 3], // Sector 4 has categories 1 and 3
-            5 => [2, 4]  // Sector 5 has categories 2 and 4
-        ];
 
         $jobTypes = ['full-time', 'part-time'];
-        $experienceLevels = ['entry-level','intermediate', 'mid-level', 'senior-executive'];
+        $experienceLevels = ['entry-level', 'intermediate', 'mid-level', 'senior-executive'];
         $salaryTypes = ['monthly', 'weekly', 'hourly', 'negotiable'];
         $skillsList = ['Communication', 'Teamwork', 'Problem-solving', 'Time Management', 'Customer Service', 'Leadership'];
 
+        
         foreach ($companies as $company) {
             $companyName = $company['name'];
             $companyLocation = $company['address'] . ', ' . $company['brgy'] . ', General Santos City';
             $branchLocation =  $company['brgy'] . ', General Santos City';
+       
+            // Fetch the HR user for this company (assumes HR has role 'company')
+            $hrUser = User::where('company_name', $companyName)
+                          ->where('role', 'company')
+                          ->first();
+
+            // If HR user exists, get the full name (you could also handle cases where no HR user exists)
+            if ($hrUser) {
+                $postedByName = $hrUser->company_hr_first_name . ' ' . $hrUser->company_hr_last_name;
+                $userId = $hrUser->id; // Store the HR user ID
+            } else {
+                // If no HR user, use default values
+                $postedByName = 'Default HR';
+                $userId = 1; // Set to a default user ID (assuming 1 exists)
+            }
+
+
+       
             foreach ($jobTitlesPerCompany[$companyName] as $title) {
-                $sectorId = Arr::random(array_keys($sectorsWithCategories));
-                $categoryId = Arr::random($sectorsWithCategories [$sectorId]);
+                $sectorId = Arr::random($sectors); // Use valid sector IDs
+                $categoryId = Arr::random($categories); // Use valid category IDs
 
                 $salaryType = Arr::random($salaryTypes);
                 $minSalary = $this->getSalaryRange($salaryType, 'min');
                 $maxSalary = $this->getSalaryRange($salaryType, 'max');
 
                 Job::create([
+                    'user_id' => $userId, // Set user_id to the HR user ID
+                    'posted_by' => $postedByName,
                     'job_title' => $title,
                     'sector_id' => $sectorId,
                     'category_id' => $categoryId,
@@ -140,6 +279,7 @@ class JobSeeder extends Seeder
                 ]);
             }
         }
+        
     }
 
     private function getSalaryRange($salaryType, $type)

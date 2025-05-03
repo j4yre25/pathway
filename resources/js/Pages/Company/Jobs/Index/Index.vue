@@ -30,27 +30,27 @@ const selectedVacancy = ref('');
 
 console.log(props.jobs);
 
-const filteredJobs = computed(() => {
-    return props.jobs.filter(job => {
-        const matchesSearch = job.job_title.toLowerCase().includes(searchQuery.value.toLowerCase());
-        const matchesDate = selectedDate.value
-            ? job.created_at
-            : true;
-        const matchesJobType = selectedJobType.value
-            ? job.type
-            : true;
+// const filteredJobs = computed(() => {
+//     return props.jobs.filter(job => {
+//         const matchesSearch = job.job_title.toLowerCase().includes(searchQuery.value.toLowerCase());
+//         const matchesDate = selectedDate.value
+//             ? job.created_at
+//             : true;
+//         const matchesJobType = selectedJobType.value
+//             ? job.type
+//             : true;
 
-        const matchesJobLevel = selectedJobLevel.value
-            ? selectedJobLevel.value 
-            : true;
+//         const matchesJobLevel = selectedJobLevel.value
+//             ? selectedJobLevel.value 
+//             : true;
 
-        const matchesVacancy = selectedVacancy.value
-            ? selectedVacancy.value 
-            : true;
+//         const matchesVacancy = selectedVacancy.value
+//             ? selectedVacancy.value 
+//             : true;
 
-        return matchesSearch && matchesDate && matchesJobType && matchesJobLevel && matchesVacancy; 
-    });
-});
+//         return matchesSearch && matchesDate && matchesJobType && matchesJobLevel && matchesVacancy; 
+//     });
+// });
 
 
 console.log('User ID:', page.props);

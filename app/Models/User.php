@@ -74,6 +74,9 @@ class User extends Authenticatable
         'graduate_skills_years_experience', 
 
         // Company
+        'is_main_hr',
+        'registered_by',
+        'company_description',
         'company_name',
         'company_street_address',
         'company_brgy',

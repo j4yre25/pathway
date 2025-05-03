@@ -5,6 +5,7 @@ namespace App\Actions\Fortify;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
@@ -20,7 +21,7 @@ class CreateNewHR implements CreatesNewUsers
     public function create(array $input): User
     {
 
-        $currentUser = auth()->user(); // Logged-in company user
+        $currentUser = Auth::user(); 
 
         Validator::make($input, [
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -43,9 +44,11 @@ class CreateNewHR implements CreatesNewUsers
                 'dob' => $input['dob'], 
                 'contact_number' => $input['contact_number'], 
                 'is_approved' => 1,
-                 'is_main_hr' => false,
-
-                  // Inherit from the current company user
+                'is_main_hr' => false,
+                
+                'registered_by' => "{$currentUser->company_hr_first_name} {$currentUser->company_hr_last_name}",
+                 
+                 // Inherit from the current company user
                 'company_name' => $currentUser->company_name,
                 'company_street_address' => $currentUser->company_street_address,
                 'company_brgy' => $currentUser->company_brgy,

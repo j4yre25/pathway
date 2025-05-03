@@ -40,10 +40,11 @@ const goToJob = (jobId) => {
         <tr class=" w-full bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
 
           <th class="py-2 px-4 text-left border">Job Title</th>
-          <th class="py-2 px-4 text-left border">Location</th>
+          <th class="py-2 px-4 text-left border">Posted By</th>
+          <th class="py-2 px-4 text-left border">Branch Location</th>
           <th class="py-2 px-4 text-left border">Employment Type</th>
           <th class="py-2 px-4 text-left border">Experience Level</th>
-            <th class="py-2 px-4 text-left border">Applicants</th>
+          <th class="py-2 px-4 text-left border">Applicants</th>
           <th class="py-2 px-4 text-left border">Status</th>
 
         </tr>
@@ -53,7 +54,8 @@ const goToJob = (jobId) => {
             @click="goToJob(job.id)"
             class="border-b border-gray-200 hover:bg-gray-100">
           <td class="border border-gray-200 px-6 py-4">{{ job.job_title }}</td>
-          <td class="border border-gray-200 px-6 py-4">{{ job.location }}</td>
+          <td class="border border-gray-200 px-6 py-4">{{ job.posted_by }}</td>
+          <td class="border border-gray-200 px-6 py-4">{{ job.branch_location }}</td>
           <td class="border border-gray-200 px-6 py-4">{{ job.job_type }}</td>
           <td class="border border-gray-200 px-6 py-4">{{ job.experience_level }}</td>
             <td class="border border-gray-200 px-6 py-4">{{  job.applicants_count ?? 0 }}</td>

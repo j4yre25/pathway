@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class CompanyManageHRController extends Controller
@@ -14,18 +15,20 @@ class CompanyManageHRController extends Controller
      */
     public function index()
     {
-        $user = auth()->user(); // Get the logged-in user (company)
+        $mainHR = Auth::user(); // the logged-in main HR
+
+        $hrs = User::where('registered_by', $mainHR->company_hr_first_name . ' ' . $mainHR->company_hr_last_name)
+               ->where('role', 'company')
+               ->where('is_main_hr', false)
+               ->get();
 
         // Ensure only main HR can manage HRs
-        if ($user->role !== 'company' || !$user->is_main_hr) {
+        if ($mainHR->role !== 'company' || !$mainHR->is_main_hr) {
             abort(403, 'Unauthorized access.');
         }
 
         // Fetch all HRs associated with the company
-        $hrs = User::where('role', 'company')
-            ->where('company_name', $user->company_name)
-            ->where('is_main_hr', false)
-            ->get();
+        
 
         return inertia('Company/ManageHR/Index/Index', [
             'hrs' => $hrs,

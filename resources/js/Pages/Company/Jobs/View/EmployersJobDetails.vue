@@ -68,7 +68,7 @@ if (confirm("Invite all matched graduates for this job?")) {
             </div>
   
             <!-- CTA Buttons -->
-            <div class="space-y-2" v-if = "job,is_approved === 'approved'">
+            <div class="space-y-2" v-if = "job.is_approved === 'approved'">
               <div class="flex flex-col space-y-2">
                 <button 
                   class="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
