@@ -19,16 +19,12 @@ class CompanyJobsController extends Controller
 {
     public function index(User $user) {
 
-        $userCompany = auth()->user()->company_name;
-
-    $jobs = Job::whereHas('user', function ($query) use ($userCompany) {
-        $query->where('company_name', $userCompany);
-    })->with('user')->get(); // Optional: eager load 'user' for posted_by display
-
-
+        $jobs = $user->jobs;
+        
         $sectors = Sector::pluck('name'); // Fetch all sector names
         $categories = \App\Models\Category::pluck('name'); // Fetch all category names
-        
+        // dd($jobs);
+
         return Inertia::render('Company/Jobs/Index/Index', [
             'jobs' => $jobs,
             'sectors' => $sectors, // Array of sectors

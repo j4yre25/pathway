@@ -13,7 +13,7 @@ const props = defineProps({
   sectors: Array,
   categories: Array,
 });
-
+console.log(props);
 const searchQuery = ref('');
 const selectedSector = ref('');
 const selectedCategory = ref('');
@@ -35,6 +35,7 @@ const goToJob = (jobId) => {
 <template>
   
   <div class="overflow-x-auto">
+    
     <table class="min-w-full bg-white border border-gray-200">
       <thead>
         <tr class=" w-full bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
@@ -50,7 +51,7 @@ const goToJob = (jobId) => {
         </tr>
       </thead>
       <tbody class="text-gray-600 text-sm font-light">
-        <tr v-for="job in jobs" :key="job.id" 
+        <tr v-for="job in filteredJobs" :key="job.id"
             @click="goToJob(job.id)"
             class="border-b border-gray-200 hover:bg-gray-100">
           <td class="border border-gray-200 px-6 py-4">{{ job.job_title }}</td>

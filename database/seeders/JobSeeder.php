@@ -231,19 +231,16 @@ class JobSeeder extends Seeder
             $companyLocation = $company['address'] . ', ' . $company['brgy'] . ', General Santos City';
             $branchLocation =  $company['brgy'] . ', General Santos City';
        
-            // Fetch the HR user for this company (assumes HR has role 'company')
             $hrUser = User::where('company_name', $companyName)
                           ->where('role', 'company')
                           ->first();
-
-            // If HR user exists, get the full name (you could also handle cases where no HR user exists)
+            
             if ($hrUser) {
                 $postedByName = $hrUser->company_hr_first_name . ' ' . $hrUser->company_hr_last_name;
-                $userId = $hrUser->id; // Store the HR user ID
+                $userId = $hrUser->id; 
             } else {
-                // If no HR user, use default values
                 $postedByName = 'Default HR';
-                $userId = 1; // Set to a default user ID (assuming 1 exists)
+                $userId = 1; 
             }
 
 
@@ -258,6 +255,7 @@ class JobSeeder extends Seeder
 
                 Job::create([
                     'user_id' => $userId, // Set user_id to the HR user ID
+                    'company_name' => $companyName,
                     'posted_by' => $postedByName,
                     'job_title' => $title,
                     'sector_id' => $sectorId,
@@ -267,7 +265,7 @@ class JobSeeder extends Seeder
                     'salary_type' => $salaryType,
                     'min_salary' => $minSalary,
                     'max_salary' => $maxSalary,
-                    'job_location' => $companyLocation,
+                    'location' => $companyLocation,
                     'branch_location' => $branchLocation,
                     'vacancy' => random_int(1, 10),
                     'description' => "$title position at $companyName. Responsibilities include ...",
