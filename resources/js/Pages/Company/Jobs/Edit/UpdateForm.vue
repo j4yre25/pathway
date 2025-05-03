@@ -15,6 +15,7 @@
     const form = useForm({
         job_name: props.job.job_title,
         description: props.job.description,
+        job_requirements: props.job.job_requirements,
     })
 
     const submitForm = () => {
@@ -48,6 +49,11 @@
                             <InputLabel value="Job Description"/>
                                 <TextInput v-model="form.description" type="text" class="block w-full"/>
                                 <InputError :message="form.errors.description" />
+                        </div>
+                        <div class="col-span-6 sm:col-span-4">
+                            <InputLabel value="Job Requirements"/>
+                                <TextInput v-model="form.job_requirements" type="text" class="block w-full"/>
+                                <InputError :message="form.errors.job_requirements" />
                         </div>
                     </template>
                     <template #actions>

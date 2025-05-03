@@ -269,7 +269,7 @@ class JobSeeder extends Seeder
                     'branch_location' => $branchLocation,
                     'vacancy' => random_int(1, 10),
                     'description' => "$title position at $companyName. Responsibilities include ...",
-                    'job_requirements' => "Requirements for $title include ...",
+                    'requirements' => "Requirements for $title include ...",
                     'job_benefits' => "Health benefits, SSS, Pag-IBIG, PhilHealth",
                     'skills' => json_encode(array_rand(array_flip($skillsList), 3)),
                     'expiration_date' => now()->addDays(30)->format('Y-m-d'),
