@@ -96,12 +96,20 @@ class  CustomRegisteredUserController extends Controller
         return 'guest';
     }
 
-    public function showGraduateDetails()
+    public function showGraduateDetails(Request $request)
     {
         $insti_users = User::where('role', 'institution')->get(['id', 'institution_name']);
         $school_year = SchoolYear::all();
-        $programs = Program::all();
-        
+    
+        // Get the selected institution name from the request
+        $institutionName = $request->input('institution_name');
+    
+        // Retrieve programs based on the selected institution name
+        $programs = [];
+        if (!empty($institutionName)) {
+            $programs = Program::where('institution_name', $institutionName)->get();
+        }
+    
         return Inertia::render('Auth/Register', [
             'insti_users' => $insti_users,
             'school_year' => $school_year,

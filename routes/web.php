@@ -720,10 +720,10 @@ Route::group(['middleware' => config('fortify.middleware', ['web'])], function (
 //     Route::put('/profile/education/{id}', [EducationController::class, 'updateEducation'])->name('education.update');
 //     Route::delete('/profile/education/{id}', [EducationController::class, 'removeEducation'])->name('education.remove');
 
-//     // Experience Routes
-//     Route::post('/profile/experience', [ExperienceController::class, 'addExperience'])->name('experience.add');
-//     Route::put('/profile/experience/{id}', [ExperienceController::class, 'updateExperience'])->name('experience.update');
-//     Route::delete('/profile/experience/{id}', [ExperienceController::class, 'removeExperience'])->name('experience.remove');
+    // // Experience Routes
+    // Route::post('/profile/experience', [ExperienceController::class, 'addExperience'])->name('experience.add');
+    // Route::put('/profile/experience/{id}', [ExperienceController::class, 'updateExperience'])->name('experience.update');
+    // Route::delete('/profile/experience/{id}', [ExperienceController::class, 'removeExperience'])->name('experience.remove');
 
 //     // Skill Routes
 //     Route::post('/profile/skills', [SkillController::class, 'addSkill'])->name('skills.add');
@@ -797,6 +797,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/resume', [ProfileController::class, 'updateResume'])->name('profile.resume');
 });
 
+
 // Profile Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
@@ -808,7 +809,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile/education/{id}', [ProfileController::class, 'removeEducation'])->name('education.remove');
 
     // Experience Routes
-    Route::post('/profile/experiences', [ProfileController::class, 'addExperience'])->name('experience.addExperience');
+    Route::post('/profile/experiences', [ProfileController::class, 'addExperience'])->name('experience.add');
     Route::put('/profile/experiences/{id}', [ProfileController::class, 'updateExperience'])->name('experience.updateExperience');
     Route::delete('/profile/experiences/{id}', [ProfileController::class, 'removeExperience'])->name('experience.remove c');
 

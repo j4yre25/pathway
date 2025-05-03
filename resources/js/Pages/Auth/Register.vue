@@ -9,7 +9,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { useFormattedMobileNumber } from '@/Composables/useFormattedMobileNumber';
 import { useFormattedTelephoneNumber } from '@/Composables/useFormattedTelephoneNumber';
 import { usePasswordCriteria } from '@/Composables/usePasswordCriteria';
-import { defineProps, onMounted, ref } from 'vue';
+import { defineProps, onMounted, ref, watch } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import { Inertia } from '@inertiajs/inertia';
 
@@ -20,10 +20,26 @@ const props = defineProps({
 
 })
 
+watch(() => form.value.institution_name, (newInstitutionName) => {
+    if (newInstitutionName) {
+        // Make an API call to fetch programs for the selected institution
+        Inertia.get(route('register.showGraduateDetails'), { institution_name: newInstitutionName }, {
+            preserveState: true,
+            onSuccess: (page) => {
+                availablePrograms.value = page.props.programs; // Update programs dynamically
+            },
+        });
+    } else {
+        availablePrograms.value = []; // Reset programs if no institution is selected
+    }
+});
+
 console.log(props)
 
 const isPasswordFocused = ref(false);
 const showModal = ref(false);
+const availablePrograms = ref(props.programs);
+
 
 // Define the form with additional fields for user types
 const form = useForm({
@@ -711,7 +727,7 @@ const redirectToLogin = () => {
                                 class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                 required>
                                 <option value="" disabled>Select a Program</option>
-                                <option v-for="program in programs" :key="program.id" :value="program.name">
+                                <option v-for="program in availablePrograms" :key="program.id" :value="program.name">
                                     {{ program.name }}
                                 </option>
                             </select>

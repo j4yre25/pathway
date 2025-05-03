@@ -1,5 +1,5 @@
 <script setup>
-import Graduate from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { ref, computed, onMounted, watch } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import { useForm, usePage, router } from '@inertiajs/vue3';
@@ -12,7 +12,6 @@ import axios from 'axios';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Datepicker from 'vue3-datepicker';
 import { isValid } from 'date-fns';
-import '@fortawesome/fontawesome-free/css/all.css';
 import VueApexCharts from 'vue3-apexcharts';
 import SkillsChart from '@/Components/SkillsChart.vue';
 
@@ -2202,7 +2201,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Graduate>
+  <AppLayout>
     <div class="bg-gray-100 min-h-screen p-6">
       <div class="container mx-auto">
         <h1 class="text-3xl font-bold mb-4">Profile Settings</h1>
@@ -4291,5 +4290,5 @@ onMounted(() => {
         </teleport>
       </div>
     </div>
-  </Graduate>
+  </AppLayout>
 </template>
